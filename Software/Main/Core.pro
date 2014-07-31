@@ -32,4 +32,5 @@ include(shared-amf.pro)
 #include(common.pro)
 include(shared.pro)
 include(DataStructures.pro)
+include(Controllers.pro)
 

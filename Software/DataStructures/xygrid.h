@@ -1,7 +1,7 @@
 #ifndef XYGRID_H
 #define XYGRID_H
 #include <QtCore>
-#include "../shared/fah-constants.h"
+#include "../libraries/shared/fah-constants.h"
 
 template <class T>
 class XYGrid {

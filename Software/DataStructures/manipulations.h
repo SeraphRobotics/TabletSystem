@@ -1,7 +1,7 @@
 #ifndef MANIPULATIONS_H
 #define MANIPULATIONS_H
 
-#include "../shared/fah-constants.h"
+#include "../libraries/shared/fah-constants.h"
 #include <QDomNode>
 #include <QUuid>
 

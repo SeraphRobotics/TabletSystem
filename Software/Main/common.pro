@@ -1,4 +1,4 @@
-HEADERS += ../common/todo.h \
-    ../common/confirm.h
-SOURCES += ../common/todo.cpp \
-    ../common/confirm.cpp
+HEADERS += ../libraries/common/todo.h \
+    ../libraries/common/confirm.h
+SOURCES += ../libraries/common/todo.cpp \
+    ../libraries/common/confirm.cpp

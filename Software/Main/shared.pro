@@ -1,1 +1,1 @@
-HEADERS += ../shared/fah-constants.h
+HEADERS += ../libraries/shared/fah-constants.h
