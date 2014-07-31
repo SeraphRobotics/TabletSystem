@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QDomElement>
 #include <QDomNode>
+#include <QDir>
 
 USBManager::USBManager(QObject *parent) :
     QObject(parent),USBDir_("")
@@ -33,6 +34,47 @@ void USBManager::usbDisconnected(QString f)
     items_.clear();
     emit usbDisconnected();
     emit uiUSBItemsUpdated(items_);
+}
+
+void USBManager::deleteItem(QString id){
+    bool hasid=false;
+    int i=0;
+    for(i;i<items_.size();i++){
+        if (items_.at(i).id==id) {
+            hasid = true;
+            break;
+        }
+    }
+    UI_USB_Item item = items_[i];
+    if (item.type==UI_USB_Item::kScan){
+        removeDir(item.id);
+    }else{
+        QFile::remove(USBDir_+item.id+".gcode");
+    }
+
+
+
+}
+void USBManager::updateUSBData(){
+
+    QString filename;
+    filename = USBDir_+"USBData.xml";
+
+    QDomDocument d("USBDataFile");
+
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly)){return;}
+
+    QDomElement node = d.createElement("USBData");
+
+    for(int i=0; i<items_.size(); i++){
+        node.appendChild(nodeFromUSBItem(items_.at(i)));
+    }
+    d.appendChild(node);
+
+    QTextStream f(&file);
+    f<<d.toString();
+    file.close();
 }
 
 void USBManager::proccessUSBDrive()
@@ -69,6 +111,28 @@ void USBManager::proccessUSBDrive()
 }
 
 
+QDomNode nodeFromUSBItem(UI_USB_Item i){
+    QDomDocument d("dummy");
+
+    QDomElement node;
+
+    if (i.type==UI_USB_Item::kScan){
+         node = d.createElement("Scan");
+         QDomElement Folder = d.createElement("Folder");
+         Folder.appendChild(d.createTextNode(i.id));
+         node.appendChild(Folder);
+    }else{
+        node = d.createElement("PrintJob");
+        QDomElement Folder = d.createElement("file");
+        Folder.appendChild(d.createTextNode(i.id+".gcode"));
+        node.appendChild(Folder);
+    }
+    QDomElement datetime = d.createElement("DateTime");
+    datetime.appendChild(d.createTextNode(QString::number(i.datetime.toMSecsSinceEpoch())));
+    node.appendChild(datetime);
+    return node;
+}
+
 UI_USB_Item makeUSBItemFromNode(QDomNode node){
     UI_USB_Item returnItem;
 
@@ -104,4 +168,28 @@ UI_USB_Item makeUSBItemFromNode(QDomNode node){
         }
     }
     return returnItem;
+}
+
+
+bool removeDir(const QString & dirName)
+{
+    bool result = true;
+    QDir dir(dirName);
+
+    if (dir.exists(dirName)) {
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+            if (info.isDir()) {
+                result = removeDir(info.absoluteFilePath());
+            }
+            else {
+                result = QFile::remove(info.absoluteFilePath());
+            }
+
+            if (!result) {
+                return result;
+            }
+        }
+        result = dir.rmdir(dirName);
+    }
+    return result;
 }

@@ -29,6 +29,12 @@ signals:
 
 
 public slots:
+    void deleteItem(QString id);
+
+
+
+
+private slots:
 
     /**
      * connects to the USB minder thread and causes the system to process the usb key
@@ -46,10 +52,15 @@ private:
      **/
     void proccessUSBDrive();
 
+    void updateUSBData();
+
 private:
     QList<UI_USB_Item> items_;
     QString USBDir_;
 };
 
+
+QDomNode nodeFromUSBItem(UI_USB_Item i);
 UI_USB_Item makeUSBItemFromNode(QDomNode node);
+bool removeDir(const QString & dirName);
 #endif // USBMANAGER_H
