@@ -1,9 +1,7 @@
-#TEMPLATE = subdirs
-#CONFIG += ordered
-SUBDIRS = libqdevicewatcher usbminder
+include(../libraries/qdevicewatcher-master/src/libQDeviceWatcher.pri)
 
-libqdevicewatcher.file = ../libraries/qdevicewatcher-master/src/libQDeviceWatcher.pro
+win32:!wince*:LIBS += -lUser32
 
-usbminder.file = USBMinder.pro
-usbminder.depends += libqdevicewatcher
+SOURCES += ../Controllers/usbminder.cpp
 
+HEADERS += ../Controllers/usbminder.h

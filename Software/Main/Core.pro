@@ -4,33 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core\
-            gui\
-            xml
 
-TARGET = CoreSystem
-CONFIG   += console
-CONFIG   -= app_bundle
+TEMPLATE = subdirs
+CONFIG += ordered
+SUBDIRS = libqdevicewatcher CoreSystem
 
-TEMPLATE = app
+libqdevicewatcher.file = ../libraries/qdevicewatcher-master/src/libQDeviceWatcher.pro
 
-
-SOURCES += main.cpp 
-
-
-HEADERS += \
-    UI_structs.h \
-    mastercontrolunit.h \
-    testing/test.h
-
-INCLUDEPATH += ../
-        
-
-include(shared-math.pro)
-include(shared-stl.pro)
-include(shared-amf.pro)
-#include(common.pro)
-include(shared.pro)
-include(DataStructures.pro)
-include(Controllers.pro)
+CoreSystem.file = Coresystem.pro
+CoreSystem.depends += libqdevicewatcher
 
