@@ -22,4 +22,5 @@ include(shared-amf.pro)
 include(shared.pro)
 include(DataStructures.pro)
 include(Controllers.pro)
+include(View.pro)
 

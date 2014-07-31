@@ -3,7 +3,7 @@
 #include <QString>
 #include <QPixmap>
 #include <QDateTime>
-#include "shared/stl/stlmesh.h"
+#include "libraries/shared/stl/stlmesh.h"
 #include "basicstructures.h"
 
 
