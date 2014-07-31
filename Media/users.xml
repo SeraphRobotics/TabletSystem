@@ -1,0 +1,11 @@
+<Users>
+	<user id="{64844aae-619c-47f1-ae93-72ca93b5ab9a}">
+	 <name>
+	  <title>mr.</title>
+	  <first>test</first>
+	  <last>person</last>
+	 </name>
+	 <password>test</password>
+	 <icon>icon.jpg</icon>
+	</user>
+</Users>
