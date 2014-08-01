@@ -24,7 +24,7 @@ QDomNode nodeFromRx(Rx r);
 Rx rxFromNode(QDomNode node);
 
 struct Patient{
-    enum ShoeGender {kMale,kFemale};
+    enum ShoeGender {kMale,kFemale,kUnknown};
     QString id;
     ShoeGender gender;
     QList<Rx> rxs;
