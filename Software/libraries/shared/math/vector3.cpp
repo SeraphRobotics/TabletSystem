@@ -387,4 +387,3 @@ Math::Vector3 operator / (const Math::Vector3& lhs, Math::Float s) {
 Math::Vector3 operator * (Math::Float s, const Math::Vector3& v) {
   return operator * (v, s);
 }
-

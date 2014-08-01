@@ -76,40 +76,6 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
     }
 }
 
-void Orthotic::requestScanData(){
-    emit needScan(scanid_);
-}
-
-Scan *Orthotic::getScan(){//placeholder
-    return scan_;
-}
-
-QString Orthotic::getScanID(){
-    return scanid_;
-}
-
-QString Orthotic::getId(){
-    return id_;
-}
-
-
-void Orthotic::setTopCoat(Top_Coat tc){
-    tc_=tc;
-}
-
-void Orthotic::addManipulation(Manipulation m){
-    manipulations_.append(m);
-    emit manipulated();
-}
-void Orthotic::undo(){
-    undo_stack_.push(manipulations_.last());
-    manipulations_.pop_back();
-    emit manipulated();
-}
-void Orthotic::redo(){
-    addManipulation(undo_stack_.pop());
-}
-
 void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
 
 
@@ -184,6 +150,42 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
     file.close();
 
 }
+
+void Orthotic::requestScanData(){
+    emit needScan(scanid_);
+}
+
+Scan *Orthotic::getScan(){//placeholder
+    return scan_;
+}
+
+QString Orthotic::getScanID(){
+    return scanid_;
+}
+
+QString Orthotic::getId(){
+    return id_;
+}
+
+
+void Orthotic::setTopCoat(Top_Coat tc){
+    tc_=tc;
+}
+
+void Orthotic::addManipulation(Manipulation m){
+    manipulations_.append(m);
+    emit manipulated();
+}
+void Orthotic::undo(){
+    undo_stack_.push(manipulations_.last());
+    manipulations_.pop_back();
+    emit manipulated();
+}
+void Orthotic::redo(){
+    addManipulation(undo_stack_.pop());
+}
+
+
 void Orthotic::setScan(Scan* scan){///placeholder for scan class
     scan_=scan;
     scanid_=scan->getID();

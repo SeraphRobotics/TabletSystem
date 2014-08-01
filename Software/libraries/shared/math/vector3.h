@@ -2,7 +2,7 @@
 
 #include "float.h"
 #include "structs.h"
-
+#include <QString>
 
 namespace Math {
 
@@ -300,6 +300,7 @@ struct Vector3 {
    * Lazy operation to make a new vector for an call
    */
   static Vector3 make(float x, float y, float z);
+
 };
 
 
