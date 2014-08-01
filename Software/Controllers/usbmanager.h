@@ -57,6 +57,9 @@ private:
      **/
     void proccessUSBDrive();
 
+    /**
+     * writes UI_USB_Items into USBData.xml files
+     **/
     void updateUSBData();
 
 private:
