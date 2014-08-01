@@ -2,7 +2,7 @@
 #define USBTESTER_H
 
 #include <QObject>
-#include "Controllers/usbmanager.h"
+#include "DataStructures/usbmanager.h"
 
 class USBTester : public QObject
 {

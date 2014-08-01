@@ -10,7 +10,9 @@ HEADERS += ../DataStructures/manipulations.h \
     ../DataStructures/usermanager.h \
     ../DataStructures/patientmanager.h \
     ../DataStructures/scanmanager.h \
-    ../DataStructures/orthoticmanager.h
+    ../DataStructures/orthoticmanager.h \
+    ../DataStructures/usbminder.h \
+    ../DataStructures/usbmanager.h
 
 SOURCES += ../DataStructures/manipulations.cpp \
     ../DataStructures/orthotic.cpp\
@@ -22,8 +24,9 @@ SOURCES += ../DataStructures/manipulations.cpp \
     ../DataStructures/usermanager.cpp \
     ../DataStructures/patientmanager.cpp \
     ../DataStructures/scanmanager.cpp \
-    ../DataStructures/orthoticmanager.cpp
-
+    ../DataStructures/orthoticmanager.cpp \
+    ../DataStructures/usbminder.cpp \
+    ../DataStructures/usbmanager.cpp
 
 
 include(common.pro)

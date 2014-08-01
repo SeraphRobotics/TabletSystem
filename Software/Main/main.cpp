@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QSettings>
-#include "Controllers/usbminder.h"
-#include "Controllers/usbmanager.h"
+#include "DataStructures/usbminder.h"
+#include "DataStructures/usbmanager.h"
 #include "UnitTest/usbtester.h"
 #include <QTimer>
 
