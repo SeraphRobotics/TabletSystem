@@ -22,13 +22,11 @@ struct UI_User{
     Name name;
     QPixmap icon;
 };
-Q_DECLARE_METATYPE(UI_User);
+Q_DECLARE_METATYPE(UI_User)
 
 
 struct UI_USB_Item{
     enum Type{kScan,kRx};
-
-
     Type type;
     QDateTime datetime;
     QString id;
@@ -36,7 +34,7 @@ struct UI_USB_Item{
     Name patient;//if none, then not assigned, if exists, thenstatus is "[Name]'s orthotic is ready for transfer to printer"
 };
 
-Q_DECLARE_METATYPE(UI_USB_Item);
+Q_DECLARE_METATYPE(UI_USB_Item)
 
 struct UI_Patient{
     QString id;
@@ -45,10 +43,10 @@ struct UI_Patient{
     QList< UI_USB_Item > item_list;
 };
 
-Q_DECLARE_METATYPE(UI_Patient);
+Q_DECLARE_METATYPE(UI_Patient)
 
 enum Foot_Type{kRight,kLeft,kBoth};
-Q_DECLARE_METATYPE(Foot_Type);
+Q_DECLARE_METATYPE(Foot_Type)
 
 
 struct Front_Edge{
@@ -57,7 +55,7 @@ struct Front_Edge{
     QPointF p3;
     QPointF p4;
 };
-Q_DECLARE_METATYPE(Front_Edge);
+Q_DECLARE_METATYPE(Front_Edge)
 
 
 struct Top_Coat{
@@ -68,7 +66,7 @@ struct Top_Coat{
     float depth;
     Density density;
 };
-Q_DECLARE_METATYPE(Top_Coat);
+Q_DECLARE_METATYPE(Top_Coat)
 
 
 typedef QVector < QPointF > Border;
@@ -83,7 +81,7 @@ struct UI_Shell_Modification{
     float stiffness;
 
 };
-Q_DECLARE_METATYPE(UI_Shell_Modification);
+Q_DECLARE_METATYPE(UI_Shell_Modification)
 
 //struct Posting{
 //    enum side{kForFoot,kRearFoot};

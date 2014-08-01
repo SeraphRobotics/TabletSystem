@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "View/UI_structs.h"
+#include <QMap>
 
 /**
  * The Goal of this object is to scan the USBKey and find the scans, and update the list of UI_USB_Items
@@ -12,6 +13,8 @@ class USBManager : public QObject
     Q_OBJECT
 public:
     explicit USBManager(QObject *parent = 0);
+
+    QString getLocation(QString id);
 
 signals:
 
@@ -63,8 +66,10 @@ private:
     void updateUSBData();
 
 private:
-    QList<UI_USB_Item> items_;
+    QMap < QString, UI_USB_Item > items_;
     QString USBDir_;
+    QString Rx_extension;
+
 };
 
 

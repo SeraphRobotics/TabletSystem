@@ -5,9 +5,9 @@ win32:!wince*:LIBS += -lUser32
 SOURCES += ../Controllers/usbminder.cpp \
     ../Controllers/usbmanager.cpp \
     ../Controllers/scanprocessing.cpp \
-    ../Controllers/scandata.cpp
+    ../Controllers/scandataprocesser.cpp
 
 HEADERS += ../Controllers/usbminder.h \
     ../Controllers/usbmanager.h \
     ../Controllers/scanprocessing.h \
-    ../Controllers/scandata.h
+    ../Controllers/scandataprocesser.h

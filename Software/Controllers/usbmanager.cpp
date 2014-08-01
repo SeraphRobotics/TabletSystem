@@ -4,13 +4,13 @@
 #include <QDomElement>
 #include <QDomNode>
 #include <QDir>
+#include <QMapIterator>
 #include <stdio.h>
 #include <iostream>
 
 USBManager::USBManager(QObject *parent) :
-    QObject(parent),USBDir_("")
+    QObject(parent),USBDir_(""),Rx_extension(".gcode")
 {
-
 }
 
 
@@ -23,7 +23,7 @@ void USBManager::usbAdded(QString f)
     USBDir_ = f;
     proccessUSBDrive();
     emit usbConnected();
-    emit uiUSBItemsUpdated(items_);
+    emit uiUSBItemsUpdated(items_.values());
     qDebug()<<"items: "<<items_.size();
 }
 
@@ -36,24 +36,29 @@ void USBManager::usbDisconnected(QString f)
     USBDir_="";
     items_.clear();
     emit usbDisconnected();
-    emit uiUSBItemsUpdated(items_);
+    emit uiUSBItemsUpdated(items_.values());
     qDebug()<<"items: "<<items_.size();
 }
+
+QString USBManager::getLocation(QString id){
+    if(!items_.keys().contains(id)){return QString();}
+    UI_USB_Item i = items[id];
+    if (i.type == UI_USB_Item::kScan){
+        return USBDir_+id;
+    }else{
+        return USBDir_+id+Rx_extension;
+    }
+}
+
+
+
+
 
 void USBManager::deleteItem(QString id){
     qDebug()<<"delete: "<<id;
 
     /// FIND IF IT IS AN ITEM
-    bool hasid=false;
-    int index=0;
-    for(int i=0;i<items_.size();i++){
-        qDebug()<<"id: "<<items_.at(i).id;
-        if (items_.at(i).id==id) {
-            hasid = true;
-            index =i;
-            i=items_.size();
-        }
-    }
+    bool hasid = items_.keys().contains(id);
 
     qDebug()<<"exists? "<<hasid;
     if (!hasid){return;}
@@ -61,21 +66,21 @@ void USBManager::deleteItem(QString id){
 
 
     /// IF IT EXISTS DELETE IT
-    UI_USB_Item item = items_[index];
+    UI_USB_Item item = items_[id];
     bool worked=false;
     if (item.type==UI_USB_Item::kScan){
         worked = removeDir(USBDir_+item.id);
         qDebug()<<"removed dir" <<item.id;
     }else{
-        if (QFile::exists(USBDir_+item.id+".gcode") ){
-            worked = QFile::remove(USBDir_+item.id+".gcode");
+        if (QFile::exists(USBDir_ + item.id + Rx_extension) ){
+            worked = QFile::remove(USBDir_ + item.id + Rx_extension);
         }else{
             qDebug()<<"didnt exist";
         }
 
     }
     if(!worked){return;}
-    items_.removeAt(index);
+    items_.remove(id);
     qDebug()<<"Worked: "<<worked;
 
     /// REWRITE DATA
@@ -97,9 +102,13 @@ void USBManager::updateUSBData(){
 
     QDomElement node = d.createElement("USBData");
 
-    for(int i=0; i<items_.size(); i++){
-        node.appendChild(nodeFromUSBItem(items_.at(i)));
+
+    QMapIterator<QString,UI_USB_Item  > i(items_);
+    while(i.hasNext()){
+        i.next();
+        node.appendChild(nodeFromUSBItem(i.value()));
     }
+
     d.appendChild(node);
 
     QTextStream f(&file);
@@ -136,7 +145,8 @@ void USBManager::proccessUSBDrive()
     for(int i=0;i<usbdataEls.size();i++){
         QDomNode mchild = usbdataEls.at(i);
         if(!mchild.isElement()){continue;}
-        items_.append(makeUSBItemFromNode(mchild));
+        UI_USB_Item item = makeUSBItemFromNode(mchild);
+        items_[item.id]=item;
     }
 }
 

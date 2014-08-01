@@ -1,5 +1,5 @@
-#ifndef SCANDATA_H
-#define SCANDATA_H
+#ifndef SCANDATAPROCESSER_H
+#define SCANDATAPROCESSER_H
 
 #include <QObject>
 #include <QPixmap>
@@ -14,13 +14,13 @@
 #include "xygrid.h"
 #include "DataStructures/scan.h"
 
-class ScanData : public QObject
+class ScanDataProcesser : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScanData(QObject *parent = 0);
-    ~ScanData();
-    ScanData(QString id, QString folder);
+    explicit ScanDataProcesser(QObject *parent = 0);
+    ~ScanDataProcesser();
+    ScanDataProcesser(QString id, QString folder);
 
 
 signals:
@@ -75,4 +75,4 @@ public:
 
 
 
-#endif // SCANDATA_H
+#endif // SCANDATAPROCESSER_H

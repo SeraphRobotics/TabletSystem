@@ -1,35 +1,35 @@
-#include "scandata.h"
+#include "scandataprocesser.h"
 #include <QSettings>
 #include "scanprocessing.h"
 #include <QThread>
 #include <QUuid>
 
-ScanData::ScanData(QObject *parent) :
+ScanDataProcesser::ScanDataProcesser(QObject *parent) :
     QObject(parent),numFilesToProcess(0),numFilesProcessed(0)
 {
     id_=QUuid::createUuid().toString();
     dir_=QDir::current();
 }
 
-ScanData::~ScanData(){
-    QList<float> xs = getXRange();
+ScanDataProcesser::~ScanDataProcesser(){
+    QList<float> xs = pointCloud.keys();
     for (int i=0;i<xs.size(); i++){
         delete pointCloud[xs.at(i)];
     }
 
 }
 
-ScanData::ScanData(QString id, QString folder):
+ScanDataProcesser::ScanDataProcesser(QString id, QString folder):
     QObject(),numFilesToProcess(0),numFilesProcessed(0)
 {
     id_=id;
     dir_ = QDir(folder);
 }
 
-void  ScanData::processScan(QString folder){
+void  ScanDataProcesser::processScan(QString folder){
 
     dir_ = QDir(folder);
-    QFileInfoList list = dir.entryInfoList();
+    QFileInfoList list = dir_.entryInfoList();
     numFilesToProcess = list.size();
     numFilesProcessed = 0;
 
@@ -47,7 +47,7 @@ void  ScanData::processScan(QString folder){
 }
 
 
-void ScanData::addImage(float x, QPixmap pxmap){
+void ScanDataProcesser::addImage(float x, QPixmap pxmap){
 
     QThread* thread = new QThread;
     ScanProcessing* worker = new ScanProcessing(x,pxmap);
@@ -64,19 +64,19 @@ void ScanData::addImage(float x, QPixmap pxmap){
 
 }
 
-void ScanData::processedImage(float x, QVector < FAHVector3 >* row ){
+void ScanDataProcesser::processedImage(float x, QVector < FAHVector3 >* row ){
     pointCloud[x]=row;
     numFilesProcessed++;
 
     if(numFilesProcessed == numFilesToProcess){
         Scan* s = new Scan();
-        s->setInitialData(makeGrid);
-        emit scanProcessed(Scan* s);
+        s->setInitialData( makeGrid());
+        emit scanProcessed(s);
     }
 }
 
 
-XYGrid<float>* ScanData::makeGrid(){
+XYGrid<float>* ScanDataProcesser::makeGrid(){
     float GRID_SIZE = 2; /// need to save from elsewhere
     float Tolerance = 0.3;
     float max_x=0;
