@@ -15,17 +15,55 @@ class Scan : public QObject
     Q_OBJECT
 public:
     explicit Scan(QObject *parent = 0);
+
+    /**
+     * @brief Scan loads file from XML tree with CSV structures
+     * @param filename
+     */
     Scan(QString filename);
 
+    /**
+     * @brief getID returns ID
+     * @return
+     */
     QString getID();
+
+    /**
+     * @brief getXYGrid
+     * @return processed XYGrid
+     */
     XYGrid<float>* getXYGrid();
+
+    /**
+     * @brief setId overides the ID generated internally
+     * @param id
+     */
+    void setId(QString id);
 
 signals:
 
 public slots:
+
+    /**
+     * @brief resets the processed grid to the raw scan
+     */
     void reset();
+
+    /**
+     * @brief writeToDisk writes a CSV files inside of XML tree structure
+     */
     void writeToDisk();
+
+    /**
+     * @brief setInitialData sets the XYGRid
+     * @param grid
+     */
     void setInitialData(XYGrid<float>* grid); // makes a copy of the data
+
+    /**
+     * @brief setProcessedGrid
+     * @param grid
+     */
     void setProcessedGrid(XYGrid<float>* grid);
 
 private:

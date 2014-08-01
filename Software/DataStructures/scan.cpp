@@ -75,6 +75,8 @@ void Scan::writeToDisk(){
 
 
 QString Scan::getID(){return id_.toString();}
+void Scan::setId(QString id){id_=id;}
+
 
 XYGrid<float>* Scan::getXYGrid(){return processed_;}
 
