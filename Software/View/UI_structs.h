@@ -58,16 +58,6 @@ struct Front_Edge{
 Q_DECLARE_METATYPE(Front_Edge)
 
 
-struct Top_Coat{
-    enum Style{ kNone,kAuto,kCloth};
-    enum Density {kLow,kMedium,kHigh};
-    Style style;
-    float thickness;
-    float depth;
-    Density density;
-};
-Q_DECLARE_METATYPE(Top_Coat)
-
 
 typedef QVector < QPointF > Border;
 

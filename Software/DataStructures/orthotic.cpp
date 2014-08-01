@@ -66,6 +66,12 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
                     manipulations_.append(Manipulation(manip));
                 }
             }
+        }else if("healpoints"==name){
+            healPts_ = pointsFromNode(mchild.childNodes());
+        }else if ("forepoints" == name){
+            forePts_ = pointsFromNode(mchild.childNodes());
+        }else if ("topcoat" == name){
+            tc_ = topCoatFromNode(mchild);
         }
     }
 }
@@ -84,6 +90,11 @@ QString Orthotic::getScanID(){
 
 QString Orthotic::getId(){
     return id_;
+}
+
+
+void Orthotic::setTopCoat(Top_Coat tc){
+    tc_=tc;
 }
 
 void Orthotic::addManipulation(Manipulation m){
@@ -133,14 +144,39 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
     QDomNode rpostEl = postingToNode(rearfoot_);
     node.appendChild(rpostEl);
 
+
+    //Boarder loop
     QDomElement borderEl = d.createElement("boundaryloop");
     QDomNode bl=nodeFromLoop(boundaryloop_);
     borderEl.appendChild(bl);
     node.appendChild(borderEl);
 
+
+    // Manipulations added
     for(int i=0;i<manipulations_.size();i++){
         node.appendChild(manipulations_[i].toNode());
     }
+
+    //  QVector< FAHVector3 > healPts_;
+    QVector< QDomNode > heal_nodes = nodeListFromVector(healPts_);
+    QDomElement healnode = d.createElement("healpoints");
+    for(int i=0; i<heal_nodes.size();i++){
+        healnode.appendChild(heal_nodes.at(i));
+    }
+    node.appendChild(healnode);
+
+    //  QVector< FAHVector3 > forePts_;
+    QVector< QDomNode > fore_nodes = nodeListFromVector(forePts_);
+    QDomElement forenode = d.createElement("forepoints");
+    for(int i=0; i<fore_nodes.size();i++){
+        forenode.appendChild(fore_nodes.at(i));
+    }
+    node.appendChild(forenode);
+
+    //  Top_Coat tc_;
+    QDomNode tc_node = nodeFromTopCoat(tc_);
+    node.appendChild(tc_node);
+
 
     d.appendChild(node);
     QTextStream f(&file);
@@ -176,62 +212,16 @@ void Orthotic::setPosting(Posting p){
     }
 }
 
+void Orthotic::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector3 > forePts){
+    healPts_=healPts;
+    forePts_ = forePts;
+}
+
+
 void Orthotic::setBoundary(FAHLoopInXYPlane* loop){boundaryloop_=loop;}
 FAHLoopInXYPlane* Orthotic::getLoop(){return boundaryloop_;}
 
 void Orthotic::setFootType(foot_type t){foot_=t;}
 Orthotic::foot_type Orthotic::getFootType(){return foot_;}
 
-QDomNode postingToNode(Posting p){
-    QDomDocument d("dummy");
-    QDomElement node = d.createElement("posting");
 
-    QDomElement sideEl = d.createElement("side");
-    sideEl.appendChild(d.createTextNode(QString::number(p.for_rear)));
-    node.appendChild(sideEl);
-
-    QDomElement angleEl = d.createElement("angle");
-    angleEl.appendChild(d.createTextNode(QString::number(p.angle)));
-    node.appendChild(angleEl);
-
-    QDomElement verticleEl = d.createElement("verticle");
-    verticleEl.appendChild(d.createTextNode(QString::number(p.verticle)));
-    node.appendChild(verticleEl);
-
-    QDomElement directionEl = d.createElement("direction");
-    directionEl.appendChild(d.createTextNode(QString::number(p.varus_valgus)));
-    node.appendChild(directionEl);
-
-    return node;
-}
-
-Posting nodeToPosting(QDomNode node){
-    Posting p;
-    p.angle=0;
-    p.varus_valgus=Posting::kValgus;
-    p.for_rear=Posting::kForFoot;
-    p.verticle=0;
-
-    if(!("posting"==node.nodeName().toLower())){return p;}
-
-
-    QDomNodeList mchildren = node.childNodes();
-    for(unsigned int i=0;i<mchildren.length();i++){
-        QDomNode mchild = mchildren.at(i);
-        if(!mchild.isElement()){continue;}
-
-        QDomElement el = mchild.toElement();
-        QString name = mchild.nodeName();
-
-        if("side"==name){
-            p.for_rear= static_cast<Posting::side>(el.text().toUInt());
-        }else if("angle"==name){
-            p.angle=el.text().toFloat();
-        }else if("verticle"==name){
-            p.verticle=el.text().toFloat();
-        }else if("direction"==name){
-            p.varus_valgus=static_cast<Posting::direction>(el.text().toUInt());
-        }
-    }
-    return p;
-}

@@ -117,6 +117,57 @@ QDomNode Manipulation::toNode(){
     return node;
 }
 
+QDomNode nodeFromTopCoat(Top_Coat tc){
+    QDomDocument d("dummy");
+
+    QDomElement node = d.createElement("TopCoat");
+    QDomElement typeEl = d.createElement("type");
+    typeEl.appendChild(d.createTextNode(QString::number(tc.style)));
+    node.appendChild(typeEl);
+
+    QDomElement stiffEl = d.createElement("density");
+    stiffEl.appendChild(d.createTextNode(QString::number(tc.density)));
+    node.appendChild(stiffEl);
+
+    QDomElement depthEl = d.createElement("depth");
+    depthEl.appendChild(d.createTextNode(QString::number(tc.depth)));
+    node.appendChild(depthEl);
+
+    QDomElement thicknessEl = d.createElement("thickness");
+    thicknessEl.appendChild(d.createTextNode(QString::number(tc.thickness)));
+    node.appendChild(thicknessEl);
+
+    return node;
+}
+
+
+
+Top_Coat topCoatFromNode(QDomNode node){
+    Top_Coat tc;
+    if(!("topcoat"==node.nodeName().toLower())){return tc;}
+
+
+    QDomNodeList mchildren = node.childNodes();
+    for(unsigned int i=0;i<mchildren.length();i++){
+        QDomNode mchild = mchildren.at(i);
+        if(!mchild.isElement()){continue;}
+
+        QDomElement el = mchild.toElement();
+        QString name = mchild.nodeName();
+
+        if("type"==name){
+            tc.style= static_cast<Top_Coat::Style>(el.text().toUInt());
+        }else if ("density"==name){
+            tc.density = static_cast<Top_Coat::Density>(el.text().toUInt());
+        }else if("depth" == name){
+            tc.depth = el.text().toFloat();
+        }else if("thickness"==name){
+            tc.thickness = el.text().toFloat();
+        }
+    }
+    return tc;
+}
+
 
 FAHLoopInXYPlane* loopFromNode(QDomNode node){
     if(!("loop"==node.nodeName())){return new FAHLoopInXYPlane();}
@@ -133,26 +184,7 @@ FAHLoopInXYPlane* loopFromNode(QDomNode node){
         if (pchild.isComment()) {continue;}
 
         if ("point"==pchild.nodeName().toLower()) {
-            p.x=0;
-            p.y=0;
-            p.z=0;
-            pointChildren = pchild.childNodes();
-
-            for(int j=0; j < pointChildren.size(); j++) {
-                if (pointChildren.at(j).isComment()) {continue;}
-                coordNode = pointChildren.at(j).toElement();
-
-                QString temp = coordNode.nodeName().toLower();
-                double tempd = coordNode.text().toDouble();
-
-                if ("x" == temp) {
-                    p.x = tempd;
-                } else if ("y" == temp) {
-                    p.y = tempd;
-                } else if ("z" == temp) {
-                    p.z = tempd;
-                }
-            }
+            p=pointFromNode(pchild);
             loop->add(p);
         }
     }
@@ -180,4 +212,126 @@ QDomNode nodeFromLoop(FAHLoopInXYPlane* loop){
         loopEl.appendChild(pointEl);
     }
     return loopEl;
+}
+
+
+QDomNode postingToNode(Posting p){
+    QDomDocument d("dummy");
+    QDomElement node = d.createElement("posting");
+
+    QDomElement sideEl = d.createElement("side");
+    sideEl.appendChild(d.createTextNode(QString::number(p.for_rear)));
+    node.appendChild(sideEl);
+
+    QDomElement angleEl = d.createElement("angle");
+    angleEl.appendChild(d.createTextNode(QString::number(p.angle)));
+    node.appendChild(angleEl);
+
+    QDomElement verticleEl = d.createElement("verticle");
+    verticleEl.appendChild(d.createTextNode(QString::number(p.verticle)));
+    node.appendChild(verticleEl);
+
+    QDomElement directionEl = d.createElement("direction");
+    directionEl.appendChild(d.createTextNode(QString::number(p.varus_valgus)));
+    node.appendChild(directionEl);
+
+    return node;
+}
+
+Posting nodeToPosting(QDomNode node){
+    Posting p;
+    p.angle=0;
+    p.varus_valgus=Posting::kValgus;
+    p.for_rear=Posting::kForFoot;
+    p.verticle=0;
+
+    if(!("posting"==node.nodeName().toLower())){return p;}
+
+
+    QDomNodeList mchildren = node.childNodes();
+    for(unsigned int i=0;i<mchildren.length();i++){
+        QDomNode mchild = mchildren.at(i);
+        if(!mchild.isElement()){continue;}
+
+        QDomElement el = mchild.toElement();
+        QString name = mchild.nodeName();
+
+        if("side"==name){
+            p.for_rear= static_cast<Posting::side>(el.text().toUInt());
+        }else if("angle"==name){
+            p.angle=el.text().toFloat();
+        }else if("verticle"==name){
+            p.verticle=el.text().toFloat();
+        }else if("direction"==name){
+            p.varus_valgus=static_cast<Posting::direction>(el.text().toUInt());
+        }
+    }
+    return p;
+}
+
+
+
+
+
+FAHVector3 pointFromNode(QDomNode node){
+    FAHVector3 p(0,0,0);
+    if ("point"==node.nodeName().toLower()) {
+
+        QDomNodeList pointChildren = node.childNodes();
+        for(int j=0; j < pointChildren.size(); j++) {
+            if (pointChildren.at(j).isComment()) {continue;}
+            QDomElement coordNode = pointChildren.at(j).toElement();
+
+            QString temp = coordNode.nodeName().toLower();
+            double tempd = coordNode.text().toDouble();
+
+            if ("x" == temp) {
+                p.x = tempd;
+            } else if ("y" == temp) {
+                p.y = tempd;
+            } else if ("z" == temp) {
+                p.z = tempd;
+            }
+        }
+    }
+    return p;
+}
+
+
+QDomNode nodeFromPoint(FAHVector3 p){
+    QDomDocument d("dummy");
+    QDomElement pointEl = d.createElement("point");
+    QDomElement xEl = d.createElement("x");
+    QDomElement yEl = d.createElement("y");
+    QDomElement zEl = d.createElement("z");
+
+    xEl.appendChild(d.createTextNode(QString::number(p.x)));
+    yEl.appendChild(d.createTextNode(QString::number(p.y)));
+    zEl.appendChild(d.createTextNode(QString::number(p.z)));
+
+    pointEl.appendChild(xEl);
+    pointEl.appendChild(yEl);
+    pointEl.appendChild(zEl);
+    return pointEl;
+}
+
+QVector< FAHVector3 > pointsFromNode(QDomNodeList nodes){
+    QVector< FAHVector3 > points;
+    for(int i=0;i<nodes.size();i++){
+        QDomNode n = nodes.at(i);
+        QDomElement el = n.toElement();
+        QString name = n.nodeName();
+        if("point"==name){
+            points.append(pointFromNode(el));
+        }
+    }
+    return points;
+}
+
+QVector< QDomNode> nodeListFromVector( QVector <FAHVector3> points){
+    QVector< QDomNode> nodes;
+    for(int i=0;i<points.size();i++){
+        nodes.append( nodeFromPoint( points.at(i) ) );
+    }
+    return nodes;
 }

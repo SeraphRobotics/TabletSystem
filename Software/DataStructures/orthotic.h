@@ -7,22 +7,7 @@
 #include <QStack>
 #include "scan.h"
 
-/**
-  Posting is the data structure for the basic orthotic angular modifications. Each orthotic has two postings
-**/
-struct Posting{
-    enum side{kForFoot,kRearFoot};
-    enum direction {kVargus,kValgus};
 
-    float angle; //angle
-    direction varus_valgus;
-    side for_rear;
-    float verticle; //mm
-};
-
-QDomNode postingToNode(Posting p);
-
-Posting nodeToPosting(QDomNode node);
 
 
 
@@ -57,6 +42,7 @@ signals:
 
 public slots:
     void addManipulation(Manipulation m);
+    void setTopCoat(Top_Coat tc);
     void undo();
     void redo();
     void writeToDisk(); //writes XML and makes Scan write to disk
@@ -65,6 +51,7 @@ public slots:
     void setBoundary(FAHLoopInXYPlane* loop);
     void setFootType(foot_type t);
     void setBottomType(bottom_type b);
+    void setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector3 > forePts);
 
 private slots:
     void requestScanData();
@@ -81,6 +68,9 @@ private:
     QStack<Manipulation> undo_stack_;
     foot_type foot_;
     bottom_type bottom_;
+    QVector< FAHVector3 > healPts_;
+    QVector< FAHVector3 > forePts_;
+    Top_Coat tc_;
 };
 
 #endif // ORTHOTIC_H
