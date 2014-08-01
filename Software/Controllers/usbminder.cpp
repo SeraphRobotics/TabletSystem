@@ -1,13 +1,13 @@
 #include "usbminder.h"
 #include <QDebug>
 
-USBMinder::USBMinder(QObject *parent) :
-    QThread(parent)
+USBMinder::USBMinder(QObject *parent) //:
+    //QThread(parent)
 {
-    start();
-    moveToThread(this);
+    //start();
+    //moveToThread(this);
     watcher = new QDeviceWatcher();
-    watcher->moveToThread(this);
+    //watcher->moveToThread(this);
     connect(watcher, SIGNAL(deviceAdded(QString)), this, SLOT(slotDeviceAdded(QString)), Qt::DirectConnection);
     connect(watcher, SIGNAL(deviceChanged(QString)), this, SLOT(slotDeviceChanged(QString)), Qt::DirectConnection);
     connect(watcher, SIGNAL(deviceRemoved(QString)), this, SLOT(slotDeviceRemoved(QString)), Qt::DirectConnection);

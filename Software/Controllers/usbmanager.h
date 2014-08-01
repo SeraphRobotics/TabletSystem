@@ -25,13 +25,18 @@ signals:
      **/
     void usbDisconnected();
 
+    /**
+     * UI facing signal for the USB control widget
+     **/
     void uiUSBItemsUpdated(QList<UI_USB_Item> f);
 
 
 public slots:
+    /**
+     * UI facing signal for the USB control widget
+     * Deletes the file or folder associated with the id if it exists
+     **/
     void deleteItem(QString id);
-
-
 
 
 private slots:

@@ -4,6 +4,8 @@
 #include <QDomElement>
 #include <QDomNode>
 #include <QDir>
+#include <stdio.h>
+#include <iostream>
 
 USBManager::USBManager(QObject *parent) :
     QObject(parent),USBDir_("")
@@ -22,6 +24,7 @@ void USBManager::usbAdded(QString f)
     proccessUSBDrive();
     emit usbConnected();
     emit uiUSBItemsUpdated(items_);
+    qDebug()<<"items: "<<items_.size();
 }
 
 void USBManager::usbDisconnected(QString f)
@@ -34,27 +37,51 @@ void USBManager::usbDisconnected(QString f)
     items_.clear();
     emit usbDisconnected();
     emit uiUSBItemsUpdated(items_);
+    qDebug()<<"items: "<<items_.size();
 }
 
 void USBManager::deleteItem(QString id){
+    qDebug()<<"delete: "<<id;
+
+    /// FIND IF IT IS AN ITEM
     bool hasid=false;
-    int i=0;
-    for(i;i<items_.size();i++){
+    int index=0;
+    for(int i=0;i<items_.size();i++){
+        qDebug()<<"id: "<<items_.at(i).id;
         if (items_.at(i).id==id) {
             hasid = true;
-            break;
+            index =i;
+            i=items_.size();
         }
     }
-    UI_USB_Item item = items_[i];
+
+    qDebug()<<"exists? "<<hasid;
+    if (!hasid){return;}
+
+
+
+    /// IF IT EXISTS DELETE IT
+    UI_USB_Item item = items_[index];
+    bool worked=false;
     if (item.type==UI_USB_Item::kScan){
-        removeDir(item.id);
+        worked = removeDir(USBDir_+item.id);
+        qDebug()<<"removed dir" <<item.id;
     }else{
-        QFile::remove(USBDir_+item.id+".gcode");
+        if (QFile::exists(USBDir_+item.id+".gcode") ){
+            worked = QFile::remove(USBDir_+item.id+".gcode");
+        }else{
+            qDebug()<<"didnt exist";
+        }
+
     }
+    if(!worked){return;}
+    items_.removeAt(index);
+    qDebug()<<"Worked: "<<worked;
 
-
-
+    /// REWRITE DATA
+    updateUSBData();
 }
+
 void USBManager::updateUSBData(){
 
     QString filename;
@@ -63,7 +90,10 @@ void USBManager::updateUSBData(){
     QDomDocument d("USBDataFile");
 
     QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly)){return;}
+    if (!file.open(QIODevice::WriteOnly)){
+        qDebug()<<"could not open file: "<< filename;
+        return;
+    }
 
     QDomElement node = d.createElement("USBData");
 
@@ -190,6 +220,8 @@ bool removeDir(const QString & dirName)
             }
         }
         result = dir.rmdir(dirName);
+    }else{
+        qDebug()<<"DIR "<<dirName<<" DOESNT EXIST";
     }
     return result;
 }

@@ -5,7 +5,7 @@
 #include <QDateTime>
 #include "libraries/shared/stl/stlmesh.h"
 #include "basicstructures.h"
-
+#include <QMetaType>
 
 //struct Name{
 //    QString title;
@@ -22,7 +22,7 @@ struct UI_User{
     Name name;
     QPixmap icon;
 };
-
+Q_DECLARE_METATYPE(UI_User);
 
 
 struct UI_USB_Item{
@@ -36,6 +36,8 @@ struct UI_USB_Item{
     Name patient;//if none, then not assigned, if exists, thenstatus is "[Name]'s orthotic is ready for transfer to printer"
 };
 
+Q_DECLARE_METATYPE(UI_USB_Item);
+
 struct UI_Patient{
     QString id;
     QString doctorid;
@@ -43,9 +45,10 @@ struct UI_Patient{
     QList< UI_USB_Item > item_list;
 };
 
+Q_DECLARE_METATYPE(UI_Patient);
 
 enum Foot_Type{kRight,kLeft,kBoth};
-
+Q_DECLARE_METATYPE(Foot_Type);
 
 
 struct Front_Edge{
@@ -54,7 +57,7 @@ struct Front_Edge{
     QPointF p3;
     QPointF p4;
 };
-
+Q_DECLARE_METATYPE(Front_Edge);
 
 
 struct Top_Coat{
@@ -65,9 +68,11 @@ struct Top_Coat{
     float depth;
     Density density;
 };
+Q_DECLARE_METATYPE(Top_Coat);
 
 
 typedef QVector < QPointF > Border;
+
 
 struct UI_Shell_Modification{
     QString name;
@@ -78,7 +83,7 @@ struct UI_Shell_Modification{
     float stiffness;
 
 };
-
+Q_DECLARE_METATYPE(UI_Shell_Modification);
 
 //struct Posting{
 //    enum side{kForFoot,kRearFoot};

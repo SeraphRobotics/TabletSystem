@@ -24,3 +24,5 @@ include(DataStructures.pro)
 include(Controllers.pro)
 include(View.pro)
 
+include(../UnitTest/test.pro)
+
