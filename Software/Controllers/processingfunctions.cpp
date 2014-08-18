@@ -1,6 +1,9 @@
 #include "processingfunctions.h"
 #include <Eigen/Dense>
 #include <QtAlgorithms>
+#include <algorithm>
+#include <QImage>
+#include <QColor>
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
@@ -275,6 +278,30 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane loop){
 }
 
 QImage makeHeightMap(XYGrid< float >* grid){
+    QImage img(grid->nx(), grid->ny(), QImage::Format_RGB32);
+
+
+    QVector<float> data = grid->asVector();
+    float minimum=1000;
+    float maximum=-1000;
+    for (int i=0;i<data.size();i++){
+        maximum = std::max(data.at(i),maximum);
+        minimum = std::max(data.at(i),minimum);
+    }
+    float range = maximum-minimum;
+
+    int max_r = 200;
+    int max_g = 200;
+    for(int i=0;i<grid->nx();i++){
+        for(int j=0;j<grid->ny();j++){
+            float dist = (grid->at(i,j)-minimum)/range;
+            int r = int( (1-dist)*max_r);
+            int g = int( dist*max_g);
+            QColor color(r,g,0);
+            img.setPixel(i,j,color.rgb());
+        }
+    }
+    return img;
 
 }
 
