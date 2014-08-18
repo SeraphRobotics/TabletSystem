@@ -7,7 +7,7 @@
 #include <math.h>
 
 #include <QVector>
-
+#include <algorithm>
 
 namespace Math {
 
@@ -118,6 +118,7 @@ Float LoopInXYPlane::getAverageZCoordinate() const {
 bool LoopInXYPlane::pointInside(const Vector3& point) const {
   if( !(points.size() >= 3) )return false;
 
+  /**
   // Perform the ray-intersection test: cast a ray from the given point
   // out to infinity and count the number of segments it intersects.
   Line test_line(point, max().scale((Float)1.1));
@@ -137,6 +138,27 @@ bool LoopInXYPlane::pointInside(const Vector3& point) const {
   // not within the loop.  If the sense of this loop is counter-clockwise,
   // that means that the point is not inside;
   return (intersections % 2) == (sense() == kCounterClockwise ? 1 : 0);
+  **/
+  bool inside = false;
+  Vector3 p1 = points[0];
+  float xinters =0;
+  for(int i=0;i<points.size()+1;i++){
+      Vector3 p2 = points[ i%points.size() ];
+      if (point.y > std::min(p1.y,p2.y)){
+          if (point.y <= std::max(p1.y,p2.y)){
+              if (point.x <= std::max(p1.x,p2.x)){
+                  if (p1.y != p2.y){
+                      xinters = (point.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;
+                  }
+                  if (p1.x == p2.x or point.x <= xinters){
+                      inside = !inside;
+                  }
+              }
+          }
+      }
+      p1=p2;
+  }
+  return inside;
 }
 
 

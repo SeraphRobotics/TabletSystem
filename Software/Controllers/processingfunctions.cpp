@@ -245,10 +245,32 @@ FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
 }
 
 FAHVector3 normFrom3Pts(FAHVector3 p1, FAHVector3 p2,FAHVector3 p3){
+    Vector3f p21( (p2.x-p1.x), (p2.y-p1.y),(p2.z-p1.z) );
+    Vector3f p31( (p3.x-p1.x), (p3.y-p1.y),(p3.z-p1.z) );
 
+    Vector3f cp = p21.cross(p31);
+    cp=cp.normalized();
+    return FAHVector3(cp[0],cp[1],cp[2]);
 }
 
 void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane loop){
+    float min = 0;
+    for(int i=0; i<grid->nx();i++){
+        for(int j=0; j<grid->ny();j++){
+            FAHVector3 pt(i,j,0);
+            if (loop.pointInside(pt)){
+                if (min>grid->at(i,j)){
+                    min = grid->at(i,j);
+                }
+            }
+        }
+    }
+
+    for(int i=0; i<grid->nx();i++){
+        for(int j=0; j<grid->ny();j++){
+            grid->operator ()(i,j)=grid->at(i,j)-min;
+        }
+    }
 
 }
 
