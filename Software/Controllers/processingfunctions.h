@@ -100,7 +100,6 @@ QImage makeHeightMap(XYGrid< float >* grid);
 
 
 
-
 QDebug operator<< (QDebug d,const FAHVector3 v);
 
 float twoPtSlope(FAHVector3 p1, FAHVector3 p2);
