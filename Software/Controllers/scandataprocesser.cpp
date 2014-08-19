@@ -26,6 +26,10 @@ ScanDataProcesser::ScanDataProcesser(QString id, QString folder):
     dir_ = QDir(folder);
 }
 
+void ScanDataProcesser::processScan(){
+    processScan(dir_.absolutePath());
+}
+
 void  ScanDataProcesser::processScan(QString folder){
 
     dir_ = QDir(folder);
@@ -37,11 +41,14 @@ void  ScanDataProcesser::processScan(QString folder){
         QFileInfo fileInfo = list.at(i);
         float x = fileInfo.fileName().split(".")[0].toFloat();
 
-        //     cv::Mat dest;
-        //cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
-        //QPixmap m = QPixmap::fromImage(QImage((unsigned char*) dest.data, dest.cols, dest.rows, dest.step, QImage::Format_RGB888));
-        QPixmap m;
-        m.load( fileInfo.fileName() );
+        cv::Mat dest;
+        dest = cv::imread(fileInfo.fileName().toStdString());
+//        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
+        QPixmap m = QPixmap::fromImage(QImage((unsigned char*) dest.data, dest.cols, dest.rows, dest.step, QImage::Format_RGB888));
+//        QImage img( fileInfo.fileName());
+//        img = img.convertToFormat(QImage::Format_RGB888);
+//        QPixmap m = QPixmap::fromImage(img);
+//        m.load( fileInfo.fileName() );
         addImage(x,m);
     }
 }

@@ -32,6 +32,8 @@ signals:
     
 public slots:
 
+
+    void processScan();
     /**
      * @brief processScan loads the folater and makes a Scan object
      * @param folder

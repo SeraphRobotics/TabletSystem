@@ -41,9 +41,16 @@ void USBManager::usbDisconnected(QString f)
 }
 
 QString USBManager::getLocation(QString id){
-    if(!items_.keys().contains(id)){return QString();}
-    UI_USB_Item i = items_[id];
-    if (i.type == UI_USB_Item::kScan){
+    bool hasid = items_.keys().contains(id);
+
+    if( !hasid ){
+        qDebug()<<"doesnt have";
+        return QString();
+    }
+
+    UI_USB_Item item = items_[id];
+
+    if (item.type== UI_USB_Item::kScan){
         return USBDir_+id;
     }else{
         return USBDir_+id+Rx_extension;

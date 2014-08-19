@@ -73,4 +73,5 @@ private:
     XYGrid<float>* processed_;
 };
 
+//Q_DECLARE_METATYPE(Scan*);
 #endif // SCAN_H
