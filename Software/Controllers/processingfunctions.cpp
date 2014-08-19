@@ -233,27 +233,30 @@ FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVec
     pts.append(fp2-cent);
 
 
-//    printPoint(hp1);
-//    printPoint(hp2);
-//    printPoint(fp1);
-//    printPoint(fp2);
+    printPoint(hp1);
+    printPoint(hp2);
+    printPoint(fp1);
+    printPoint(fp2);
 
-    Vector3f unnorm = Vector3f::Zero();
+//    Vector3f unnorm = Vector3f::Zero();
     Matrix3f m = Matrix3f::Zero();
     for( int i=0;i<pts.size();i++){
         m(0,0)= m(0,0)+ pts.at(i).x*pts.at(i).x;
         m(0,1)= m(0,1)+ pts.at(i).x*pts.at(i).y;
         m(1,0)= m(1,0)+ pts.at(i).x*pts.at(i).y;
         m(1,1)= m(1,1)+ pts.at(i).y*pts.at(i).y;
-        m(0,2)= m(0,2)+ pts.at(i).x;
-        m(2,0)= m(2,0)+ pts.at(i).x;
-        m(1,2)= m(1,2)+ pts.at(i).y;
-        m(2,1)= m(2,1)+ pts.at(i).y;
-        m(2,2)= m(2,2)+1;
+        m(0,2)= m(0,2)+ pts.at(i).x*pts.at(i).z;
+        m(2,0)= m(2,0)+ pts.at(i).x*pts.at(i).z;
+        m(1,2)= m(1,2)+ pts.at(i).y*pts.at(i).z;
+        m(2,1)= m(2,1)+ pts.at(i).y*pts.at(i).z;
+        m(2,2)= m(2,2)+ pts.at(i).z*pts.at(i).z;
 
-        unnorm(0) = unnorm(0) + pts.at(i).x*pts.at(i).z;
-        unnorm(1) = unnorm(1) + pts.at(i).y*pts.at(i).z;
-        unnorm(2) = unnorm(2) + pts.at(i).z;
+//        unnorm(0) = unnorm(0) + pts.at(i).x*pts.at(i).z;
+//        unnorm(1) = unnorm(1) + pts.at(i).y*pts.at(i).z;
+//        unnorm(2) = unnorm(2) + pts.at(i).z;
+    }
+    if(m(2,2)==0){
+        return(FAHVector3(0,0,1));
     }
 
     qDebug()<<"\nM";
@@ -265,10 +268,10 @@ FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVec
         qDebug()<< row;
     }
 
-    qDebug()<<"unnorm";
-    for(int i=0; i<3;i++){
-        qDebug()<<i<<", "<<unnorm(i);
-    }
+//    qDebug()<<"unnorm";
+//    for(int i=0; i<3;i++){
+//        qDebug()<<i<<", "<<unnorm(i);
+//    }
 
     EigenSolver<Matrix3f> es(m);
     std::complex<float> min (100000,0);
