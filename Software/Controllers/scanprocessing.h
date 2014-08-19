@@ -16,7 +16,7 @@ class ScanProcessing : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScanProcessing(float x, QPixmap image, QObject *parent = 0);
+    explicit ScanProcessing(float x, QString imagelocation, QObject *parent = 0);
 
 signals:
     void processed(float x, QVector < FAHVector3 >* );
@@ -27,7 +27,7 @@ public slots:
 
 
 private:
-    QPixmap image_;
+    QString imagelocation_;
     float x_;
 
 };

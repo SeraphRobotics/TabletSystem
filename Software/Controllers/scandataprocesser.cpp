@@ -39,25 +39,27 @@ void  ScanDataProcesser::processScan(QString folder){
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
-        float x = fileInfo.fileName().split(".")[0].toFloat();
+        processImage(fileInfo.fileName());
 
-        cv::Mat dest;
-        dest = cv::imread(fileInfo.fileName().toStdString());
-//        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
-        QPixmap m = QPixmap::fromImage(QImage((unsigned char*) dest.data, dest.cols, dest.rows, dest.step, QImage::Format_RGB888));
+
 //        QImage img( fileInfo.fileName());
 //        img = img.convertToFormat(QImage::Format_RGB888);
 //        QPixmap m = QPixmap::fromImage(img);
 //        m.load( fileInfo.fileName() );
-        addImage(x,m);
+//        addImage(x,m);
     }
 }
 
 
-void ScanDataProcesser::addImage(float x, QPixmap pxmap){
+void ScanDataProcesser::processImage(QString file){
 
     QThread* thread = new QThread;
-    ScanProcessing* worker = new ScanProcessing(x,pxmap);
+
+    float x = QString(file).replace(".JPEG","").toFloat();//file.split(".")[0].toFloat();
+
+
+
+    ScanProcessing* worker = new ScanProcessing(x,dir_.absoluteFilePath(file));
     worker->moveToThread(thread);
 
     connect(worker,SIGNAL(processed(float,QVector<FAHVector3>*)),this,SLOT(processedImage(float,QVector<FAHVector3>*)));

@@ -4,8 +4,8 @@
 #include <math.h>
 #include <qalgorithms.h>
 
-ScanProcessing::ScanProcessing(float x, QPixmap image, QObject *parent) :
-    QObject(parent), image_(image),x_(x)
+ScanProcessing::ScanProcessing(float x, QString imagelocation, QObject *parent) :
+    QObject(parent),  imagelocation_( imagelocation),x_(x)
 {
 
 }
@@ -13,7 +13,16 @@ ScanProcessing::ScanProcessing(float x, QPixmap image, QObject *parent) :
 
 
 void ScanProcessing::process(){
-    cv::Mat img;
+    cv::Mat dest;
+//    dest = cv::imread(imagelocation_.toStdString());
+//    QPixmap m = QPixmap::fromImage(QImage((unsigned char*) dest.data, dest.cols, dest.rows, dest.step, QImage::Format_RGB888));
+
+
+    cv::Mat img = cv::imread(imagelocation_.toStdString());
+    if(!img.data){
+        qDebug()<<"faled to read "<<imagelocation_;
+        return;
+    }
     bool metOne = false;
 
     /// ////////////////////////////////////////////////////////////////
@@ -96,7 +105,7 @@ void ScanProcessing::process(){
         QVector< FAHVector3 >* row = new QVector< FAHVector3 >();
 
 
-        img = QPixmapToCvMat(image_,true);
+//        img = QPixmapToCvMat(image_,true);
 
 
         /// ////////////////////////////////////////////

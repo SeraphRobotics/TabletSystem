@@ -43,12 +43,8 @@ public slots:
 private slots:
 
 
-    /**
-     * @brief addImage processes image
-     * @param x
-     * @param pxmap
-     */
-    void addImage(float x, QPixmap pxmap);
+
+    void processImage(QString file);
 
     /**
      * @brief processedImage uses scanprocessing objects to process them in multi threaded fashion
