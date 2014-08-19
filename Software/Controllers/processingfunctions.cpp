@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <QImage>
 #include <QColor>
+#include "UnitTest/debugfunctions.h"
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
@@ -21,6 +22,7 @@ FAHLoopInXYPlane loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVecto
     for (int i=0;i<numpts;i++){
         cent.x=cent.x+curve.at(i).x;
         cent.y=cent.y+curve.at(i).y;
+        printPoint(curve.at(i));
     }
     cent.x=cent.x/numpts;
     cent.y=cent.y/numpts;
@@ -38,7 +40,9 @@ FAHLoopInXYPlane loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVecto
     //Add to loop by polar angle
     FAHLoopInXYPlane loop;
     for(int i=0; i<numpts;i++){
-        loop.add(curve[indecies.at(i)]);
+//        loop.add( curve[indecies.at(i)] );
+          loop.add(curve.at(i));
+//        printPoint(curve[indecies.at(i)]);
     }
 
     return loop;
@@ -65,14 +69,14 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
     }
 
     y[3] = -100;
-    y[4] = twoPtSlope(heal_pts[0],heal_pts.last());
+    y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
     y[5] = 100;
 
 
     for(int k=0;k<soln_order;k++){
-        m(3,k)+= pow(k*heal_pts.at(0).x,float(k));
-        m(4,k)+= pow(k*heal_pts.at(1).x,float(k));
-        m(5,k)+= pow(k*heal_pts.at(2).x,float(k));
+        m(3,k)+= k*pow(heal_pts.at(0).x,float(k));
+        m(4,k)+= k*pow(heal_pts.at(1).x,float(k));
+        m(5,k)+= k*pow(heal_pts.at(2).x,float(k));
     }
 
     c = m.inverse()*y;

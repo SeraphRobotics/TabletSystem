@@ -26,12 +26,9 @@ int main(int argc, char *argv[])
 
 //    USBToScanProcessingTest();
 
-    ScanSystemTester* st = new ScanSystemTester();
+    loopTest();
 
-
-
-//    ScanManager* sm_ = new ScanManager();
-
+//    curveTests();
 
     return a.exec();
 }

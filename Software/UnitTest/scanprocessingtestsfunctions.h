@@ -2,6 +2,8 @@
 #define SCANPROCESSINGTESTSFUNCTIONS_H
 
 void curveTests();
+void loopTest();
+
 
 void USBMinderTest();
 
