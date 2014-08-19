@@ -12,6 +12,8 @@ ScanSystemTester::ScanSystemTester(QObject *parent) :
 
     manager_->connect(manager_,SIGNAL(uiUSBItemsUpdated(QList<UI_USB_Item>)),this,SLOT(USBItems(QList<UI_USB_Item>)));
     manager_->connect(manager_,SIGNAL(usbConnected()),this,SLOT(USBConnected()));
+
+    sm_ = new ScanManager();
 }
 
 void ScanSystemTester::USBConnected(){
@@ -35,8 +37,8 @@ void ScanSystemTester::processScanItem(UI_USB_Item item){
     QString dir = manager_->getLocation(item.id);
 //    qDebug()<<"dir: "<<dir;
     ScanDataProcesser* sdp = new ScanDataProcesser(item.id,dir);
-    sdp->processScan();
     connect(sdp,SIGNAL(scanProcessed(Scan*)),sm_,SLOT(addScan(Scan*)));
+    sdp->processScan();
 //    connect(sdp,SIGNAL(scanProcessed(Scan*)),sdp,SLOT(deleteLater()));
 }
 

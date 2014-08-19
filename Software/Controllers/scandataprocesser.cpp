@@ -34,7 +34,7 @@ void  ScanDataProcesser::processScan(QString folder){
 
     dir_ = QDir(folder);
     QFileInfoList list = dir_.entryInfoList();
-    numFilesToProcess = list.size();
+    numFilesToProcess = list.size()-2;
     numFilesProcessed = 0;
 
     for (int i = 0; i < list.size(); ++i) {
@@ -53,33 +53,32 @@ void  ScanDataProcesser::processScan(QString folder){
 
 void ScanDataProcesser::processImage(QString file){
 
-    QThread* thread = new QThread;
-
     float x = QString(file).replace(".JPEG","").toFloat();//file.split(".")[0].toFloat();
 
 
 
     ScanProcessing* worker = new ScanProcessing(x,dir_.absoluteFilePath(file));
-    worker->moveToThread(thread);
+//    QThread* thread = new QThread;
+//    worker->moveToThread(thread);
 
     connect(worker,SIGNAL(processed(float,QVector<FAHVector3>*)),this,SLOT(processedImage(float,QVector<FAHVector3>*)));
 
-    connect(thread, SIGNAL(started()), worker, SLOT(process()));
-    connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
-    connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    thread->start();
-
-
+//    connect(thread, SIGNAL(started()), worker, SLOT(process()));
+//    connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
+//    connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+//    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+//    thread->start();
+    worker->process();
 }
 
 void ScanDataProcesser::processedImage(float x, QVector < FAHVector3 >* row ){
     pointCloud[x]=row;
     numFilesProcessed++;
-
+    qDebug()<<"Processed: "<<numFilesProcessed <<" of"<<numFilesToProcess;
     if(numFilesProcessed == numFilesToProcess){
         Scan* s = new Scan();
         s->setInitialData( makeGrid());
+        qDebug()<<"Made Scan";
         emit scanProcessed(s);
     }
 }

@@ -1,5 +1,6 @@
 #include "scan.h"
 #include <QDomDocument>
+#include <QDebug>
 
 Scan::Scan(QObject *parent) :
     QObject(parent)
@@ -48,7 +49,7 @@ Scan::Scan(QString filename){
 
 void Scan::writeToDisk(){
     QDomDocument d("ScanFile");
-
+    qDebug()<<"writing to:"<<filename_;
     QFile file(filename_);
     if (!file.open(QIODevice::WriteOnly)){return;}
 
