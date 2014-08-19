@@ -21,12 +21,10 @@ void ScanSystemTester::USBConnected(){
 }
 
 void ScanSystemTester::USBItems(QList<UI_USB_Item> f){
-//    qDebug()<<"Found "<<f.size()<<" items";
     QListIterator<UI_USB_Item> i(f);
     while(i.hasNext()){
         UI_USB_Item item = i.next();
         if(item.type==UI_USB_Item::kScan){
-//            qDebug()<<"processing Scan: "<<item.id;
             processScanItem(item);
         }
     }

@@ -34,7 +34,6 @@ bool ScanManager::hasScan(QString id){
 
 void ScanManager::addScan(Scan* s){
     idlist_.append(s->getID());
-    qDebug()<<"writing";
     s->writeToDisk();
 }
 
