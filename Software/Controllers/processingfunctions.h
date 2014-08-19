@@ -6,6 +6,7 @@
 #include "libraries/shared/fah-constants.h"
 #include "DataStructures/xygrid.h"
 #include "DataStructures/scan.h"
+#include "DataStructures/manipulations.h"
 
 /// LOOP MAKING
 
@@ -98,7 +99,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane loop);
  */
 QImage makeHeightMap(XYGrid< float >* grid);
 
-
+QVector< FAHVector3> transformPointsWithPosting(FAHVector3 p1,FAHVector3 p2,Posting p);
 
 QDebug operator<< (QDebug d,const FAHVector3 v);
 

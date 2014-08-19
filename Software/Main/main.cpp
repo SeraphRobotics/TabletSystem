@@ -24,11 +24,14 @@ int main(int argc, char *argv[])
 
 //   USBMinderTest();
 
-//    USBToScanProcessingTest();
+//   USBToScanProcessingTest();
 
-    loopTest();
+//   loopTest();
 
-//    curveTests();
+//   curveTests();
+
+
+    TestMakePostingPlane();
 
     return a.exec();
 }

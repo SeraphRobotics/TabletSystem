@@ -4,6 +4,7 @@
 void curveTests();
 void loopTest();
 
+void TestMakePostingPlane();
 
 void USBMinderTest();
 

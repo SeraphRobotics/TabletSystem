@@ -51,6 +51,30 @@ void loopTest(){
 }
 
 
+
+void TestMakePostingPlane(){
+    FAHVector3 hp1(50.0,35.0,0);
+    FAHVector3 hp2(103.0,26.0,0);
+    FAHVector3 fp1(60.0,105.0,0);
+    FAHVector3 fp2(140.0,85.0,0);
+
+    Posting forpost;
+    forpost.angle=0*M_PI/180.0;
+    forpost.verticle=0;
+    forpost.varus_valgus=Posting::kVargus;
+    forpost.for_rear=Posting::kForFoot;
+    Posting rearpost;
+    rearpost.angle=0*M_PI/180.0;
+    rearpost.verticle=0;
+    rearpost.varus_valgus=Posting::kVargus;
+    rearpost.for_rear=Posting::kRearFoot;
+
+    QVector<FAHVector3> heals = transformPointsWithPosting(hp1,hp2,rearpost);
+    QVector<FAHVector3> fors = transformPointsWithPosting(fp1,fp2,forpost);
+    FAHVector3 plane = makePostingPlane(heals[0],heals[1],fors[0],fors[1]);
+    printPoint(plane);
+
+}
 void USBMinderTest(){
     /*USBMinder um;
     USBManager manager;

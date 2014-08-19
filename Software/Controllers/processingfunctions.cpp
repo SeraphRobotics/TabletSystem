@@ -5,11 +5,17 @@
 #include <QImage>
 #include <QColor>
 #include "UnitTest/debugfunctions.h"
+#include <Eigen/Eigenvalues>
+#include <iostream>
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
 using Eigen::RowVectorXf;
 using Eigen::Vector3f;
+using Eigen::Vector4f;
+using Eigen::Matrix3f;
+using Eigen::EigenSolver;
+//using Eigen::EigenvalueType;
 
 
 FAHLoopInXYPlane loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts){
@@ -196,37 +202,96 @@ void projectGridOntoPlane(FAHVector3 n, XYGrid< float >* grid){
 }
 
 FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVector3 fp2){
-    // using algorithm from http://stackoverflow.com/questions/1400213/3d-least-squares-plane
-    QList<FAHVector3> pts;
-    pts.append(hp1);
-    pts.append(hp2);
-    pts.append(fp1);
-    pts.append(fp2);
 
-    Vector3f unnorm;
-    MatrixXf m(3,pts.size());
+//    Matrix<float,3,4> m;
+//    m(0,0)=hp1.x;
+//    m(1,0)=hp1.y;
+//    m(2,0)=hp1.z;
+//    m(0,1)=hp2.x;
+//    m(1,1)=hp2.y;
+//    m(2,1)=hp2.z;
+//    m(0,2)=fp1.x;
+//    m(1,2)=fp1.y;
+//    m(2,2)=fp1.z;
+//    m(0,3)=fp2.x;
+//    m(1,3)=fp2.y;
+//    m(2,3)=fp2.z;
+
+//    Vector4f p = Vector4f::Zeros();
+
+
+//}
+
+    // using algorithm from http://stackoverflow.com/questions/1400213/3d-least-squares-plane
+    //https://groups.google.com/forum/#!topic/comp.graphics.algorithms/qrtcLb4QHFE
+    QList<FAHVector3> pts;
+    FAHVector3 cent = hp1+hp2+fp1+fp2;
+    cent = cent/4.0;
+    pts.append(hp1-cent);
+    pts.append(hp2-cent);
+    pts.append(fp1-cent);
+    pts.append(fp2-cent);
+
+
+//    printPoint(hp1);
+//    printPoint(hp2);
+//    printPoint(fp1);
+//    printPoint(fp2);
+
+    Vector3f unnorm = Vector3f::Zero();
+    Matrix3f m = Matrix3f::Zero();
     for( int i=0;i<pts.size();i++){
         m(0,0)= m(0,0)+ pts.at(i).x*pts.at(i).x;
         m(0,1)= m(0,1)+ pts.at(i).x*pts.at(i).y;
         m(1,0)= m(1,0)+ pts.at(i).x*pts.at(i).y;
         m(1,1)= m(1,1)+ pts.at(i).y*pts.at(i).y;
-        m(0,2)= m(0,2)+pts.at(i).x;
-        m(2,0)= m(2,0)+pts.at(i).x;
-        m(1,2)= m(1,2)+pts.at(i).y;
-        m(2,1)= m(2,1)+pts.at(i).y;
+        m(0,2)= m(0,2)+ pts.at(i).x;
+        m(2,0)= m(2,0)+ pts.at(i).x;
+        m(1,2)= m(1,2)+ pts.at(i).y;
+        m(2,1)= m(2,1)+ pts.at(i).y;
         m(2,2)= m(2,2)+1;
 
-        unnorm[0] = unnorm[0] + pts.at(i).x*pts.at(i).z;
-        unnorm[1] = unnorm[1] + pts.at(i).y*pts.at(i).z;
-        unnorm[2] = unnorm[2] + pts.at(i).z;
+        unnorm(0) = unnorm(0) + pts.at(i).x*pts.at(i).z;
+        unnorm(1) = unnorm(1) + pts.at(i).y*pts.at(i).z;
+        unnorm(2) = unnorm(2) + pts.at(i).z;
     }
 
-    Vector3f soln = m.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(unnorm);
+    qDebug()<<"\nM";
+    for(int i=0; i<3;i++){
+        QString row;
+        for(int j=0; j<3;j++){
+            row = row.append(QString::number(m(i,j))+", ");
+        }
+        qDebug()<< row;
+    }
 
-    FAHVector3 returnvec(soln[0],soln[1],soln[2]);
+    qDebug()<<"unnorm";
+    for(int i=0; i<3;i++){
+        qDebug()<<i<<", "<<unnorm(i);
+    }
+
+    EigenSolver<Matrix3f> es(m);
+    std::complex<float> min (100000,0);
+    float realmin = fabs(std::real(min));
+
+    int index = 0;
+    for(int i=0;i<3;i++){
+        float realnew = fabs(std::real(es.eigenvalues()(i)));
+        if(realnew>0 && realnew < realmin){
+            realmin=realnew;
+            min = es.eigenvalues()(i);
+            index=i;
+        }
+    }
+    std::cout << "eigenvalue: "<<std::real(min);
+    std::cout << "\neigenvector: "<<es.eigenvectors().col(index);
+
+    FAHVector3 returnvec(std::real(es.eigenvectors().col(index)[0]),
+                         std::real(es.eigenvectors().col(index)[1]),
+                         std::real(es.eigenvectors().col(index)[2])
+                         );
+    printPoint(returnvec);
     return returnvec;
-
-
 }
 
 FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
@@ -280,6 +345,26 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane loop){
     }
 
 }
+
+
+QVector< FAHVector3> transformPointsWithPosting(FAHVector3 p1,FAHVector3 p2,Posting p){
+    p2.z=0;
+    p1.z=0;
+    FAHVector3 D = p2-p1;
+    float h = D.magnitude()*tan(p.angle);
+    if(Posting::kValgus==p.varus_valgus){
+        p2.z=h+p.verticle;
+        p1.z=p.verticle;
+    }else{
+        p2.z=p.verticle;
+        p1.z=h+p.verticle;
+    }
+    QVector< FAHVector3> returnvec;
+    returnvec.append(p1);
+    returnvec.append(p2);
+    return returnvec;
+}
+
 
 QImage makeHeightMap(XYGrid< float >* grid){
     QImage img(grid->nx(), grid->ny(), QImage::Format_RGB32);
