@@ -41,6 +41,8 @@ public:
 
   STLMesh(STLMesh& M);
 
+  STLMesh(STLMesh* M);
+
   ~STLMesh();
 
   /**

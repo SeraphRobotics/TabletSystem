@@ -38,7 +38,8 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
     orth_->setBoundary(&loop);
     emit boundaryLoopUpdated(orth_->getLoop());
     emit borderGenerated(borderFromLoop(orth_->getLoop()));
-    STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),QList<FAHLoopInXYPlane*>());
+
+
 }
 
 void OrthoticController::processBoundary(){
@@ -70,6 +71,19 @@ void OrthoticController::setPosting(Posting p){
     orth_->getScan()->setPostedGrid(posted);
 
 
+}
+
+void OrthoticController::makeSTLs(){
+    STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),QList<FAHLoopInXYPlane*>());
+
+    QList<View_3D_Item> toEmitList;
+    View_3D_Item v3d;
+
+    v3d.mesh = m;
+    v3d.color = QColor(Qt::gray);
+
+    toEmitList.append(v3d);
+    emit stlsGenerated(toEmitList);
 }
 
 Border OrthoticController::borderFromLoop(FAHLoopInXYPlane* loop){}

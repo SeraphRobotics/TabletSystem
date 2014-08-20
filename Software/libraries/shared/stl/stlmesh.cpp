@@ -41,6 +41,16 @@ STLMesh::STLMesh(STLMesh& M){
     }
 }
 
+STLMesh::STLMesh(STLMesh* M){
+    QList<STLFacet*> facets= M->GetFacets();
+    for(int i=0; i<facets.size();i++){
+        STLFacet* f = new STLFacet();
+        f->triangle = FAHTriangle(M->GetFacets().at(i)->triangle);
+        f->normal = FAHVector3(M->GetFacets().at(i)->normal);
+        facets_.append(f);
+    }
+}
+
 STLMesh::~STLMesh() {
   // delete all of the facets
   for (int i = 0; i < facets_.size(); i++) {

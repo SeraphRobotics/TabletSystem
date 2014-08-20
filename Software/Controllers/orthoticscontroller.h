@@ -95,7 +95,7 @@ public:
     void processBoundary();
 
 private:
-
+    void makeSTLs();
     Border borderFromLoop(FAHLoopInXYPlane* loop);
     QList<QPointF> qpointfListFromFAHVector3(QVector<FAHVector3> points);
 

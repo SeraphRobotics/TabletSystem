@@ -86,7 +86,7 @@ Q_DECLARE_METATYPE(UI_Shell_Modification)
 
 struct View_3D_Item{
     QColor color;
-    STLMesh mesh;
+    STLMesh* mesh;
 };
 
 #endif // UI_STRUCTS_H
