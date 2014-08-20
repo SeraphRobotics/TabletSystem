@@ -367,7 +367,7 @@ QVector< FAHVector3> transformPointsWithPosting(FAHVector3 p1,FAHVector3 p2,Post
 
 
 QImage makeHeightMap(XYGrid< float >* grid){
-    QImage img(grid->nx(), grid->ny(), QImage::Format_RGB32);
+    QImage img(grid->ny(),grid->nx(), QImage::Format_RGB32);
 
 
     QVector<float> data = grid->asVector();
@@ -400,7 +400,7 @@ QImage makeHeightMap(XYGrid< float >* grid){
 
 
             QColor color(r,g,0);
-            img.setPixel(i,j,color.rgb());
+            img.setPixel(j,i,color.rgb());
         }
     }
     return img;
