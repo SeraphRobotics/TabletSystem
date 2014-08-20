@@ -168,3 +168,25 @@ void TestprojectGridOntoPlane(){
     out<<x.toCSV();
     f2.close();
 }
+
+void TestmakeHeightMap(){
+    QString csvfileLocation = "scan.csv";
+    QFile f(csvfileLocation);
+
+    if (!f.open(QIODevice::ReadOnly)){
+     qDebug()<<"didnt open file";
+     return;
+    }
+    QString data;
+    QTextStream in(&f);
+    //file opened successfully
+    while(!in.atEnd()){
+     data.append(in.readLine()+"\n");
+    }
+    f.close();
+
+    XYGrid<float> x(data);
+
+    QImage img = makeHeightMap(&x);
+    img.save("heightmap.jpeg");
+}

@@ -375,17 +375,30 @@ QImage makeHeightMap(XYGrid< float >* grid){
     float maximum=-1000;
     for (int i=0;i<data.size();i++){
         maximum = std::max(data.at(i),maximum);
-        minimum = std::max(data.at(i),minimum);
+        minimum = std::min(data.at(i),minimum);
     }
     float range = maximum-minimum;
 
     int max_r = 200;
     int max_g = 200;
+
+
     for(int i=0;i<grid->nx();i++){
         for(int j=0;j<grid->ny();j++){
             float dist = (grid->at(i,j)-minimum)/range;
-            int r = int( (1-dist)*max_r);
-            int g = int( dist*max_g);
+            int r = 0;
+            int g = 0;
+
+            if(dist< 0.5) {
+                r=200;
+                g = int( 2*dist*max_g);
+            }else{
+                r=int( max_r*2*(1-dist));
+                qDebug()<<"r: "<<r<<"\tdist: "<<dist;
+                g = 200;
+            }
+
+
             QColor color(r,g,0);
             img.setPixel(i,j,color.rgb());
         }

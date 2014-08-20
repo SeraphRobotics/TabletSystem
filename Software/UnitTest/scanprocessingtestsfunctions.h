@@ -13,4 +13,6 @@ void USBToScanProcessingTest();
 void TestMinAlongLine();
 
 void TestprojectGridOntoPlane();
+
+void TestmakeHeightMap();
 #endif // SCANPROCESSINGTESTSFUNCTIONS_H
