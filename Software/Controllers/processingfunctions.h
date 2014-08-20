@@ -49,7 +49,7 @@ float bernstein_poly(int i, int n, float t);
  * @param n
  * @param grid
  */
-void projectGridOntoPlane(FAHVector3 n, XYGrid< float >* grid);
+void projectGridOntoPlane(FAHVector3 n,FAHVector3 cent, XYGrid< float >* grid);
 
 /**
  * @brief makePostingPlane
@@ -57,10 +57,10 @@ void projectGridOntoPlane(FAHVector3 n, XYGrid< float >* grid);
  * @param hp2
  * @param fp1
  * @param fp2
- * @return FAHVector3
- * make a planes a plane using least squares method
+ * @return QVector<FAHVector3>
+ * make a planes a plane using least squares method returns a vector of the normal and center
  */
-FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVector3 fp2);
+QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVector3 fp2);
 
 
 /**

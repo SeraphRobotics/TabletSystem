@@ -6,6 +6,7 @@
 #include <QColor>
 #include "UnitTest/debugfunctions.h"
 #include <Eigen/Eigenvalues>
+#include <iostream>
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
@@ -175,36 +176,41 @@ float bernstein_poly(int i, int n, float t){
     return comb(n,i)*pow(t,float((n-i)))*pow((1-t),float(i));
 }
 
-void projectGridOntoPlane(FAHVector3 n, XYGrid< float >* grid){
+void projectGridOntoPlane(FAHVector3 n, FAHVector3 cent, XYGrid< float >* grid){
     Vector3f r;
-    Vector3f unnorm;
-    unnorm[0]=n.x;
-    unnorm[1]=n.y;
-    unnorm[2]=n.z;
+    Vector3f centv;
+    centv[0]=cent.x;
+    centv[1]=cent.y;
+    centv[2]=cent.z;
 
     n.normalize();
     Vector3f norm;
     norm[0]=n.x;
     norm[1]=n.y;
     norm[2]=n.z;
+    int signN=-1;
+    if(norm[2]<0){signN=1;}
+    std::cout<<"\n"<<centv;
+    std::cout<<"\n"<<norm<<"\n";
     float D=0;
     for(int i=0;i<grid->nx();i++){
         for(int j=0; j<grid->ny(); j++){
             r[0]=i;
             r[1]=j;
             r[2]=0;
-            r=r-norm;
-            D= r.dot(unnorm);
-            grid->operator ()(i,j)=grid->operator ()(i,j)+D;
+            r=r-centv;
+            D= signN*r.dot(norm);
+            grid->operator ()(i,j)=grid->operator ()(i,j)-D;
+            if(i==10 and j==10){qDebug()<<"D: "<<QString::number(D);}
         }
     }
 }
 
-FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVector3 fp2){
+QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVector3 fp2){
 
     /// using algorithm from http://stackoverflow.com/questions/1400213/3d-least-squares-plane
     ///https://groups.google.com/forum/#!topic/comp.graphics.algorithms/qrtcLb4QHFE
-
+    QVector<FAHVector3> returns;
 
     /// We calculate the center of the points
     FAHVector3 cent = hp1+hp2+fp1+fp2;
@@ -257,7 +263,9 @@ FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVec
     float d = returnvec.x*cent.x+returnvec.y*cent.y+returnvec.z*cent.z;
     if(d==0){d=1;}
     returnvec*=d;
-    return returnvec;
+    returns.append(returnvec);
+    returns.append(cent);
+    return returns;
 }
 
 FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){

@@ -71,8 +71,10 @@ void TestMakePostingPlane(){
 
     QVector<FAHVector3> heals = transformPointsWithPosting(hp1,hp2,rearpost);
     QVector<FAHVector3> fors = transformPointsWithPosting(fp1,fp2,forpost);
-    FAHVector3 plane = makePostingPlane(heals[0],heals[1],fors[0],fors[1]);
-    printPoint(plane);
+    QVector<FAHVector3> planeAndCent = makePostingPlane(heals[0],heals[1],fors[0],fors[1]);
+    printPoint(planeAndCent[0]);
+    printPoint(planeAndCent[1]);
+
 
 }
 void USBMinderTest(){
@@ -145,14 +147,16 @@ void TestprojectGridOntoPlane(){
     }
     f.close();
 
-    qDebug()<<data.split("\n")[0];
+//    qDebug()<<data.split("\n")[0];
     XYGrid<float> x(data);
     FAHVector3 hp1(10.0,10.0,-10);
     FAHVector3 hp2(50.0,10.0,-10);
     FAHVector3 fp1(50.0,50.0,-10);
     FAHVector3 fp2(10.0,50.0,-10);
-    FAHVector3 plane = makePostingPlane(hp1,hp2,fp1,fp2);
-    projectGridOntoPlane(plane, &x);
+    QVector<FAHVector3> planeAndCent = makePostingPlane(hp1,hp2,fp1,fp2);
+    printPoint(planeAndCent[0]);
+    printPoint(planeAndCent[1]);
+    projectGridOntoPlane(planeAndCent[0],planeAndCent[1], &x);
 
 
     QFile f2("mapped.csv");
