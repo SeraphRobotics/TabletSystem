@@ -9,6 +9,7 @@ Scan::Scan(QObject *parent) :
     filename_=id_.toString()+QString(".scan");
     raw_=new XYGrid<float>();
     processed_=new XYGrid<float>();
+    posted_ = new XYGrid<float>();
 }
 
 Scan::Scan(QString filename){
@@ -43,6 +44,8 @@ Scan::Scan(QString filename){
             raw_= new XYGrid<float>(el.text());
         }else if("processedscan"==name){
             processed_=new XYGrid<float>(el.text());
+        }else if("postedscan"==name){
+            posted_=new XYGrid<float>(el.text());
         }
     }
 }
@@ -66,6 +69,10 @@ void Scan::writeToDisk(){
     processedEl.appendChild(d.createTextNode(processed_->toCSV()));
     node.appendChild(processedEl);
 
+    QDomElement postedEl = d.createElement("postedscan");
+    postedEl.appendChild(d.createTextNode(posted_->toCSV()));
+    node.appendChild(postedEl);
+
     d.appendChild(node);
     QTextStream f(&file);
     f<<d.toString();
@@ -79,7 +86,8 @@ QString Scan::getID(){return id_.toString();}
 void Scan::setId(QString id){id_=id;}
 
 
-XYGrid<float>* Scan::getXYGrid(){return processed_;}
+XYGrid<float>* Scan::getProcessedXYGrid(){return processed_;}
+XYGrid<float>* Scan::getPostedXYGrid(){return posted_;}
 
 void Scan::reset(){
     processed_ = new XYGrid<float>(raw_->asVector(),raw_->ny(),raw_->stepSize());
@@ -89,8 +97,14 @@ void Scan::setInitialData(XYGrid<float>* grid){// makes a copy of the data
     if(raw_->nx()<2){
         raw_ = new XYGrid<float>(grid->asVector(),grid->ny(),grid->stepSize());
         processed_ = new XYGrid<float>(grid->asVector(),grid->ny(),grid->stepSize());
+        posted_ = new XYGrid<float>(grid->asVector(),grid->ny(),grid->stepSize());
     }
 }
 void Scan::setProcessedGrid(XYGrid<float>* grid){
     processed_=grid;
+    posted_= new XYGrid<float>(grid);
+}
+
+void Scan::setPostedGrid(XYGrid<float>* grid){
+    posted_=grid;
 }

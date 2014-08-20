@@ -1,9 +1,43 @@
+/*---------------------------------------------------------------------------*\
+ This file is part of the Fab@Home Project.
+ Fab@Home operates under the BSD Open Source License.
 
-#include "libraries/shared/amf/amffile.h"
-#include "libraries/shared/amf/amfobject.h"
-#include "libraries/shared/amf/amfvertex.h"
-#include "libraries/shared/amf/amftriangle.h"
-#include "libraries/shared/amf/amfregion.h"
+ Copyright (c) 2009, Sean Cretella (sac76@cornell.edu)
+               2010, Karl Gluck (kwg8@cornell.edu)
+                     Nathan Lloyd (nsl6@cornell.edu)
+                     Jimmy Liu (jl2222@cornell.edu)
+                     Karina Sobhani (ks598@cornell.edu)
+
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+     * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+     * Neither the name of the <organization> nor the
+       names of its contributors may be used to endorse or promote products
+       derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNERS OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+\*---------------------------------------------------------------------------*/
+
+//#include "shared/amf/amffile.h"
+//#include "shared/amf/amfobject.h"
+//#include "shared/amf/amfvertex.h"
+//#include "shared/amf/amftriangle.h"
+//#include "shared/amf/amfregion.h"
 
 #include "STLFile.h"
 #include "stlfacet.h"
@@ -12,7 +46,7 @@
 #include <qstringlist.h>
 #include <iostream>
 #include <stdio.h>
-#include "libraries/common/todo.h"
+#include "../libraries/common/todo.h"
 #include <QBitmap>
 #include <QPixmap>
 #include <QImageReader>
@@ -140,7 +174,7 @@ bool STLFile::readASCII(QString path) {
     }
 
     // Add facet to the list.
-    mesh_.AddFacet(facet);
+    mesh_->AddFacet(facet);
   }
 
   file.close();
@@ -230,7 +264,7 @@ bool STLFile::readBinary(QString path) {
       stream.skipRawData(2);
 
       // Add facet to the list.
-      mesh_.AddFacet(facet);
+      mesh_->AddFacet(facet);
   }
 
   file.close();
@@ -246,26 +280,31 @@ bool STLFile::WriteASCII(QString path) {
   if (!file.open(QFile::WriteOnly))
     return false; // error
 
-  QList<STLFacet*> facets = mesh_.GetFacets();
+  QList<STLFacet*> facets = mesh_->GetFacets();
 
   stream << "solid STL1\n";
 
   // write facet data
   for (int i = 0; i < facets.size(); i++) {
-    stream >> "facet normal %g %g %g\n", facets[i]->normal.x,
-        facets[i]->normal.y, facets[i]->normal.z;
-    stream >> "outer loop\n";
-    stream >> "vertex %g %g %g\n", facets[i]->triangle.v[0].x,
-        facets[i]->triangle.v[0].y, facets[i]->triangle.v[0].z;
-    stream >> "vertex %g %g %g\n", facets[i]->triangle.v[1].x,
-        facets[i]->triangle.v[1].y, facets[i]->triangle.v[1].z;
-    stream >> "vertex %g %g %g\n", facets[i]->triangle.v[2].x,
-        facets[i]->triangle.v[2].y, facets[i]->triangle.v[2].z;
-    stream >> "endloop\n";
-    stream >> "endfacet\n";
+      stream << "facet normal "<< facets[i]->normal.x <<" "
+                               << facets[i]->normal.y <<" "
+                               << facets[i]->normal.z<<"\n";
+
+    stream << "outer loop\n";
+    stream << "vertex " << facets[i]->triangle.v[0].x <<" "
+                        << facets[i]->triangle.v[0].y<<" "
+                        << facets[i]->triangle.v[0].z<<"\n";
+    stream << "vertex " << facets[i]->triangle.v[1].x <<" "
+                        << facets[i]->triangle.v[1].y<<" "
+                        << facets[i]->triangle.v[1].z<<"\n";
+    stream << "vertex " << facets[i]->triangle.v[2].x <<" "
+                        << facets[i]->triangle.v[2].y<<" "
+                        << facets[i]->triangle.v[2].z<<"\n";
+    stream << "endloop\n";
+    stream << "endfacet\n";
   }
 
-  stream >> "endsolid";
+  stream << "endsolid";
 
   // clean up
   file.close();
@@ -526,41 +565,45 @@ bool STLFile::ReadBMP(QString path) {
   return true;
 }
 
-const STLMesh& STLFile::GetMesh() {
+const STLMesh *STLFile::GetMesh() {
   return mesh_;
 }
 
-void STLFile::convertToAMF(AMFFile* output) {
-
-  // remove all contents of the output file1
-  output->clear();
-
-  QList<AMFVertex*> welded_vertices;
-  QList<AMFTriangle*> welded_triangles;
-
-  const QList<STLFacet*>& facets = mesh_.GetFacets();
-
-  for (int i = 0; i < facets.length(); i++) {
-    for (int j = 0; j < 3; j++) {
-      welded_vertices.push_back(new AMFVertex(facets[i]->triangle.v[j], welded_vertices.size()));
-    }
-    welded_triangles.push_back(new AMFTriangle(welded_vertices.size() - 3,
-                                                welded_vertices.size() - 2,
-                                                welded_vertices.size() - 1));
-  }
-
-  todo("kwg8","This method doesn't actually weld vertices to create a solid mesh");
-  // TODO: welding
-
-  // Generate the output mesh
-  AMFMesh* amfMesh = new AMFMesh();
-  amfMesh->Fill(welded_triangles, welded_vertices);
-
-  // fill the output object
-  AMFObject* object = new AMFObject();
-  object->GiveMesh(amfMesh);
-  output->addObject(object);
+void STLFile::SetMesh(STLMesh* mesh){
+    mesh_=mesh;
 }
+
+//void STLFile::convertToAMF(AMFFile* output) {
+
+//  // remove all contents of the output file1
+//  output->clear();
+
+//  QList<AMFVertex*> welded_vertices;
+//  QList<AMFTriangle*> welded_triangles;
+
+//  const QList<STLFacet*>& facets = mesh_.GetFacets();
+
+//  for (int i = 0; i < facets.length(); i++) {
+//    for (int j = 0; j < 3; j++) {
+//      welded_vertices.push_back(new AMFVertex(facets[i]->triangle.v[j], welded_vertices.size()));
+//    }
+//    welded_triangles.push_back(new AMFTriangle(welded_vertices.size() - 3,
+//                                                welded_vertices.size() - 2,
+//                                                welded_vertices.size() - 1));
+//  }
+
+//  todo("kwg8","This method doesn't actually weld vertices to create a solid mesh");
+//  // TODO: welding
+
+//  // Generate the output mesh
+//  AMFMesh* amfMesh = new AMFMesh();
+//  amfMesh->Fill(welded_triangles, welded_vertices);
+
+//  // fill the output object
+//  AMFObject* object = new AMFObject();
+//  object->GiveMesh(amfMesh);
+//  output->addObject(object);
+//}
 
 void STLFile::traversePath(FAHVector3* A, FAHVector3* B, FAHVector3* C,
                          FAHVector3* D, const QImage* Im, bool** visited,

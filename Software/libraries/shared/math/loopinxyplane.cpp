@@ -18,6 +18,14 @@ LoopInXYPlane::LoopInXYPlane(const LoopInXYPlane& other) {
   points += other.points;
 }
 
+LoopInXYPlane::LoopInXYPlane( LoopInXYPlane* other){
+    for(int i=0; i<points.size();i++){
+        points.append(Vector3(other->points.at(i).x,
+                              other->points.at(i).y,
+                              other->points.at(i).z));
+    }
+}
+
 LoopInXYPlane::Sense LoopInXYPlane::sense() const {
 
   if (points.size() < 3) return kUndefined;
@@ -248,7 +256,35 @@ bool LoopInXYPlane::crossedBy(const Line& segment) const {
   return false;
 }
 
+bool LoopInXYPlane::intersect(const Line& segment,Vector3* result) const{
+  for (int i = 1; i < points.size() + 1; ++i) {
+    Line current_segment(points[i-1], points[i%points.size()]);
+//    Vector3 pt;
+    if (current_segment.intersectSegmentWithSegment2DXY(segment, result)/* &&
+        !segment.isEndpoint(pt)*/) {
+        float x = result->x-current_segment.b.x;
+        float y = result->y-current_segment.b.y;
+        float r = sqrt(x*x+y*y);
 
+        float dx = current_segment.a.x-current_segment.b.x;
+        float dy = current_segment.a.y-current_segment.b.y;
+        float dz = current_segment.a.z-current_segment.b.z;
+        float dr = sqrt(dx*dx+dy*dy);
+
+        if(dr<0.00001){
+            result->z= current_segment.b.z;
+            return true;
+        }
+        result->z = current_segment.b.z + dz/dr*r;
+        return true;
+    }
+  }
+  // doesn't cross any boundary
+  result->x=0;
+  result->y=0;
+  result->z=0;
+  return false;
+}
 
 bool LoopInXYPlane::contains(const LoopInXYPlane& other) const {
   for (int i = 1; i < points.size(); ++i) {

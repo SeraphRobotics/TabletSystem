@@ -29,11 +29,11 @@ XYGrid<T>::XYGrid():stepsize_(1.0),nx_(0),ny_(0)
 
 // Constructs a null grid
 template <class T>
-XYGrid<T>::XYGrid(const XYGrid<T>& otherxygrid){
-    stepsize_ = otherxygrid.stepsize_;
-    data_ = otherxygrid.data_;
-    nx_=otherxygrid.nx_;
-    ny_=otherxygrid.ny_;
+XYGrid<T>::XYGrid(const XYGrid<T> *otherxygrid){
+    stepsize_ = otherxygrid->stepsize_;
+    data_ = otherxygrid->data_;
+    nx_=otherxygrid->nx_;
+    ny_=otherxygrid->ny_;
 }
 //Copy constructor
 template <class T>

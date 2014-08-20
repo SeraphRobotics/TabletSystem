@@ -32,8 +32,13 @@ public:
      * @brief getXYGrid
      * @return processed XYGrid
      */
-    XYGrid<float>* getXYGrid();
+    XYGrid<float>* getProcessedXYGrid();
 
+    /**
+     * @brief getPostedXYGrid
+     * @return posted XYGrid
+     */
+    XYGrid<float>* getPostedXYGrid();
     /**
      * @brief setId overides the ID generated internally
      * @param id
@@ -66,11 +71,14 @@ public slots:
      */
     void setProcessedGrid(XYGrid<float>* grid);
 
+    void setPostedGrid(XYGrid<float>* grid);
+
 private:
     QUuid id_;
     QString filename_;
     XYGrid<float>* raw_;
     XYGrid<float>* processed_;
+    XYGrid<float>* posted_;
 };
 
 //Q_DECLARE_METATYPE(Scan*);

@@ -51,6 +51,11 @@ public:
   LoopInXYPlane(const LoopInXYPlane& other);
 
   /**
+   * Copies the points from the input loop
+   */
+  LoopInXYPlane( LoopInXYPlane* other);
+
+  /**
    * Obtains the sense of this loop from the order of the points it contains
    */
   Sense sense() const;
@@ -130,6 +135,12 @@ public:
    * none of the edges of the two loops intersect.
    */
   bool contains(const LoopInXYPlane& other) const;
+
+
+  /**
+   *returns true if given segment intersects with boundary, returns point of intersection
+   **/
+  bool intersect(const Line& segment,Vector3* result) const;
 
   /**
    * Creates a new set of zero or more loops that are displaced by 'amount' from this

@@ -8,7 +8,7 @@ class XYGrid {
 public:
     XYGrid();
     // Constructs a null grid
-    XYGrid(const XYGrid<T>& grid);
+    XYGrid(const XYGrid<T>* grid);
     //Copy constructor
     XYGrid(int x, int y);
     //Creates a grid of size x,y of zeros

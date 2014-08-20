@@ -88,7 +88,7 @@ FAHVector3 normFrom3Pts(FAHVector3 p1, FAHVector3 p2,FAHVector3 p3);
  * @param loop
  * sets the grid to have a minimum of 0 based on the mininmum used before
  */
-void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane loop);
+void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane *loop);
 
 
 ///IMAGE MAKING

@@ -312,12 +312,12 @@ FAHVector3 normFrom3Pts(FAHVector3 p1, FAHVector3 p2,FAHVector3 p3){
     return FAHVector3(cp[0],cp[1],cp[2]);
 }
 
-void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane loop){
+void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
     float min = 0;
     for(int i=0; i<grid->nx();i++){
         for(int j=0; j<grid->ny();j++){
             FAHVector3 pt(i,j,0);
-            if (loop.pointInside(pt)){
+            if (loop->pointInside(pt)){
                 if (min>grid->at(i,j)){
                     min = grid->at(i,j);
                 }
