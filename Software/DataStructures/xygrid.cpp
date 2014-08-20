@@ -125,9 +125,9 @@ XYGrid<T>::XYGrid(QString csv):stepsize_(1.0),nx_(0),ny_(0) {
          vals = data.split(",");
          stepsize_=vals[0].toFloat();
          nx_ = lines.size();
-         ny_ = lines[0].split(",").size();
+         ny_ = lines[1].split(",").size();
          data_ = QVector<T>(nx_*ny_);
-         for(int row=0;row<nx_;row++){
+         for(int row=1;row<nx_;row++){
              vals = lines[row].split(",");
              for(int col=0;col<ny_;col++){
                  data_[(ny_*row+col)]= (T)vals[col].toFloat();

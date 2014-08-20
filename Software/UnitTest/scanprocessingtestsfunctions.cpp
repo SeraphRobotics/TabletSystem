@@ -65,7 +65,7 @@ void TestMakePostingPlane(){
     forpost.for_rear=Posting::kForFoot;
     Posting rearpost;
     rearpost.angle=0*M_PI/180.0;
-    rearpost.verticle=0;
+    rearpost.verticle=10;
     rearpost.varus_valgus=Posting::kVargus;
     rearpost.for_rear=Posting::kRearFoot;
 
@@ -100,4 +100,31 @@ void USBMinderTest(){
 
 void USBToScanProcessingTest(){
     ScanSystemTester* st = new ScanSystemTester();
+}
+
+void TestMinAlongLine(){
+    QString csvfileLocation = "scan.csv";
+    QFile f(csvfileLocation);
+
+    if (!f.open(QIODevice::ReadOnly)){
+     qDebug()<<"didnt open file";
+     return;
+    }
+    QString data;
+    QTextStream in(&f);
+    //file opened successfully
+    while(!in.atEnd()){
+     data.append(in.readLine()+"\n");
+    }
+    f.close();
+
+    //qDebug()<<data;
+    XYGrid<float> x(data);
+    FAHVector3 hp1(35.0+8,50.0,0);
+    FAHVector3 hp2(26.0+8,103.0,0);
+    FAHVector3 fp1(60.0,105.0,0);
+    FAHVector3 fp2(140.0,85.0,0);
+    //qDebug()<<x.toCSV();
+    printPoint(minAlongLine(&x,hp1,hp2));
+//    printPoint(minAlongLine(&x,fp1,fp2));
 }

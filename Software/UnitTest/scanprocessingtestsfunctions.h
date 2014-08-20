@@ -9,4 +9,6 @@ void TestMakePostingPlane();
 void USBMinderTest();
 
 void USBToScanProcessingTest();
+
+void TestMinAlongLine();
 #endif // SCANPROCESSINGTESTSFUNCTIONS_H

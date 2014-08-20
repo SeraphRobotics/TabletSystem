@@ -6,7 +6,6 @@
 #include <QColor>
 #include "UnitTest/debugfunctions.h"
 #include <Eigen/Eigenvalues>
-#include <iostream>
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
@@ -203,42 +202,22 @@ void projectGridOntoPlane(FAHVector3 n, XYGrid< float >* grid){
 
 FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVector3 fp2){
 
-//    Matrix<float,3,4> m;
-//    m(0,0)=hp1.x;
-//    m(1,0)=hp1.y;
-//    m(2,0)=hp1.z;
-//    m(0,1)=hp2.x;
-//    m(1,1)=hp2.y;
-//    m(2,1)=hp2.z;
-//    m(0,2)=fp1.x;
-//    m(1,2)=fp1.y;
-//    m(2,2)=fp1.z;
-//    m(0,3)=fp2.x;
-//    m(1,3)=fp2.y;
-//    m(2,3)=fp2.z;
-
-//    Vector4f p = Vector4f::Zeros();
+    /// using algorithm from http://stackoverflow.com/questions/1400213/3d-least-squares-plane
+    ///https://groups.google.com/forum/#!topic/comp.graphics.algorithms/qrtcLb4QHFE
 
 
-//}
-
-    // using algorithm from http://stackoverflow.com/questions/1400213/3d-least-squares-plane
-    //https://groups.google.com/forum/#!topic/comp.graphics.algorithms/qrtcLb4QHFE
-    QList<FAHVector3> pts;
+    /// We calculate the center of the points
     FAHVector3 cent = hp1+hp2+fp1+fp2;
     cent = cent/4.0;
+    ///And subtract center from the points
+    QList<FAHVector3> pts;
     pts.append(hp1-cent);
     pts.append(hp2-cent);
     pts.append(fp1-cent);
     pts.append(fp2-cent);
 
 
-    printPoint(hp1);
-    printPoint(hp2);
-    printPoint(fp1);
-    printPoint(fp2);
-
-//    Vector3f unnorm = Vector3f::Zero();
+    /// We produce the vector m
     Matrix3f m = Matrix3f::Zero();
     for( int i=0;i<pts.size();i++){
         m(0,0)= m(0,0)+ pts.at(i).x*pts.at(i).x;
@@ -250,29 +229,9 @@ FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVec
         m(1,2)= m(1,2)+ pts.at(i).y*pts.at(i).z;
         m(2,1)= m(2,1)+ pts.at(i).y*pts.at(i).z;
         m(2,2)= m(2,2)+ pts.at(i).z*pts.at(i).z;
-
-//        unnorm(0) = unnorm(0) + pts.at(i).x*pts.at(i).z;
-//        unnorm(1) = unnorm(1) + pts.at(i).y*pts.at(i).z;
-//        unnorm(2) = unnorm(2) + pts.at(i).z;
-    }
-    if(m(2,2)==0){
-        return(FAHVector3(0,0,1));
     }
 
-    qDebug()<<"\nM";
-    for(int i=0; i<3;i++){
-        QString row;
-        for(int j=0; j<3;j++){
-            row = row.append(QString::number(m(i,j))+", ");
-        }
-        qDebug()<< row;
-    }
-
-//    qDebug()<<"unnorm";
-//    for(int i=0; i<3;i++){
-//        qDebug()<<i<<", "<<unnorm(i);
-//    }
-
+    ///We find the smallest eigenvalue of m
     EigenSolver<Matrix3f> es(m);
     std::complex<float> min (100000,0);
     float realmin = fabs(std::real(min));
@@ -280,20 +239,24 @@ FAHVector3 makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVec
     int index = 0;
     for(int i=0;i<3;i++){
         float realnew = fabs(std::real(es.eigenvalues()(i)));
-        if(realnew>0 && realnew < realmin){
+        if(realnew < realmin){
             realmin=realnew;
             min = es.eigenvalues()(i);
             index=i;
         }
     }
-    std::cout << "eigenvalue: "<<std::real(min);
-    std::cout << "\neigenvector: "<<es.eigenvectors().col(index);
 
+    ///make a FAHvector of the eigenvector with the smallest eigenvalue
     FAHVector3 returnvec(std::real(es.eigenvectors().col(index)[0]),
                          std::real(es.eigenvectors().col(index)[1]),
                          std::real(es.eigenvectors().col(index)[2])
                          );
-    printPoint(returnvec);
+//    printPoint(returnvec);
+
+    /// we unnormalize the vector to give us the proper plane vector which is normal to the surface and points from the origin to the centerpoint
+    float d = returnvec.x*cent.x+returnvec.y*cent.y+returnvec.z*cent.z;
+    if(d==0){d=1;}
+    returnvec*=d;
     return returnvec;
 }
 
@@ -302,16 +265,22 @@ FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
     FAHVector3 minpt(0,0,10000);
     FAHVector3 p = p1;
     FAHVector3 testp(0,0,0);
-    p[2]=100;
-    v = p2-p1;
-    v.normalize();
-    for(int i=0; i<100;i++){
-        float t = 1.0/100.0*i;
+    v.x = p2.x-p1.x;
+    v.y = p2.y-p1.y;
+    //v.normalize();
+    printPoint(v);
+    float lastz=0;
+    int numpts=1000;
+    for(int i=0; i<numpts;i++){
+        float t = 1.0/numpts*i;
         testp = p+t*v;
         int i = floor(testp.x);
         int j = floor(testp.y);
         testp.z=grid->operator ()(i,j);
-
+        if (lastz!=testp.z){
+            printPoint(testp);
+            lastz = testp.z;
+        }
         if (testp.z < minpt.z){
             minpt = testp;
         }
@@ -353,14 +322,27 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane loop){
 QVector< FAHVector3> transformPointsWithPosting(FAHVector3 p1,FAHVector3 p2,Posting p){
     p2.z=0;
     p1.z=0;
+
+    /**
+      We calculate the height of a triangle
+
+          /|
+         / | H
+        /  |
+      p2---p1
+         d
+
+      but we invert all of the heights since this will be used to make a plane vector for remaping the grid.
+    **/
+
     FAHVector3 D = p2-p1;
     float h = D.magnitude()*tan(p.angle);
     if(Posting::kValgus==p.varus_valgus){
-        p2.z=h+p.verticle;
-        p1.z=p.verticle;
+        p2.z=-1.0*(h+p.verticle);
+        p1.z=-1.0*(p.verticle);
     }else{
-        p2.z=p.verticle;
-        p1.z=h+p.verticle;
+        p2.z=-1.0*(p.verticle);
+        p1.z=-1.0*(h+p.verticle);
     }
     QVector< FAHVector3> returnvec;
     returnvec.append(p1);

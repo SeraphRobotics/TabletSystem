@@ -31,7 +31,9 @@ int main(int argc, char *argv[])
 //   curveTests();
 
 
-    TestMakePostingPlane();
+//    TestMakePostingPlane();
+
+    TestMinAlongLine();
 
     return a.exec();
 }
