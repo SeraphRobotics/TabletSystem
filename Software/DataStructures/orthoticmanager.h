@@ -19,11 +19,14 @@ public:
 private slots:
     void updateList();
 
+public:
+    ScanManager* sm_;
+
 private:
     QDir dir_;
     QStringList idlist_;
     QString extension_;
-    ScanManager* sm_;
+
 };
 
 #endif // ORTHOTICMANAGER_H

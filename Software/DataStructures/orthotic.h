@@ -35,6 +35,9 @@ public:
     FAHLoopInXYPlane* getLoop();
     foot_type getFootType();
     bottom_type getBottomType();
+    QVector< FAHVector3 > getHealPoints();
+    QVector< FAHVector3 > getForePoints();
+    Top_Coat getTopCoat();
 
 signals:
     void manipulated();

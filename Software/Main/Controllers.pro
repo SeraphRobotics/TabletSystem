@@ -4,8 +4,10 @@ win32:!wince*:LIBS += -lUser32
 
 SOURCES += ../Controllers/scanprocessing.cpp \
     ../Controllers/scandataprocesser.cpp \
-    ../Controllers/processingfunctions.cpp
+    ../Controllers/processingfunctions.cpp \
+    ../Controllers/orthoticscontroller.cpp
 
 HEADERS += ../Controllers/scanprocessing.h \
     ../Controllers/scandataprocesser.h \
-    ../Controllers/processingfunctions.h
+    ../Controllers/processingfunctions.h \
+    ../Controllers/orthoticscontroller.h

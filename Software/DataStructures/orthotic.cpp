@@ -219,6 +219,10 @@ void Orthotic::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector
     forePts_ = forePts;
 }
 
+QVector< FAHVector3 > Orthotic::getHealPoints(){return healPts_;}
+QVector< FAHVector3 > Orthotic::getForePoints(){return forePts_;}
+Top_Coat Orthotic::getTopCoat(){return tc_;}
+
 
 void Orthotic::setBoundary(FAHLoopInXYPlane* loop){boundaryloop_=loop;}
 FAHLoopInXYPlane* Orthotic::getLoop(){return boundaryloop_;}
