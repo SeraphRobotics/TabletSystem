@@ -11,4 +11,6 @@ void USBMinderTest();
 void USBToScanProcessingTest();
 
 void TestMinAlongLine();
+
+void TestprojectGridOntoPlane();
 #endif // SCANPROCESSINGTESTSFUNCTIONS_H

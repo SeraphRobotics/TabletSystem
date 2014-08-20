@@ -128,3 +128,39 @@ void TestMinAlongLine(){
     printPoint(minAlongLine(&x,hp1,hp2));
 //    printPoint(minAlongLine(&x,fp1,fp2));
 }
+
+void TestprojectGridOntoPlane(){
+    QString csvfileLocation = "blanktest.csv";
+    QFile f(csvfileLocation);
+
+    if (!f.open(QIODevice::ReadOnly)){
+     qDebug()<<"didnt open file";
+     return;
+    }
+    QString data;
+    QTextStream in(&f);
+    //file opened successfully
+    while(!in.atEnd()){
+     data.append(in.readLine()+"\n");
+    }
+    f.close();
+
+    qDebug()<<data.split("\n")[0];
+    XYGrid<float> x(data);
+    FAHVector3 hp1(10.0,10.0,-10);
+    FAHVector3 hp2(50.0,10.0,-10);
+    FAHVector3 fp1(50.0,50.0,-10);
+    FAHVector3 fp2(10.0,50.0,-10);
+    FAHVector3 plane = makePostingPlane(hp1,hp2,fp1,fp2);
+    projectGridOntoPlane(plane, &x);
+
+
+    QFile f2("mapped.csv");
+    if (!f2.open(QIODevice::WriteOnly)){
+     qDebug()<<"didnt open file";
+     return;
+    }
+    QTextStream out(&f2);
+    out<<x.toCSV();
+    f2.close();
+}

@@ -33,7 +33,9 @@ int main(int argc, char *argv[])
 
 //    TestMakePostingPlane();
 
-    TestMinAlongLine();
+//    TestMinAlongLine();
+
+     TestprojectGridOntoPlane();
 
     return a.exec();
 }
