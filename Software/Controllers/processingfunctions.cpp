@@ -188,6 +188,13 @@ void projectGridOntoPlane(FAHVector3 n, FAHVector3 cent, XYGrid< float >* grid){
     norm[0]=n.x;
     norm[1]=n.y;
     norm[2]=n.z;
+
+
+    /// using the eq from http://mathworld.wolfram.com/Point-PlaneDistance.html
+    ///D = n*(x-cent)
+    /// the sign of D is + if the planes are on the same side of origin
+    /// the sign of D is - if the planes are on the oposite side of origin
+    ///Since we will compare to the XY plane, we need to multiple by -1 of a points above and 1 if z is bellow
     int signN=-1;
     if(norm[2]<0){signN=1;}
     std::cout<<"\n"<<centv;

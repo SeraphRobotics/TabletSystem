@@ -149,10 +149,10 @@ void TestprojectGridOntoPlane(){
 
 //    qDebug()<<data.split("\n")[0];
     XYGrid<float> x(data);
-    FAHVector3 hp1(10.0,10.0,-10);
-    FAHVector3 hp2(50.0,10.0,-10);
-    FAHVector3 fp1(50.0,50.0,-10);
-    FAHVector3 fp2(10.0,50.0,-10);
+    FAHVector3 hp1(0.0 ,    0.0,    0.0);
+    FAHVector3 hp2(0.0 ,    50.0,    10);
+    FAHVector3 fp1(50.0,    0.0,    0.0);
+    FAHVector3 fp2(50.0 ,   50.0,   10.0);
     QVector<FAHVector3> planeAndCent = makePostingPlane(hp1,hp2,fp1,fp2);
     printPoint(planeAndCent[0]);
     printPoint(planeAndCent[1]);
