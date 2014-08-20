@@ -170,6 +170,12 @@ void TestprojectGridOntoPlane(){
 }
 
 void TestmakeHeightMap(){
+
+//    int r = falseColorR(0.5);
+//    int g = falseColorG(0.5);
+//    qDebug()<<r<<","<<g;
+//    return;
+
     QString csvfileLocation = "scan.csv";
     QFile f(csvfileLocation);
 

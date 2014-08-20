@@ -99,6 +99,10 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane loop);
  */
 QImage makeHeightMap(XYGrid< float >* grid);
 
+int falseColorR(float dist);
+int falseColorG(float dist);
+
+
 QVector< FAHVector3> transformPointsWithPosting(FAHVector3 p1,FAHVector3 p2,Posting p);
 
 QDebug operator<< (QDebug d,const FAHVector3 v);
