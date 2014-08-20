@@ -386,10 +386,14 @@ QImage makeHeightMap(XYGrid< float >* grid){
     for(int i=0;i<grid->nx();i++){
         for(int j=0;j<grid->ny();j++){
             float dist = (grid->at(i,j)-minimum)/range;
+
             int r = falseColorR(dist);
-            int g = falseColorG(dist);
-            qDebug()<<"dist: "<<dist<<"\tr:"<<r<<"\tg"<<g;
-            QColor color(r,g,0);
+            int g = 255-falseColorG(dist);
+            //qDebug()<<"dist: "<<dist<<"\tr:"<<r<<"\tg"<<g;
+            //QColor color(r,g,0);
+
+            QColor color = QColor::fromHsv(240,g,r);
+
             img.setPixel(j,i,color.rgb());
         }
     }
@@ -398,8 +402,8 @@ QImage makeHeightMap(XYGrid< float >* grid){
 }
 
 int falseColorR(float dist){
-    int max_r = 200;
-    float thresh = 0.8;
+    int max_r = 250;
+    float thresh = 0.7;
     if(dist>1){return max_r;}
     if(dist< thresh) {
         return max_r;
@@ -410,7 +414,7 @@ int falseColorR(float dist){
 }
 int falseColorG(float dist){
     int max_g = 200;
-    float thresh = 0.8;
+    float thresh = 0.7;
     if(dist>thresh){return max_g;}
     float m = max_g/thresh;
     float b = max_g-(m*thresh);
