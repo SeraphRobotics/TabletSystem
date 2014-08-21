@@ -4,7 +4,7 @@
 #include "../libraries/shared/stl/stlfacet.h"
 #include "UnitTest/debugfunctions.h"
 
-
+#include <iostream>
 
 
 template <class T>
@@ -720,6 +720,11 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
     // Construct triangles for top and bottom
 
 
+    QFile f("stlcompared.csv");
+    f.open(QFile::WriteOnly);
+    QTextStream fs(&f);
+
+
     for(int j=0;j<grid->ny()-1;j++){
         for(int i=0;i<grid->nx()-1;i++){
             /** calculated vOuterLoophe 4 points and determin case
@@ -772,8 +777,11 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
             //l4=onLoops(p4,OuterLoop,innerLoops);
             if(b4){numInBounds++;}
             //if(l4){numOnLoop++;}
-
-
+            if(!b1){grid->operator ()(i,j)=0;}
+//            printPoint(p4);
+//            if(numInBounds>1){
+//                qDebug()<<"\n\n"<<p4.x<<","<<p4.y<<":"<<numInBounds;
+//            }
 
 //            printf("\n\nGrid:%i,%i\tX:%.1f - %.1f\tY:%.1f-%.1f",
 //                   i,j,p1.x,p4.x,p1.y,p4.y);
@@ -1118,6 +1126,9 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
     //for(int i=0;i<innerLoops.size();i++){
     //    addLoopToSTL(innerLoops.at(i),grid,mesh,true);
     //}
+
+    fs<<grid->toCSV();
+    f.close();
     return mesh;
 }
 

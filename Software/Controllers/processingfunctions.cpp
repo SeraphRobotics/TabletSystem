@@ -18,9 +18,9 @@ using Eigen::EigenSolver;
 //using Eigen::EigenvalueType;
 
 
-FAHLoopInXYPlane loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts){
-    QVector< FAHVector3 > curve = secondOrder(healpts);
-    curve += bezier_curve(forepts);
+FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts, float scale){
+    QVector< FAHVector3 > curve = secondOrder(healpts, 50);
+    curve += bezier_curve(forepts,50);
 
     int numpts = curve.size();
     //find center
@@ -28,7 +28,7 @@ FAHLoopInXYPlane loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVecto
     for (int i=0;i<numpts;i++){
         cent.x=cent.x+curve.at(i).x;
         cent.y=cent.y+curve.at(i).y;
-        printPoint(curve.at(i));
+//        printPoint(curve.at(i));
     }
     cent.x=cent.x/numpts;
     cent.y=cent.y/numpts;
@@ -44,10 +44,11 @@ FAHLoopInXYPlane loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVecto
     qSort(indecies);
 
     //Add to loop by polar angle
-    FAHLoopInXYPlane loop;
+    FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
     for(int i=0; i<numpts;i++){
 //        loop.add( curve[indecies.at(i)] );
-          loop.add(curve.at(i));
+          FAHVector3 pt = curve.at(i);
+          loop->add(FAHVector3(scale*pt.y,scale*pt.x,pt.z));
 //        printPoint(curve[indecies.at(i)]);
     }
 

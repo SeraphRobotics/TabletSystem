@@ -13,6 +13,7 @@ public:
 
     Scan* getScan(QString id);
     bool hasScan(QString id);
+    QStringList scanIds();
 
 public slots:
     void addScan(Scan* s);

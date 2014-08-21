@@ -9,6 +9,8 @@
 #include <QVector>
 #include <algorithm>
 
+#include <QDebug>
+
 namespace Math {
 
 LoopInXYPlane::LoopInXYPlane() {
@@ -124,29 +126,34 @@ Float LoopInXYPlane::getAverageZCoordinate() const {
 
 
 bool LoopInXYPlane::pointInside(const Vector3& point) const {
-  if( !(points.size() >= 3) )return false;
+//  if( !(points.size() >= 3) )return false;
 
-  /**
-  // Perform the ray-intersection test: cast a ray from the given point
-  // out to infinity and count the number of segments it intersects.
-  Line test_line(point, max().scale((Float)1.1));
-  int intersections = 0;
-  for (int i = 1; i < points.size() + 1; ++i) {
-    Line current_segment(points[i-1], points[i%points.size()]);
-    Vector3 pt;
-    // find an intersection that is not the endpoint of the current segment.
-    // this ensures that lines that go through a vertex don't get double-counted
-    if (current_segment.intersectSegmentWithSegment2DXY(test_line, &pt) &&
-        !current_segment.b.equals(pt)) {
-      ++intersections;
-    }
-  }
 
-  // An even number of intersections (including 0) means that this point is
-  // not within the loop.  If the sense of this loop is counter-clockwise,
-  // that means that the point is not inside;
-  return (intersections % 2) == (sense() == kCounterClockwise ? 1 : 0);
-  **/
+//  Vector3 newPt(point);
+//  newPt.z=0;
+//  // Perform the ray-intersection test: cast a ray from the given point
+//  // out to infinity and count the number of segments it intersects.
+//  Line test_line(newPt, max().scale((Float)2.0));
+//  int intersections = 0;
+//  for (int i = 1; i < points.size() + 1; ++i) {
+//    Line current_segment(points[i-1], points[i%points.size()]);
+//    Vector3 pt;
+//    // find an intersection that is not the endpoint of the current segment.
+//    // this ensures that lines that go through a vertex don't get double-counted
+////    if (current_segment.intersectSegmentWithSegment2DXY(test_line, &pt) &&
+////        !current_segment.b.equals(pt)) {
+////      ++intersections;
+////    }
+//    if (current_segment.intersectSegmentWithSegment2DXY(test_line, &pt)) {
+//      ++intersections;
+//    }
+//  }
+
+//  // An even number of intersections (including 0) means that this point is
+//  // not within the loop.  If the sense of this loop is counter-clockwise,
+//  // that means that the point is not inside;
+//  return ((intersections % 2) == 1);
+//}
   bool inside = false;
   Vector3 p1 = points[0];
   float xinters =0;

@@ -217,6 +217,8 @@ void Orthotic::setPosting(Posting p){
 void Orthotic::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector3 > forePts){
     healPts_=healPts;
     forePts_ = forePts;
+    qDebug()<<"has points"<<healPts_.size();
+    qDebug()<<"has points"<<forePts_.size();
 }
 
 QVector< FAHVector3 > Orthotic::getHealPoints(){return healPts_;}

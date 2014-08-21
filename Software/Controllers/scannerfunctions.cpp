@@ -26,8 +26,8 @@ bool loopsContain(FAHVector3 pt, const FAHLoopInXYPlane* OuterLoop, QList<FAHLoo
     foreach(FAHLoopInXYPlane* loop,innerLoops){
         notContainedByInners = notContainedByInners && !loop->pointInside(pt);
     }
-
     containedByOuter = OuterLoop->pointInside(pt);
+//    qDebug()<<containedByOuter;
     return (containedByOuter&&notContainedByInners);
 }
 

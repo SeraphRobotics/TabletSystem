@@ -1,15 +1,18 @@
 #include "scanprocessingtestsfunctions.h"
 
-#include "Controllers/processingfunctions.h"
-#include "UnitTest/usbtester.h"
-
 #include "DataStructures/usbminder.h"
 #include "DataStructures/usbmanager.h"
+#include "DataStructures/orthoticmanager.h"
 
 #include "UnitTest/scansystemtester.h"
-#include "Controllers/processingfunctions.h"
-
 #include "UnitTest/debugfunctions.h"
+#include "UnitTest/usbtester.h"
+#include "UnitTest/orthoticcontrollertester.h"
+
+
+#include "Controllers/processingfunctions.h"
+#include "Controllers/orthoticscontroller.h"
+
 
 void curveTests(){
     qDebug()<<"result factorial: "<<factorial(5);
@@ -45,9 +48,9 @@ void loopTest(){
     points2.append(FAHVector3(70.0,19.0,0));
     points2.append(FAHVector3(103.0,26.0,0));
 
-    FAHLoopInXYPlane plane = loopFromPoints(points2,points);
+    FAHLoopInXYPlane plane = loopFromPoints(points2,points,1);
 
-    writeLoopToXDFL(plane,"test.xdfl");
+    writeLoopToXDFL(&plane,"test.xdfl");
 }
 
 
@@ -195,4 +198,60 @@ void TestmakeHeightMap(){
 
     QImage img = makeHeightMap(&x);
     img.save("heightmap.jpeg");
+}
+
+
+void TestOrthoticsRx(){
+    ScanManager* sm = new ScanManager();
+    OrthoticManager* om = new OrthoticManager(sm);
+    OrthoticController* oc = new OrthoticController(om);
+    OrthoticControllerTester* oct = new OrthoticControllerTester();
+
+    QVector< FAHVector3 > forePts;
+    forePts.append(FAHVector3(60.0,105.0,0));
+    forePts.append(FAHVector3(90.0,120.0,0));
+    forePts.append(FAHVector3(125.0,115.0,0));
+    forePts.append(FAHVector3(140.0,85.0,0));
+
+
+    QVector< FAHVector3 > healPts;
+    healPts.append(FAHVector3(50.0,35.0,0));
+    healPts.append(FAHVector3(70.0,19.0,0));
+    healPts.append(FAHVector3(103.0,26.0,0));
+
+    Posting forpost;
+    forpost.angle=0*M_PI/180.0;
+    forpost.verticle=0;
+    forpost.varus_valgus=Posting::kVargus;
+    forpost.for_rear=Posting::kForFoot;
+    Posting rearpost;
+    rearpost.angle=0*M_PI/180.0;
+    rearpost.verticle=10;
+    rearpost.varus_valgus=Posting::kVargus;
+    rearpost.for_rear=Posting::kRearFoot;
+
+    Top_Coat tc;
+    tc.density = Top_Coat::kLow;
+    tc.depth=10;
+    tc.style=Top_Coat::kCloth;
+    tc.thickness=11;
+
+    QString scanid = sm->scanIds()[0];
+    qDebug()<<"using scan: "<<scanid;
+
+    oct->connect(oc,SIGNAL(boundaryLoopUpdated(FAHLoopInXYPlane*)),oct,SLOT(boundaryLoopUpdated(FAHLoopInXYPlane*)));
+    oct->connect(oc,SIGNAL(scanImageGenerated(QImage)),oct,SLOT(scanImageGenerated(QImage)));
+    oct->connect(oc,SIGNAL(stlsGenerated(QList<View_3D_Item>)),oct,SLOT(stlsGenerated(QList<View_3D_Item>)));
+
+
+    oc->setScan(scanid);
+    oc->setBorderPoints(healPts, forePts);
+
+    oc->setTopCoat(tc);
+
+
+    oc->processBoundary();
+    oc->setPosting(forpost);
+    oc->setPosting(rearpost);
+
 }

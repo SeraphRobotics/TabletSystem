@@ -15,4 +15,7 @@ void TestMinAlongLine();
 void TestprojectGridOntoPlane();
 
 void TestmakeHeightMap();
+
+void TestOrthoticsRx();
+
 #endif // SCANPROCESSINGTESTSFUNCTIONS_H

@@ -3,7 +3,7 @@
 #include "../libraries/shared/fah-constants.h"
 
 /// DEGUB FUNCTIONS
-void writeLoopToXDFL(const FAHLoopInXYPlane& loop, QString file);
+void writeLoopToXDFL(FAHLoopInXYPlane* loop, QString file);
 void printPoint(FAHVector3 pt);
 
 #endif // DEBUGFUNCTIONS_H

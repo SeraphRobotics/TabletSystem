@@ -5,10 +5,10 @@
 #include <QTextStream>
 
 void printPoint(FAHVector3 pt){
-    printf("\n\t%.4f\t%.4f\t%.4f",pt.x,pt.y,pt.z);
+    printf("\n %.4f\t%.4f\t%.4f",pt.x,pt.y,pt.z);
 }
 
-void writeLoopToXDFL(const FAHLoopInXYPlane& loop, QString file){
+void writeLoopToXDFL(FAHLoopInXYPlane *loop, QString file){
      QDomDocument document;
      QDomElement root = document.createElement("xdfl");
      document.appendChild(root);
@@ -28,8 +28,8 @@ void writeLoopToXDFL(const FAHLoopInXYPlane& loop, QString file){
      QDomElement matId = document.createElement("materialid");
      matId.appendChild(document.createTextNode("1"));
      path.appendChild(matId);
-     for(int i=0;i<loop.points.size();i++){
-         FAHVector3 pt = loop.points.at(i);
+     for(int i=0;i<loop->points.size();i++){
+         FAHVector3 pt = loop->points.at(i);
 
          QDomElement point = document.createElement("point");
          QDomElement xEl = document.createElement("x");
@@ -45,7 +45,7 @@ void writeLoopToXDFL(const FAHLoopInXYPlane& loop, QString file){
          path.appendChild(point);
 
      }
-     FAHVector3 pt = loop.points.at(0);
+     FAHVector3 pt = loop->points.at(0);
 
      QDomElement point = document.createElement("point");
      QDomElement xEl = document.createElement("x");

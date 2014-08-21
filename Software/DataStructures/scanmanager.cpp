@@ -45,3 +45,5 @@ void ScanManager::updateScanList(){
     }
 //    qDebug()<<idlist_;
 }
+
+QStringList ScanManager::scanIds(){return idlist_;}
