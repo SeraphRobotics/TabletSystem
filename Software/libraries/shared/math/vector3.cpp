@@ -170,6 +170,11 @@ Vector3 Vector3::copy() const {
   return v;
 }
 
+Vector3 Vector3::xyprojection() const{
+    Vector3 v(this);
+    v.z=0;
+    return v;
+}
 
 Float Vector3::distanceTo(const Vector3& v) const {
   return sqrt(distanceToSq(v));

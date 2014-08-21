@@ -460,6 +460,15 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid ){
 }
 
 void addFacetWithNormal(FAHVector3 p1, FAHVector3 p2, FAHVector3 p3, STLMesh* mesh, bool zpositive){
+    float thresh=0.01;
+    if( p1.x<thresh || p2.x<thresh ||p3.x<thresh || p1.y<thresh || p2.y<thresh ||p3.y<thresh  ){
+        printf("\nERROR IN Pts");
+        printPoint(p1);
+        printPoint(p2);
+        printPoint(p3);
+        return;
+    }
+
     FAHTriangle t1(p1,p2,p3);
     STLFacet s1;
     if(((t1.normal().z>0)&&zpositive)||((t1.normal().z<0)&&!zpositive)){
@@ -478,6 +487,15 @@ void addFacetWithNormal(FAHVector3 p1, FAHVector3 p2, FAHVector3 p3, STLMesh* me
 }
 
 void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* mesh, FAHVector3 direction){
+    float thresh=0.01;
+    if( p1.x<thresh || p2.x<thresh ||p3.x<thresh || p1.y<thresh || p2.y<thresh ||p3.y<thresh  ){
+        printf("\nERROR IN Pts");
+        printPoint(p1);
+        printPoint(p2);
+        printPoint(p3);
+        return;
+    }
+
     FAHTriangle t1(p1,p2,p3);
     STLFacet s1;
     bool used1=false;
@@ -746,16 +764,16 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
             //int numOnLoop=0;
 
             p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSize());
-            p1prime = FAHVector3(&p1);
-            p1prime[2]=0;
+            p1prime = p1.xyprojection();//FAHVector3(&p1);
+//            p1prime[2]=0;
             b1=loopsContain(p1,OuterLoop,innerLoops);
             //l1=onLoops(p1,OuterLoop,innerLoops);
             if(b1){numInBounds++;}
             //if(l1){numOnLoop++;}
 
             p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSize());
-            p2prime = FAHVector3(&p2);
-            p2prime[2]=0;
+            p2prime = p2.xyprojection();//FAHVector3(&p2);
+//            p2prime[2]=0;
             b2=loopsContain(p2,OuterLoop,innerLoops);
             //l2=onLoops(p1,OuterLoop,innerLoops);
             if(b2){numInBounds++;}
@@ -763,16 +781,16 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
 
 
             p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSize());
-            p3prime = FAHVector3(&p3);
-            p3prime[2]=0;
+            p3prime = p3.xyprojection();//FAHVector3(&p3);
+//            p3prime[2]=0;
             b3=loopsContain(p3,OuterLoop,innerLoops);
             //l3=onLoops(p1,OuterLoop,innerLoops);
             if(b3){numInBounds++;}
             //if(l3){numOnLoop++;}
 
             p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSize());
-            p4prime = FAHVector3(&p4);
-            p4prime[2]=0;
+            p4prime = p4.xyprojection();//FAHVector3(&p4);
+//            p4prime[2]=0;
             b4=loopsContain(p4,OuterLoop,innerLoops);
             //l4=onLoops(p4,OuterLoop,innerLoops);
             if(b4){numInBounds++;}

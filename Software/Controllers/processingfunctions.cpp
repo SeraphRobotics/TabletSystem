@@ -48,7 +48,7 @@ FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVect
     for(int i=0; i<numpts;i++){
 //        loop.add( curve[indecies.at(i)] );
           FAHVector3 pt = curve.at(i);
-          loop->add(FAHVector3(scale*pt.y,scale*pt.x,pt.z));
+          loop->add(FAHVector3(scale*pt.y+3,scale*pt.x,pt.z));
 //        printPoint(curve[indecies.at(i)]);
     }
 
@@ -203,8 +203,8 @@ void projectGridOntoPlane(FAHVector3 n, FAHVector3 cent, XYGrid< float >* grid){
     float D=0;
     for(int i=0;i<grid->nx();i++){
         for(int j=0; j<grid->ny(); j++){
-            r[0]=i;
-            r[1]=j;
+            r[0]=j;
+            r[1]=i;
             r[2]=0;
             r=r-centv;
             D= signN*r.dot(norm);
@@ -284,17 +284,17 @@ FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
     v.x = p2.x-p1.x;
     v.y = p2.y-p1.y;
     //v.normalize();
-    printPoint(v);
+//    printPoint(v);
     float lastz=0;
     int numpts=1000;
     for(int i=0; i<numpts;i++){
         float t = 1.0/numpts*i;
         testp = p+t*v;
-        int i = floor(testp.x);
-        int j = floor(testp.y);
+        int j = floor(testp.x);
+        int i = floor(testp.y);
         testp.z=grid->operator ()(i,j);
         if (lastz!=testp.z){
-            printPoint(testp);
+//            printPoint(testp);
             lastz = testp.z;
         }
         if (testp.z < minpt.z){
@@ -314,10 +314,10 @@ FAHVector3 normFrom3Pts(FAHVector3 p1, FAHVector3 p2,FAHVector3 p3){
 }
 
 void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
-    float min = 0;
+    float min = 10000;
     for(int i=0; i<grid->nx();i++){
         for(int j=0; j<grid->ny();j++){
-            FAHVector3 pt(i,j,0);
+            FAHVector3 pt=vectorFromIJ(i,j,0,grid->stepSize());
             if (loop->pointInside(pt)){
                 if (min>grid->at(i,j)){
                     min = grid->at(i,j);
@@ -325,10 +325,14 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
             }
         }
     }
-
+    qDebug()<<"Min: "<<min;
     for(int i=0; i<grid->nx();i++){
         for(int j=0; j<grid->ny();j++){
-            grid->operator ()(i,j)=grid->at(i,j)-min;
+            if(grid->at(i,j)<min){
+                grid->operator ()(i,j)=0.0;
+            }else{
+                grid->operator ()(i,j)=grid->at(i,j)-min;
+            }
         }
     }
 

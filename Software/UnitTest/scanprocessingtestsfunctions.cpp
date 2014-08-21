@@ -226,7 +226,7 @@ void TestOrthoticsRx(){
     forpost.for_rear=Posting::kForFoot;
     Posting rearpost;
     rearpost.angle=0*M_PI/180.0;
-    rearpost.verticle=10;
+    rearpost.verticle=0;
     rearpost.varus_valgus=Posting::kVargus;
     rearpost.for_rear=Posting::kRearFoot;
 

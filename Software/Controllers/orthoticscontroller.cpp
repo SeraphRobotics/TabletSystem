@@ -45,12 +45,31 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
 }
 
 void OrthoticController::processBoundary(){
-    qDebug()<<"\nSize of healpts: "<<orth_->getHealPoints().size();
+    float slope = 63.5/101;
+    float heightoffset =0;
+    scaleAndOffset(orth_->getScan()->getProcessedXYGrid(),slope,heightoffset);
+
     FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
     FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().first(),orth_->getForePoints().last());
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,orth_->getForePoints().last());
-    projectGridOntoPlane(planeVec,orth_->getForePoints().last(),orth_->getScan()->getProcessedXYGrid());
-    //thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
+    qDebug()<<"\nplane vec";
+    printPoint(planeVec);
+
+    qDebug()<<"\nminpt1";
+    printPoint(minpt1);
+
+    qDebug()<<"\nminpt2";
+    printPoint(minpt2);
+
+    FAHVector3 cent = orth_->getForePoints().last();
+    FAHVector3 d(cent.y,cent.x,cent.z);
+    projectGridOntoPlane(planeVec,d,orth_->getScan()->getProcessedXYGrid());
+    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
+    QFile f("processed.csv");
+    f.open(QFile::WriteOnly);
+    QTextStream fs(&f);
+    fs<<orth_->getScan()->getProcessedXYGrid()->toCSV();
+    f.close();
 }
 
 void OrthoticController::setTopCoat(Top_Coat tc){
@@ -71,7 +90,9 @@ void OrthoticController::setPosting(Posting p){
 
 
     projectGridOntoPlane(planeAndCent[0],planeAndCent[1], posted);
+    printPoint(planeAndCent[0]);
     orth_->getScan()->setPostedGrid(posted);
+    thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
     QFile f("posted.csv");
     f.open(QFile::WriteOnly);
     QTextStream fs(&f);
@@ -84,6 +105,7 @@ void OrthoticController::setPosting(Posting p){
 void OrthoticController::makeSTLs(){
     QList<FAHLoopInXYPlane*> inners;
     STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),inners);
+    m->scale(2,1,1.0);
     stlToFile(m,"original.stl");
     QList<View_3D_Item> toEmitList;
     View_3D_Item v3d;

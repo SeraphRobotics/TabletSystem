@@ -159,6 +159,9 @@ struct Vector3 {
    */
   Vector3 copy() const;
 
+
+  Vector3 xyprojection() const;
+
   /**
    * Returns the distance from this point in space to 'v'.
    * This method involves taking a square root, which can be an expensive
