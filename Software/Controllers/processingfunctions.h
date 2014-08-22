@@ -16,7 +16,7 @@
  * @param forepts
  * @return FAHLoopInXYPlane
  */
-FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts, float scale);
+FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts);
 
 
 /**

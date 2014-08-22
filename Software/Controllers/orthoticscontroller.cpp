@@ -35,7 +35,7 @@ void OrthoticController::setOrthotic(QString orthotic_id){
 void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector3 > forePts){
     if(!(healPts.size()==3 && forePts.size()==4)){return;}
     orth_->setBorderPoints(healPts,forePts);
-    FAHLoopInXYPlane* loop = loopFromPoints(healPts,forePts,orth_->getScan()->getProcessedXYGrid()->stepSize());
+    FAHLoopInXYPlane* loop = loopFromPoints(healPts,forePts);
     orth_->setBoundary(loop);
     writeLoopToXDFL(loop,"LOOPINSETBORDER.XDFL");
     emit boundaryLoopUpdated(orth_->getLoop());

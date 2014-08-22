@@ -18,7 +18,7 @@ using Eigen::EigenSolver;
 //using Eigen::EigenvalueType;
 
 
-FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts, float scale){
+FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts){
     QVector< FAHVector3 > curve = secondOrder(healpts, 50);
     curve += bezier_curve(forepts,50);
 
@@ -46,9 +46,7 @@ FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVect
     //Add to loop by polar angle
     FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
     for(int i=0; i<numpts;i++){
-//        loop.add( curve[indecies.at(i)] );
-          FAHVector3 pt = curve.at(i);
-          loop->add(FAHVector3(scale*pt.y+3,scale*pt.x,pt.z));
+          loop->add( curve.at(i) );
 //        printPoint(curve[indecies.at(i)]);
     }
 
@@ -70,20 +68,20 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
 
     for(int i=0;i<heal_pts.size();i++){
         for(int j=0; j<soln_order;j++){
-            m(i,j) = pow(heal_pts.at(i).x,float(j));
+            m(i,j) = pow(heal_pts.at(i).y,float(j));
         }
-        y(i) = heal_pts.at(i).y;
+        y(i) = heal_pts.at(i).x;
     }
 
-    y[3] = -100;
-    y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
-    y[5] = 100;
+    y[3] = -200.0;
+    y[4] = twoPtSlope(heal_pts[0],heal_pts.last());
+    y[5] = 200.0;
 
 
     for(int k=0;k<soln_order;k++){
-        m(3,k)+= k*pow(heal_pts.at(0).x,float(k));
-        m(4,k)+= k*pow(heal_pts.at(1).x,float(k));
-        m(5,k)+= k*pow(heal_pts.at(2).x,float(k));
+        m(3,k)+= k*pow(heal_pts.at(0).y,float(k));
+        m(4,k)+= k*pow(heal_pts.at(1).y,float(k));
+        m(5,k)+= k*pow(heal_pts.at(2).y,float(k));
     }
 
     c = m.inverse()*y;
@@ -91,9 +89,9 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
     VectorXf xval(nTimes);
     VectorXf yval(nTimes);
 
-    float stepsize = (heal_pts.at(2).x-heal_pts.at(0).x)/nTimes;
+    float stepsize = (heal_pts.at(2).y-heal_pts.at(0).y)/nTimes;
     for(int i=0; i<nTimes; i++){
-        xval(i) = heal_pts.at(0).x+stepsize*i;
+        xval(i) = heal_pts.at(0).y+stepsize*i;
     }
     for(int i=0; i<nTimes;i++){
         for(int j=0; j<soln_order; j++){
@@ -104,8 +102,8 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
     QVector<FAHVector3> curvepts;
     for(int i=0;i<nTimes;i++){
         FAHVector3 p(0,0,0);
-        p.x = xval(i);
-        p.y = yval(i);
+        p.y = xval(i);
+        p.x = yval(i);
         curvepts.append(p);
     }
     return curvepts;
@@ -203,8 +201,8 @@ void projectGridOntoPlane(FAHVector3 n, FAHVector3 cent, XYGrid< float >* grid){
     float D=0;
     for(int i=0;i<grid->nx();i++){
         for(int j=0; j<grid->ny(); j++){
-            r[0]=j;
-            r[1]=i;
+            r[0]=i;
+            r[1]=j;
             r[2]=0;
             r=r-centv;
             D= signN*r.dot(norm);
@@ -290,8 +288,8 @@ FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
     for(int i=0; i<numpts;i++){
         float t = 1.0/numpts*i;
         testp = p+t*v;
-        int j = floor(testp.x);
-        int i = floor(testp.y);
+        int i = floor(testp.x);
+        int j = floor(testp.y);
         testp.z=grid->operator ()(i,j);
         if (lastz!=testp.z){
 //            printPoint(testp);
@@ -433,8 +431,8 @@ QDebug operator<< (QDebug d,const FAHVector3 v){
 }
 
 float twoPtSlope(FAHVector3 p1, FAHVector3 p2){
-    if( (p2.y-p1.y)==0 ){return 0;}
-    return (p2.x-p1.x)/(p2.y-p1.y);
+    if( (p2.x-p1.x)==0 ){return 0;}
+    return (p2.y-p1.y)/(p2.x-p1.x);
 }
 
 

@@ -48,7 +48,7 @@ void loopTest(){
     points2.append(FAHVector3(70.0,19.0,0));
     points2.append(FAHVector3(103.0,26.0,0));
 
-    FAHLoopInXYPlane plane = loopFromPoints(points2,points,1);
+    FAHLoopInXYPlane plane = loopFromPoints(points2,points);
 
     writeLoopToXDFL(&plane,"test.xdfl");
 }
@@ -174,11 +174,6 @@ void TestprojectGridOntoPlane(){
 
 void TestmakeHeightMap(){
 
-//    int r = falseColorR(0.5);
-//    int g = falseColorG(0.5);
-//    qDebug()<<r<<","<<g;
-//    return;
-
     QString csvfileLocation = "scan.csv";
     QFile f(csvfileLocation);
 
@@ -207,17 +202,20 @@ void TestOrthoticsRx(){
     OrthoticController* oc = new OrthoticController(om);
     OrthoticControllerTester* oct = new OrthoticControllerTester();
 
+    float scale=2.0;
+
     QVector< FAHVector3 > forePts;
-    forePts.append(FAHVector3(60.0,105.0,0));
-    forePts.append(FAHVector3(90.0,120.0,0));
-    forePts.append(FAHVector3(125.0,115.0,0));
-    forePts.append(FAHVector3(140.0,85.0,0));
+    forePts.append(FAHVector3(105.0*scale,60.0*scale,0));
+    forePts.append(FAHVector3(120.0*scale,90.0*scale,0));
+    forePts.append(FAHVector3(115.0*scale,125.0*scale,0));
+    forePts.append(FAHVector3(85.0*scale,140.0*scale,0));
 
 
     QVector< FAHVector3 > healPts;
-    healPts.append(FAHVector3(50.0,35.0,0));
-    healPts.append(FAHVector3(70.0,19.0,0));
-    healPts.append(FAHVector3(103.0,26.0,0));
+    healPts.append(FAHVector3(35.0*scale,50.0*scale,0));
+    healPts.append(FAHVector3(19.0*scale,70.0*scale,0));
+    healPts.append(FAHVector3(26.0*scale,103.0*scale,0));
+
 
     Posting forpost;
     forpost.angle=0*M_PI/180.0;
@@ -249,8 +247,9 @@ void TestOrthoticsRx(){
 
     oc->setTopCoat(tc);
 
-
+    return;
     oc->processBoundary();
+
     oc->setPosting(forpost);
     oc->setPosting(rearpost);
 
