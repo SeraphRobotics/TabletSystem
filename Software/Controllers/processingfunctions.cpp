@@ -73,9 +73,9 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
         y(i) = heal_pts.at(i).x;
     }
 
-    y[3] = -200.0;
-    y[4] = twoPtSlope(heal_pts[0],heal_pts.last());
-    y[5] = 200.0;
+    y[3] = -100.0;
+    y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
+    y[5] = 100.0;
 
 
     for(int k=0;k<soln_order;k++){
@@ -244,6 +244,8 @@ QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp
     }
 
     ///We find the smallest eigenvalue of m
+    std::cout<<m;
+
     EigenSolver<Matrix3f> es(m);
     std::complex<float> min (100000,0);
     float realmin = fabs(std::real(min));
@@ -315,7 +317,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
     float min = 10000;
     for(int i=0; i<grid->nx();i++){
         for(int j=0; j<grid->ny();j++){
-            FAHVector3 pt=vectorFromIJ(i,j,0,grid->stepSize());
+            FAHVector3 pt=vectorFromIJ(i,j,0,1);
             if (loop->pointInside(pt)){
                 if (min>grid->at(i,j)){
                     min = grid->at(i,j);
@@ -381,11 +383,9 @@ QImage makeHeightMap(XYGrid< float >* grid){
         minimum = std::min(data.at(i),minimum);
     }
     float range = maximum-minimum;
+    if(range<1){return img;}
 
-
-
-
-
+    return img;
     for(int i=0;i<grid->nx();i++){
         for(int j=0;j<grid->ny();j++){
             float dist = (grid->at(i,j)-minimum)/range;

@@ -45,13 +45,13 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
 }
 
 void OrthoticController::processBoundary(){
-    float slope = 63.5/101;
-    float heightoffset =0;
-    scaleAndOffset(orth_->getScan()->getProcessedXYGrid(),slope,heightoffset);
+
 
     FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
-    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().first(),orth_->getForePoints().last());
-    FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,orth_->getForePoints().last());
+    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
+    FAHVector3 minpt3 = orth_->getForePoints().first();
+    minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(int(minpt3.x),int(minpt3.y));
+    FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
 //    FAHVector3 planeVec = normFrom3Pts(minpt1,orth_->getForePoints().first(),orth_->getForePoints().last());
     qDebug()<<"\nplane vec";
     printPoint(planeVec);
@@ -62,10 +62,13 @@ void OrthoticController::processBoundary(){
     qDebug()<<"\nminpt2";
     printPoint(minpt2);
 
-    FAHVector3 cent = orth_->getForePoints().last();
-    FAHVector3 d(cent.y,cent.x,cent.z);
-    projectGridOntoPlane(planeVec,d,orth_->getScan()->getProcessedXYGrid());
-    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
+    qDebug()<<"\nminpt3";
+    printPoint(minpt3);
+
+    FAHVector3 cent = orth_->getForePoints().first();
+    FAHVector3 d(cent.x,cent.y,cent.z);
+    projectGridOntoPlane(planeVec.scale(-1.0),d,orth_->getScan()->getProcessedXYGrid());
+    //thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
     QFile f("processed.csv");
     f.open(QFile::WriteOnly);
     QTextStream fs(&f);
@@ -84,16 +87,26 @@ void OrthoticController::redo(){}
 void OrthoticController::setPosting(Posting p){
     orth_->setPosting(p);
     XYGrid<float>*  posted = new XYGrid<float>(orth_->getScan()->getProcessedXYGrid());
-    QVector<FAHVector3> planeAndCent = makePostingPlane(orth_->getHealPoints().first(),
-                                                        orth_->getHealPoints().last(),
-                                                        orth_->getForePoints().first(),
-                                                        orth_->getForePoints().last());
+
+    QVector<FAHVector3> heals = transformPointsWithPosting(orth_->getHealPoints().first(),
+                                                           orth_->getHealPoints().last(),
+                                                           orth_->getRearFootPosting());
+    QVector<FAHVector3> fors = transformPointsWithPosting(orth_->getForePoints().first(),
+                                                          orth_->getForePoints().last(),
+                                                          orth_->getForFootPosting());
+    QVector<FAHVector3> planeAndCent = makePostingPlane(heals[0],heals[1],fors[0],fors[1]);
+
 
 
     projectGridOntoPlane(planeAndCent[0],planeAndCent[1], posted);
     printPoint(planeAndCent[0]);
     orth_->getScan()->setPostedGrid(posted);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
+
+    float slope = 63.5/101;
+    float heightoffset =0;
+    scaleAndOffset(orth_->getScan()->getPostedXYGrid(),slope,heightoffset);
+
     QFile f("posted.csv");
     f.open(QFile::WriteOnly);
     QTextStream fs(&f);
@@ -116,6 +129,26 @@ void OrthoticController::makeSTLs(){
 
     toEmitList.append(v3d);
     emit stlsGenerated(toEmitList);
+
+
+//    QList<FAHLoopInXYPlane*> innerLoops3;
+//    innerLoops3.append(orth_->getLoop());
+//    FAHLoopInXYPlane* outside = new FAHLoopInXYPlane();
+//    outside->points.append(FAHVector3(0,0,0));
+//    outside->points.append(FAHVector3(1000,0,0));
+//    outside->points.append(FAHVector3(1000,1000,0));
+//    outside->points.append(FAHVector3(0,1000,0));
+
+
+//    STLMesh* mp = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
+//                                         outside,
+//                                         innerLoops3);
+
+//    STLMesh* mp = makeSTLfromScan(orth_->getScan()->getPostedXYGrid());
+
+//    mp->scale(2,1,1.0);
+//    stlToFile(mp,"cutout.stl");
+
 }
 
 Border OrthoticController::borderFromLoop(FAHLoopInXYPlane* loop){}

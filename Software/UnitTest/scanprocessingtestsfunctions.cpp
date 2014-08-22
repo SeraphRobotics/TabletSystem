@@ -202,19 +202,19 @@ void TestOrthoticsRx(){
     OrthoticController* oc = new OrthoticController(om);
     OrthoticControllerTester* oct = new OrthoticControllerTester();
 
-    float scale=2.0;
+    float offset = 3.0;
 
     QVector< FAHVector3 > forePts;
-    forePts.append(FAHVector3(105.0*scale,60.0*scale,0));
-    forePts.append(FAHVector3(120.0*scale,90.0*scale,0));
-    forePts.append(FAHVector3(115.0*scale,125.0*scale,0));
-    forePts.append(FAHVector3(85.0*scale,140.0*scale,0));
+    forePts.append(FAHVector3(105.0+offset,60.0,0));
+    forePts.append(FAHVector3(120.0+offset,90.0,0));
+    forePts.append(FAHVector3(115.0+offset,125.0,0));
+    forePts.append(FAHVector3(85.0+offset,140.0,0));
 
 
     QVector< FAHVector3 > healPts;
-    healPts.append(FAHVector3(35.0*scale,50.0*scale,0));
-    healPts.append(FAHVector3(19.0*scale,70.0*scale,0));
-    healPts.append(FAHVector3(26.0*scale,103.0*scale,0));
+    healPts.append(FAHVector3(35.0+offset,50.0,0));
+    healPts.append(FAHVector3(19.0+offset,70.0,0));
+    healPts.append(FAHVector3(26.0+offset,103.0,0));
 
 
     Posting forpost;
@@ -247,10 +247,10 @@ void TestOrthoticsRx(){
 
     oc->setTopCoat(tc);
 
-    return;
+
     oc->processBoundary();
 
     oc->setPosting(forpost);
     oc->setPosting(rearpost);
-
+    return;
 }
