@@ -52,6 +52,7 @@ void OrthoticController::processBoundary(){
     FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
     FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().first(),orth_->getForePoints().last());
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,orth_->getForePoints().last());
+//    FAHVector3 planeVec = normFrom3Pts(minpt1,orth_->getForePoints().first(),orth_->getForePoints().last());
     qDebug()<<"\nplane vec";
     printPoint(planeVec);
 
