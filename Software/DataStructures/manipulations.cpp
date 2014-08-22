@@ -270,7 +270,12 @@ Posting nodeToPosting(QDomNode node){
 }
 
 
-
+Posting::Posting(){
+    angle=0;
+    verticle=0;
+    varus_valgus = Posting::kValgus;
+    for_rear = Posting::kForFoot;
+}
 
 
 FAHVector3 pointFromNode(QDomNode node){

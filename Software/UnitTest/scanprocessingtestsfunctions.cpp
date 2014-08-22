@@ -251,6 +251,6 @@ void TestOrthoticsRx(){
     oc->processBoundary();
 
     oc->setPosting(forpost);
-    oc->setPosting(rearpost);
+//    oc->setPosting(rearpost);
     return;
 }

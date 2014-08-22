@@ -9,6 +9,9 @@ Orthotic::Orthotic(QObject *parent) :
     filename_ = id_.toString()+QString(".ortho");
     scan_=new Scan();
     scanid_=scan_->getID();
+    forfoot_ = Posting();
+    rearfoot_=Posting();
+
 
 }
 
@@ -217,6 +220,13 @@ void Orthotic::setPosting(Posting p){
 void Orthotic::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector3 > forePts){
     healPts_=healPts;
     forePts_ = forePts;
+//    foreach(FAHVector3 pt,healPts){
+//        healPts_.append(FAHVector3(pt));
+//    }
+
+//    foreach(FAHVector3 pt,forePts){
+//        forePts_.append(FAHVector3(pt));
+//    }
 }
 
 QVector< FAHVector3 > Orthotic::getHealPoints(){return healPts_;}

@@ -606,11 +606,6 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
     // Construct triangles for top and bottom
 
 
-    QFile f("stlcompared.csv");
-    f.open(QFile::WriteOnly);
-    QTextStream fs(&f);
-
-
     for(int j=0;j<grid->ny()-1;j++){
         for(int i=0;i<grid->nx()-1;i++){
             /** calculated vOuterLoophe 4 points and determin case
@@ -663,7 +658,6 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
             //l4=onLoops(p4,OuterLoop,innerLoops);
             if(b4){numInBounds++;}
             //if(l4){numOnLoop++;}
-            if(!b1){grid->operator ()(i,j)=0;}
 //            printPoint(p4);
 //            if(numInBounds>1){
 //                qDebug()<<"\n\n"<<p4.x<<","<<p4.y<<":"<<numInBounds;
@@ -1013,8 +1007,6 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
     //    addLoopToSTL(innerLoops.at(i),grid,mesh,true);
     //}
 
-    fs<<grid->toCSV();
-    f.close();
     return mesh;
 }
 

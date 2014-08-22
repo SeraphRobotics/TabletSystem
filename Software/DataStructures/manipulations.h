@@ -58,7 +58,7 @@ Top_Coat topCoatFromNode(QDomNode node);
 struct Posting{
     enum side{kForFoot,kRearFoot};
     enum direction {kVargus,kValgus};
-
+    Posting();
     float angle; //angle
     direction varus_valgus;
     side for_rear;
