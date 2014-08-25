@@ -37,9 +37,10 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
     orth_->setBorderPoints(healPts,forePts);
     FAHLoopInXYPlane* loop = loopFromPoints(healPts,forePts);
     orth_->setBoundary(loop);
-    writeLoopToXDFL(loop,"LOOPINSETBORDER.XDFL");
+//    writeLoopToXDFL(loop,"LOOPINSETBORDER.XDFL");
     emit boundaryLoopUpdated(orth_->getLoop());
 //    emit borderGenerated(borderFromLoop(orth_->getLoop()));
+
 
 
 }
@@ -53,17 +54,17 @@ void OrthoticController::processBoundary(){
     minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(int(minpt3.x),int(minpt3.y));
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
 //    FAHVector3 planeVec = normFrom3Pts(minpt1,orth_->getForePoints().first(),orth_->getForePoints().last());
-    qDebug()<<"\nplane vec";
-    printPoint(planeVec);
+//    qDebug()<<"\nplane vec";
+//    printPoint(planeVec);
 
-    qDebug()<<"\nminpt1";
-    printPoint(minpt1);
+//    qDebug()<<"\nminpt1";
+//    printPoint(minpt1);
 
-    qDebug()<<"\nminpt2";
-    printPoint(minpt2);
+//    qDebug()<<"\nminpt2";
+//    printPoint(minpt2);
 
-    qDebug()<<"\nminpt3";
-    printPoint(minpt3);
+//    qDebug()<<"\nminpt3";
+//    printPoint(minpt3);
 
     FAHVector3 cent = orth_->getForePoints().first();
     FAHVector3 d(cent.x,cent.y,cent.z);
@@ -103,7 +104,7 @@ void OrthoticController::setPosting(Posting p){
     printPoint(planeAndCent[0]);
     orth_->getScan()->setPostedGrid(posted);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
-
+    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
     float slope = 63.5/101;
     float heightoffset =0;
     scaleAndOffset(orth_->getScan()->getPostedXYGrid(),slope,heightoffset);
@@ -128,12 +129,21 @@ void OrthoticController::makeSTLs(){
     outside->points.append(FAHVector3(1000,0,0));
     outside->points.append(FAHVector3(1000,1000,0));
     outside->points.append(FAHVector3(0,1000,0));
+
+
+    STLMesh* p = makeSTLfromScanSection(orth_->getScan()->getProcessedXYGrid(),
+                                         outside,
+                                         innerLoops3);
+    p->scale(2,1,1.0);
+    stlToFile(p,"prepost.stl");
+
+
     STLMesh* mp = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
                                          outside,
                                          innerLoops3);
 
     mp->scale(2,1,1.0);
-    stlToFile(mp,"fullt.stl");
+    stlToFile(mp,"full.stl");
 
     innerLoops3.append(orth_->getLoop());
     STLMesh* mn = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
@@ -154,6 +164,7 @@ void OrthoticController::makeSTLs(){
 
     toEmitList.append(v3d);
     emit stlsGenerated(toEmitList);
+//    writeLoopToXDFL(orth_->getLoop(),"FINALLOOP.XDFL");
 
 
 

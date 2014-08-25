@@ -46,7 +46,7 @@ FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVect
     //Add to loop by polar angle
     FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
     for(int i=0; i<numpts;i++){
-          loop->add( curve.at(i) );
+          loop->add( FAHVector3(curve.at(i)) );
 //        printPoint(curve[indecies.at(i)]);
     }
 
@@ -60,11 +60,15 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
     // M is the matrix of k*x^n, c is a vector of a,b,c,d,e,f
     // Y is a vector of y and dy
     QVector< FAHVector3 > returnpts;
+
     if(heal_pts.size()!=3){return returnpts;}
     int soln_order = 6;
     MatrixXf m(soln_order,soln_order);
+    m = MatrixXf::Zero(soln_order,soln_order);
     VectorXf y(soln_order);
+    y=VectorXf::Zero(soln_order);
     VectorXf c(soln_order);
+    c=VectorXf::Zero(soln_order);
 
     for(int i=0;i<heal_pts.size();i++){
         for(int j=0; j<soln_order;j++){
@@ -78,6 +82,8 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
     y[5] = 100.0;
 
 
+
+
     for(int k=0;k<soln_order;k++){
         m(3,k)+= k*pow(heal_pts.at(0).y,float(k));
         m(4,k)+= k*pow(heal_pts.at(1).y,float(k));
@@ -88,6 +94,7 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
 
     VectorXf xval(nTimes);
     VectorXf yval(nTimes);
+    yval = VectorXf::Zero(nTimes);
 
     float stepsize = (heal_pts.at(2).y-heal_pts.at(0).y)/nTimes;
     for(int i=0; i<nTimes; i++){
@@ -196,8 +203,12 @@ void projectGridOntoPlane(FAHVector3 n, FAHVector3 cent, XYGrid< float >* grid){
     ///Since we will compare to the XY plane, we need to multiple by -1 of a points above and 1 if z is bellow
     int signN=-1;
     if(norm[2]<0){signN=1;}
-    std::cout<<"\n"<<centv;
-    std::cout<<"\n"<<norm<<"\n";
+//    std::cout<<"\n"<<centv;
+//    std::cout<<"\n"<<norm<<"\n";
+
+
+//    float Dz=-1*(n.x*cent.x+n.y+cent.y*n.y+n.z*cent.z);
+
     float D=0;
     for(int i=0;i<grid->nx();i++){
         for(int j=0; j<grid->ny(); j++){
@@ -206,6 +217,8 @@ void projectGridOntoPlane(FAHVector3 n, FAHVector3 cent, XYGrid< float >* grid){
             r[2]=0;
             r=r-centv;
             D= signN*r.dot(norm);
+
+//            D = (Dz-n.x*i+n.y*j)/n.z;
             grid->operator ()(i,j)=grid->operator ()(i,j)-D;
             if(i==10 and j==10){qDebug()<<"D: "<<QString::number(D);}
         }
@@ -244,7 +257,7 @@ QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp
     }
 
     ///We find the smallest eigenvalue of m
-    std::cout<<m;
+//    std::cout<<m;
 
     EigenSolver<Matrix3f> es(m);
     std::complex<float> min (100000,0);
@@ -325,7 +338,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
             }
         }
     }
-    qDebug()<<"Min: "<<min;
+//    qDebug()<<"Min: "<<min;
     for(int i=0; i<grid->nx();i++){
         for(int j=0; j<grid->ny();j++){
             if(grid->at(i,j)<min){

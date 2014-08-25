@@ -31,7 +31,10 @@ XYGrid<T>::XYGrid():stepsize_(1.0),nx_(0),ny_(0)
 template <class T>
 XYGrid<T>::XYGrid(const XYGrid<T> *otherxygrid){
     stepsize_ = otherxygrid->stepsize_;
-    data_ = otherxygrid->data_;
+//    data_ = otherxygrid->data_;
+    for(int i=0;i<otherxygrid->data_.size();i++){
+        data_.append(otherxygrid->data_.at(i));
+    }
     nx_=otherxygrid->nx_;
     ny_=otherxygrid->ny_;
 }

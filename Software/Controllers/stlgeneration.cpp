@@ -462,10 +462,10 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid ){
 void addFacetWithNormal(FAHVector3 p1, FAHVector3 p2, FAHVector3 p3, STLMesh* mesh, bool zpositive){
     float thresh=0.01;
     if( p1.x<thresh || p2.x<thresh ||p3.x<thresh || p1.y<thresh || p2.y<thresh ||p3.y<thresh  ){
-        printf("\nERROR IN Pts");
-        printPoint(p1);
-        printPoint(p2);
-        printPoint(p3);
+//        printf("\nERROR IN Pts");
+//        printPoint(p1);
+//        printPoint(p2);
+//        printPoint(p3);
         return;
     }
 
@@ -489,10 +489,10 @@ void addFacetWithNormal(FAHVector3 p1, FAHVector3 p2, FAHVector3 p3, STLMesh* me
 void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* mesh, FAHVector3 direction){
     float thresh=0.01;
     if( p1.x<thresh || p2.x<thresh ||p3.x<thresh || p1.y<thresh || p2.y<thresh ||p3.y<thresh  ){
-        printf("\nERROR IN Pts");
-        printPoint(p1);
-        printPoint(p2);
-        printPoint(p3);
+//        printf("\nERROR IN Pts");
+//        printPoint(p1);
+//        printPoint(p2);
+//        printPoint(p3);
         return;
     }
 
@@ -511,10 +511,10 @@ void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* me
     if(!s1.normal.isInvalid()){
         mesh->AddFacet(s1);
     }else{
-        printf("\nERROR IN NORMAL\t used:%s",(used1?"1":"2"));
-        printPoint(p1);
-        printPoint(p2);
-        printPoint(p3);
+//        printf("\nERROR IN NORMAL\t used:%s",(used1?"1":"2"));
+//        printPoint(p1);
+//        printPoint(p2);
+//        printPoint(p3);
     }
 }
 
@@ -963,7 +963,7 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
 
                 }else{
 
-                    printf("\n found %i points",points.size());
+//                    printf("\n found %i points",points.size());
                     for(int k=0;k<allpoints.size()-1;k++){
                         direction.operator *=(-1);
                         addFacetWithDirection(allpoints[k],allpoints[k+1],allprimepoints[k],mesh,direction);
