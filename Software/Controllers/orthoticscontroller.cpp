@@ -69,6 +69,7 @@ void OrthoticController::processBoundary(){
     FAHVector3 cent = orth_->getForePoints().first();
     FAHVector3 d(cent.x,cent.y,cent.z);
     projectGridOntoPlane(planeVec.scale(1.0),d,orth_->getScan()->getProcessedXYGrid());
+    blurGrid(orth_->getScan()->getProcessedXYGrid(),6);
 //    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
     QFile f("processed.csv");
     f.open(QFile::WriteOnly);
@@ -101,7 +102,7 @@ void OrthoticController::setPosting(Posting p){
 
 
     projectGridOntoPlane(planeAndCent[0],planeAndCent[1], posted);
-    printPoint(planeAndCent[0]);
+//    printPoint(planeAndCent[0]j);
     orth_->getScan()->setPostedGrid(posted);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
     thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
@@ -145,12 +146,26 @@ void OrthoticController::makeSTLs(){
     mp->scale(2,1,1.0);
     stlToFile(mp,"full.stl");
 
+
+    mapOntoGrid(orth_->getLoop(),orth_->getScan()->getPostedXYGrid());
+    FAHLoopInXYPlane* angled = angledBase(20,1,orth_->getLoop());
+    writeLoopToXDFL(angled,"angled.xdfl");
+
+
+    STLMesh* angleMesh = STLFromSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),angled,innerLoops3);
+    angleMesh->scale(2,1,1);
+    stlToFile(angleMesh,"angled.stl");
+
+
     innerLoops3.append(orth_->getLoop());
     STLMesh* mn = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
                                          outside,
                                          innerLoops3);
     mn->scale(2,1,1.0);
     stlToFile(mn,"cutout.stl");
+
+
+
 
 
     STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),inners);

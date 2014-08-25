@@ -7,6 +7,81 @@
 #include <iostream>
 
 
+FAHLoopInXYPlane* angledBase(float theta, float threshold, FAHLoopInXYPlane* baseloop){
+    QVector<FAHVector3>points = baseloop->points;
+    QVector<FAHVector3>new_points;
+    new_points += points;
+
+    // Set displacements for the loop
+    for (int i = 0; i < points.size(); ++i) {
+
+      //Dont use loop less than threshold
+      if(points[i].z<threshold){
+          continue;
+      }
+      float amount = points[i].z*tan(Math::kPi/180*theta);
+
+      int before = i - 1;
+      if (before == -1) before = points.size() - 1;
+      int after = i + 1;
+      if (after == points.size()) after = 0;
+
+      FAHLine before_segment(points[before], points[i]);
+      FAHLine after_segment(points[i], points[after]);
+
+      FAHVector3 before_ray = before_segment.ray();
+      FAHVector3 after_ray  = after_segment.ray();
+
+      // form the perpendicular displacement vector
+      FAHVector3 before_displacement;
+      before_displacement.x =  before_ray.y;
+      before_displacement.y = -before_ray.x;
+      before_displacement.z = 0.0;
+      before_displacement.normalize();
+
+      FAHVector3 after_displacement;
+      after_displacement.x =  after_ray.y;
+      after_displacement.y = -after_ray.x;
+      after_displacement.z = 0.0;
+      after_displacement.normalize();
+
+      // sum the displacements and adjust the current vertex
+      FAHVector3 pt_displacement;
+      pt_displacement.set(before_displacement).add(after_displacement);
+      pt_displacement.normalize().scale(amount);
+      pt_displacement.z=0;
+      new_points[i].add(pt_displacement);
+    }
+    FAHLoopInXYPlane* returnloop = new FAHLoopInXYPlane();
+//    returnloop->points=new_points;
+    for(int i=0;i<new_points.size();i++){
+        new_points[i].z=0;
+        returnloop->points.append(new_points[i]);
+//        returnloop->points[i].z=0;
+    }
+    return returnloop;
+}
+
+
+STLMesh* STLFromSection(XYGrid<float>* grid,FAHLoopInXYPlane* OuterLoop, FAHLoopInXYPlane* angleLoop, QList<FAHLoopInXYPlane*> innerLoop){
+    STLMesh* mesh= new STLMesh();
+
+    kChannelType type;
+
+    for(int j=0;j<grid->ny()-1;j++){
+        for(int i=0;i<grid->nx()-1;i++){
+
+            addSquareToSTL(i,j,grid, mesh, OuterLoop, innerLoop,true);
+
+            addSquareToSTL(i,j,grid, mesh, angleLoop, innerLoop,false);
+        }
+    }
+    return mesh;
+}
+
+
+
+
 template <class T>
 void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
                     FAHLoopInXYPlane* OuterLoop,
@@ -44,6 +119,8 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
     p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSize());
     b4=loopsContain(p4,OuterLoop,innerLoops);
     if(b4){numInBounds++;}
+
+    if(numInBounds<1){return;}
 
     if(!top){// if its the bottom set all Z points to 0
         p1.z=0;

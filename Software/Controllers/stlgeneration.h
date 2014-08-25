@@ -27,6 +27,12 @@ template <class T>
 STLMesh* makeSTLfromScan(XYGrid<T>* grid );
 
 
+/**
+ * returns the loop translated proprotional to the height of the loop ds = z*tan(theta)
+ * theta is measured in degrees
+ * if z<threshold no translation
+ **/
+FAHLoopInXYPlane* angledBase(float theta, float threshold, FAHLoopInXYPlane *loop);
 
 
 
