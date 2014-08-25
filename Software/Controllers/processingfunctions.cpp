@@ -220,7 +220,7 @@ void projectGridOntoPlane(FAHVector3 n, FAHVector3 cent, XYGrid< float >* grid){
 
 //            D = (Dz-n.x*i+n.y*j)/n.z;
             grid->operator ()(i,j)=grid->operator ()(i,j)-D;
-            if(i==10 and j==10){qDebug()<<"D: "<<QString::number(D);}
+//            if(i==10 and j==10){qDebug()<<"D: "<<QString::number(D);}
         }
     }
 }
@@ -398,7 +398,6 @@ QImage makeHeightMap(XYGrid< float >* grid){
     float range = maximum-minimum;
     if(range<1){return img;}
 
-    return img;
     for(int i=0;i<grid->nx();i++){
         for(int j=0;j<grid->ny();j++){
             float dist = (grid->at(i,j)-minimum)/range;
