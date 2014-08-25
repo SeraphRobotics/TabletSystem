@@ -147,10 +147,8 @@ void OrthoticController::makeSTLs(){
     stlToFile(mp,"full.stl");
 
 
-    mapOntoGrid(orth_->getLoop(),orth_->getScan()->getPostedXYGrid());
-    FAHLoopInXYPlane* angled = angledBase(15,1,orth_->getLoop());
-    writeLoopToXDFL(angled,"angled.xdfl");
-    STLMesh* angleMesh = STLFromSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),angled,innerLoops3);
+
+    STLMesh* angleMesh = STLFromSection(orth_->getScan()->getPostedXYGrid(),35,1,8,orth_->getLoop(),innerLoops3);
     angleMesh->scale(2,1,1);
     stlToFile(angleMesh,"angled.stl");
 

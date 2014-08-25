@@ -218,12 +218,12 @@ void TestOrthoticsRx(){
 
 
     Posting forpost;
-    forpost.angle=10*M_PI/180.0;
+    forpost.angle=0*M_PI/180.0;
     forpost.verticle=0;
     forpost.varus_valgus=Posting::kVargus;
     forpost.for_rear=Posting::kForFoot;
     Posting rearpost;
-    rearpost.angle=10*M_PI/180.0;
+    rearpost.angle=0*M_PI/180.0;
     rearpost.verticle=0;
     rearpost.varus_valgus=Posting::kVargus;
     rearpost.for_rear=Posting::kRearFoot;
@@ -251,6 +251,6 @@ void TestOrthoticsRx(){
     oc->processBoundary();
 
     oc->setPosting(forpost);
-//    oc->setPosting(rearpost);
+    oc->setPosting(rearpost);
 
 }

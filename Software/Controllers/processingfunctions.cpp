@@ -46,7 +46,7 @@ FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVect
     //Add to loop by polar angle
     FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
     for(int i=0; i<numpts;i++){
-          loop->add( FAHVector3(curve.at(i)) );
+          loop->add( FAHVector3(thetamap[indecies.at(i)]) );
 //        printPoint(curve[indecies.at(i)]);
     }
 

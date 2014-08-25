@@ -32,11 +32,11 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid );
  * theta is measured in degrees
  * if z<threshold no translation
  **/
-FAHLoopInXYPlane* angledBase(float theta, float threshold, FAHLoopInXYPlane *loop);
+FAHLoopInXYPlane* angledBase(float theta, float min_threshold, float max_threshold, FAHLoopInXYPlane *loop);
 
 
 
-STLMesh* STLFromSection(XYGrid<float>* grid,  FAHLoopInXYPlane *OuterLoop, FAHLoopInXYPlane *angleLoop, QList<FAHLoopInXYPlane *> innerLoops);
+STLMesh* STLFromSection(XYGrid<float>* grid, float theta, float min_threshold, float max_threshold,  FAHLoopInXYPlane *OuterLoop, QList<FAHLoopInXYPlane *> innerLoops);
 /// STL Helper functions
 
 /**

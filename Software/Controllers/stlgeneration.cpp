@@ -7,20 +7,24 @@
 #include <iostream>
 
 
-FAHLoopInXYPlane* angledBase(float theta, float threshold, FAHLoopInXYPlane* baseloop){
+FAHLoopInXYPlane* angledBase(float theta, float min_threshold, float max_threshold, FAHLoopInXYPlane* baseloop){
     QVector<FAHVector3>points = baseloop->points;
     QVector<FAHVector3>new_points;
     new_points += points;
+
+    float amount=0;
 
     // Set displacements for the loop
     for (int i = 0; i < points.size(); ++i) {
 
       //Dont use loop less than threshold
-      if(points[i].z<threshold){
+      if(points[i].z<min_threshold){
           continue;
+      }else if(points[i].z>max_threshold){
+          amount = max_threshold*tan(Math::kPi/180*theta);
+      }else{
+          amount = points[i].z*tan(Math::kPi/180*theta);
       }
-      float amount = points[i].z*tan(Math::kPi/180*theta);
-
       int before = i - 1;
       if (before == -1) before = points.size() - 1;
       int after = i + 1;
@@ -48,7 +52,7 @@ FAHLoopInXYPlane* angledBase(float theta, float threshold, FAHLoopInXYPlane* bas
       // sum the displacements and adjust the current vertex
       FAHVector3 pt_displacement;
       pt_displacement.set(before_displacement).add(after_displacement);
-      pt_displacement.normalize().scale(amount);
+      pt_displacement.normalize().scale(-amount);
       pt_displacement.z=0;
       new_points[i].add(pt_displacement);
     }
@@ -59,23 +63,39 @@ FAHLoopInXYPlane* angledBase(float theta, float threshold, FAHLoopInXYPlane* bas
         returnloop->points.append(new_points[i]);
 //        returnloop->points[i].z=0;
     }
+//    sortLoop(returnloop);
+    QVector<FAHLoopInXYPlane> planes;
+    returnloop->simplifyAndExpand(0,&planes);
+    qDebug()<<"\nplanes:"<<planes.size();
     return returnloop;
 }
 
 
-STLMesh* STLFromSection(XYGrid<float>* grid,FAHLoopInXYPlane* OuterLoop, FAHLoopInXYPlane* angleLoop, QList<FAHLoopInXYPlane*> innerLoop){
+STLMesh* STLFromSection(XYGrid<float>* grid, float theta, float min_threshold, float max_threshold, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoop){
     STLMesh* mesh= new STLMesh();
 
     kChannelType type;
 
+    FAHLoopInXYPlane* borderWithHeight = mapOntoGrid(OuterLoop,grid);
+
+    FAHLoopInXYPlane* angleloop = angledBase(theta,min_threshold,max_threshold,borderWithHeight);
+
+    qDebug()<<borderWithHeight->points.size()<<","
+           <<angleloop->points.size()<<","
+           <<OuterLoop->points.size();
+    writeLoopToXDFL(angleloop,"angled.xdfl");
     for(int j=0;j<grid->ny()-1;j++){
         for(int i=0;i<grid->nx()-1;i++){
 
             addSquareToSTL(i,j,grid, mesh, OuterLoop, innerLoop,true);
 
-            addSquareToSTL(i,j,grid, mesh, angleLoop, innerLoop,false);
+            addSquareToSTL(i,j,grid, mesh, angleloop, innerLoop,false);
         }
     }
+
+    delete borderWithHeight;
+    delete angleloop;
+
     return mesh;
 }
 

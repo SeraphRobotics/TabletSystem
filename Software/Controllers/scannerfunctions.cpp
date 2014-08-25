@@ -4,21 +4,7 @@
 #include <QDomDocument>
 #include <math.h>
 #include "../libraries/shared/stl/stlfile.h"
-
-
-//bool onLoops(FAHVector3 pt, const FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops){
-//    bool onouter=false;
-//    bool oninner=false;
-//    foreach(FAHLoopInXYPlane* loop,innerLoops){
-//        oninner=loop->pointOnLoop(pt);
-//        if (oninner){
-//            return oninner;
-//        }
-//    }
-
-//    onouter = OuterLoop->pointOnLoop(pt);
-//    return onouter;
-//}
+#include "UnitTest/debugfunctions.h"
 
 bool loopsContain(FAHVector3 pt, const FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops){
     bool containedByOuter=true;
@@ -27,78 +13,8 @@ bool loopsContain(FAHVector3 pt, const FAHLoopInXYPlane* OuterLoop, QList<FAHLoo
         notContainedByInners = notContainedByInners && !loop->pointInside(pt);
     }
     containedByOuter = OuterLoop->pointInside(pt);
-//    qDebug()<<containedByOuter;
     return (containedByOuter&&notContainedByInners);
 }
-
-//void printPoint(FAHVector3 pt){
-//    printf("\n\t%.2f\t%.2f\t%.2f",pt.x,pt.y,pt.z);
-//}
-
-//void writeLoopToXDFL(const FAHLoopInXYPlane& loop, QString file){
-//     QDomDocument document;
-//     QDomElement root = document.createElement("xdfl");
-//     document.appendChild(root);
-
-//     /// ADD palette
-//     QDomElement palette = document.createElement("palette");
-//     root.appendChild(palette);
-//     QDomElement name = document.createElement("name");
-//     name.appendChild(document.createTextNode("test"));
-//     palette.appendChild(name);
-//     QDomElement id = document.createElement("id");
-//     id.appendChild(document.createTextNode("1"));
-//     palette.appendChild(id);
-
-//     QDomElement cmds = document.createElement("commands");
-//     QDomElement path = document.createElement("path");
-//     QDomElement matId = document.createElement("materialid");
-//     matId.appendChild(document.createTextNode("1"));
-//     path.appendChild(matId);
-//     for(int i=0;i<loop.points.size();i++){
-//         FAHVector3 pt = loop.points.at(i);
-
-//         QDomElement point = document.createElement("point");
-//         QDomElement xEl = document.createElement("x");
-//         xEl.appendChild(document.createTextNode(QString::number(pt.x)));
-//         QDomElement yEl = document.createElement("y");
-//         yEl.appendChild(document.createTextNode(QString::number(pt.y)));
-//         QDomElement zEl = document.createElement("z");
-//         zEl.appendChild(document.createTextNode(QString::number(pt.z)));
-
-//         point.appendChild(xEl);
-//         point.appendChild(yEl);
-//         point.appendChild(zEl);
-//         path.appendChild(point);
-
-//     }
-//     FAHVector3 pt = loop.points.at(0);
-
-//     QDomElement point = document.createElement("point");
-//     QDomElement xEl = document.createElement("x");
-//     xEl.appendChild(document.createTextNode(QString::number(pt.x)));
-//     QDomElement yEl = document.createElement("y");
-//     yEl.appendChild(document.createTextNode(QString::number(pt.y)));
-//     QDomElement zEl = document.createElement("z");
-//     zEl.appendChild(document.createTextNode(QString::number(pt.z)));
-
-//     point.appendChild(xEl);
-//     point.appendChild(yEl);
-//     point.appendChild(zEl);
-//     path.appendChild(point);
-//     cmds.appendChild(path);
-//     root.appendChild(cmds);
-
-
-
-//     QFile f(file);
-//     if (f.open(QFile::WriteOnly)) {
-//         QTextStream out(&f);
-//         out<<document.toString();
-//         f.close();
-//     }
-
-//}
 
 void removePointsIfInList(QVector<FAHVector3>* vector,QVector<FAHVector3>* newvector, QList<FAHVector3> points){
     QVector<FAHVector3> copy(vector->size());
@@ -357,49 +273,6 @@ float getHeightAt(float x, float y, FAHVector3 p1, FAHVector3 p2, FAHVector3 p3,
 }
 
 
-/**
-    // Need to make 5 point average of the border
-    QMap<int, QVector<float> > refinedBorder;
-
-    int reach=2;
-    for(int j=0; j<grid->ny();j++){
-
-        QVector<int> temp;
-        QVector<float> border(2,0);
-        QVector<int> tempBorder(2,0);
-        QVector<int> totalNum(2,0);
-        QVector<float> sum(2,0.0);
-
-        tempBorder = bordermap[j];
-
-        if((j<reach) || (j>(grid->ny()-1-reach)) ){
-            border[0]=tempBorder[0]*grid->stepSize();
-            border[1]=tempBorder[1]*grid->stepSize();
-
-        }else{
-            for(int l=0;l<2;l++){
-                for(int k = -reach;k<reach;k++){// Average over last and next number of reach points
-                    temp=bordermap[j+k];
-                    if( !((temp[l]==0)||(temp[l]==grid->nx())) ){
-                        totalNum[l]++;
-                        sum[l]=sum[l]+temp[l]*grid->stepSize();
-                    }
-                }
-                if (totalNum[l]>0){
-                    border[l]=sum[l]/totalNum[l];
-                }else{
-                    border[l]=tempBorder[l];
-                }
-            }
-        }
-        refinedBorder[j]=border;
-    }
-    //// New 5 point average for x coordinate of border.
-**/
-
-
-
-
 FAHLoopInXYPlane smoothLoop(FAHLoopInXYPlane* loop, int times, float ylimit){
     FAHLoopInXYPlane newloop(loop);
     int size = loop->points.size();
@@ -525,7 +398,8 @@ FAHLoopInXYPlane boundaryLoopFromGrid(XYGrid<float>* grid, int offsetFromBorder,
 
 }
 
-BoundaryMap boundaryGridDetection(XYGrid<float>* grid){
+BoundaryMap boundaryGridDetection(XYGrid<float>* grid)
+{
     /// FIND BORDERS
     QMap<int,QVector<int> > bordermap;
     float max;
@@ -575,17 +449,76 @@ BoundaryMap boundaryGridDetection(XYGrid<float>* grid){
     return bordermap;
 }
 
+void sortLoop(FAHLoopInXYPlane* loop)
+{
+    QVector< FAHVector3 > curve = loop->points;
+    ///// SORT POINTS
+    int numpts = curve.size();
+    //find center
+    FAHVector3 cent(0,0,0);
+    for (int i=0;i<numpts;i++){
+        cent.x=cent.x+curve.at(i).x;
+        cent.y=cent.y+curve.at(i).y;
+//        printPoint(curve.at(i));
+    }
+    cent.x=cent.x/numpts;
+    cent.y=cent.y/numpts;
 
+    QMap<float,FAHVector3> thetamap;
+    for(int i=0;i<numpts;i++){
+        float theta = atan2( (curve.at(i).y-cent.y), (curve.at(i).x - cent.x) );
+        thetamap[theta] = curve[i];
+    }
 
-void mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid){
-    for(int i=0;i<loop->points.size();i++){
-        float z = getHeightAt(loop->points[i].x,loop->points[i].y,grid);
-        loop->points[i].z=z;
+    //Sort by polar angle
+    QList<float> indecies = thetamap.keys();
+    qSort(indecies);
+
+    //Add to loop by polar angle
+
+    for(int i=0; i<numpts;i++){
+        loop->points[i] = FAHVector3(thetamap[indecies.at(i)]) ;
+//        printPoint(thetamap[indecies.at(i)]);
     }
 }
 
+FAHLoopInXYPlane *mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid){
 
-QVector<FAHVector3> sortByIndex(QVector<FAHVector3> vec, int index, bool reverse){
+    QVector< FAHVector3 > curve;
+    /////get heights of points
+    for(int i=0;i<loop->points.size();i++){
+        float z = getHeightAt(loop->points[i].x,loop->points[i].y,grid);
+        curve.append(FAHVector3(loop->points[i].x,loop->points[i].y,z));
+    }
+
+
+    //// FIND INTERSECTIONS WITH X lines
+    FAHVector3 dim = grid->getDimensions();
+    for(int i=0;i<grid->nx()-1;i++){
+        FAHVector3 p1(i,0,0);
+        FAHVector3 p2(i,dim[1],0);
+
+        FAHLine l12(p1,p2);
+        QList<FAHLine> lines;
+        lines.append(l12);
+        QList<FAHLoopInXYPlane*> innerLoops;
+        QVector<FAHVector3> intersected = intersection_points(lines,loop,innerLoops);
+        foreach(FAHVector3 pt,intersected){
+            pt.z = getHeightAt(pt.x,pt.y,grid);
+            curve.append(pt);
+        }
+    }
+    FAHLoopInXYPlane* newloop = new FAHLoopInXYPlane();
+    newloop->points=curve;
+    sortLoop(newloop);
+
+
+    return newloop;
+}
+
+
+QVector<FAHVector3> sortByIndex(QVector<FAHVector3> vec, int index, bool reverse)
+{
     QMap<float,FAHVector3> map;
     for(int i=0; i<vec.size();i++){
         if(index==0){map[vec.at(i).x] = vec.at(i);}
