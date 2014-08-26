@@ -132,19 +132,19 @@ void OrthoticController::makeSTLs(){
     outside->points.append(FAHVector3(0,1000,0));
 
 
-    STLMesh* p = makeSTLfromScanSection(orth_->getScan()->getProcessedXYGrid(),
-                                         outside,
-                                         innerLoops3);
-    p->scale(2,1,1.0);
-    stlToFile(p,"prepost.stl");
+//    STLMesh* p = makeSTLfromScanSection(orth_->getScan()->getProcessedXYGrid(),
+//                                         outside,
+//                                         innerLoops3);
+//    p->scale(2,1,1.0);
+//    stlToFile(p,"prepost.stl");
 
 
-    STLMesh* mp = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
-                                         outside,
-                                         innerLoops3);
+//    STLMesh* mp = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
+//                                         outside,
+//                                         innerLoops3);
 
-    mp->scale(2,1,1.0);
-    stlToFile(mp,"full.stl");
+//    mp->scale(2,1,1.0);
+//    stlToFile(mp,"full.stl");
 
 
     FAHLoopInXYPlane* bottomloop = bottomLoopFromPoints(orth_->getHealPoints(),orth_->getForePoints());
@@ -153,28 +153,28 @@ void OrthoticController::makeSTLs(){
     stlToFile(angleMesh,"angled.stl");
 
 
-    innerLoops3.append(orth_->getLoop());
-    STLMesh* mn = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
-                                         outside,
-                                         innerLoops3);
-    mn->scale(2,1,1.0);
-    stlToFile(mn,"cutout.stl");
+//    innerLoops3.append(orth_->getLoop());
+//    STLMesh* mn = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
+//                                         outside,
+//                                         innerLoops3);
+//    mn->scale(2,1,1.0);
+//    stlToFile(mn,"cutout.stl");
 
 
 
 
 
-    STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),inners);
-    m->scale(2,1,1.0);
-    stlToFile(m,"original.stl");
-    QList<View_3D_Item> toEmitList;
-    View_3D_Item v3d;
+//    STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),inners);
+//    m->scale(2,1,1.0);
+//    stlToFile(m,"original.stl");
+//    QList<View_3D_Item> toEmitList;
+//    View_3D_Item v3d;
 
-    v3d.mesh = m;
-    v3d.color = QColor(Qt::gray);
+//    v3d.mesh = m;
+//    v3d.color = QColor(Qt::gray);
 
-    toEmitList.append(v3d);
-    emit stlsGenerated(toEmitList);
+//    toEmitList.append(v3d);
+//    emit stlsGenerated(toEmitList);
 //    writeLoopToXDFL(orth_->getLoop(),"FINALLOOP.XDFL");
 
 

@@ -515,7 +515,7 @@ FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid,bool w
         foreach(FAHVector3 pt,intersected){
             if(withheights){pt.z = getHeightAt(pt.x,pt.y,grid);
             }else{pt.z=0;}
-            curve.append(pt);
+            if(!pt.isInvalid()){curve.append(pt);}
         }
     }
     FAHLoopInXYPlane* newloop = new FAHLoopInXYPlane();
