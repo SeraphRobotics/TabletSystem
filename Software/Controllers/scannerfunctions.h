@@ -39,7 +39,7 @@ FAHLoopInXYPlane smoothLoop(FAHLoopInXYPlane *loop, int times, float ylimit);
 /**
  * Maps the Z value of the loop onto the grid
  **/
-FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid);
+FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid, bool withheights=true);
 
 
 void sortLoop(FAHLoopInXYPlane* loop);

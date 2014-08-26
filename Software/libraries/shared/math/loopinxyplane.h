@@ -140,7 +140,7 @@ public:
   /**
    *returns true if given segment intersects with boundary, returns point of intersection
    **/
-  bool intersect(const Line& segment,Vector3* result) const;
+  bool intersect(const Line& segment, QVector<Vector3> *result) const;
 
   /**
    * Creates a new set of zero or more loops that are displaced by 'amount' from this

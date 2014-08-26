@@ -95,22 +95,29 @@ QVector<FAHVector3> intersection_points(QList<FAHLine> lines, const FAHLoopInXYP
     QVector<FAHVector3> points;
     
     foreach(FAHLine line,lines){
-        FAHVector3 pt;
-        outerloop->intersect(line,&pt);
-        if(!pt.isInvalid()){
+        QVector<FAHVector3> pts;
+        outerloop->intersect(line,&pts);
+//        if(!pts.isInvalid()){
 //            pt.z = ptOnLine(line, pt);
 //            qDebug()<<"z: "<<pt.z;
+//            points.append(pt.copy());
+
+        foreach(FAHVector3 pt, pts){
             points.append(pt.copy());
+//            printPoint(pt);
         }
     }
     
     for(int k=0;k<loops.size();k++){
         FAHLoopInXYPlane* loop = loops.at(k);
         foreach(FAHLine line,lines){
-            FAHVector3 pt;
-            loop->intersect(line,&pt);
-            if(!pt.isInvalid()){
-//                pt.z = ptOnLine(line, pt);
+//            FAHVector3 pt;
+            QVector<FAHVector3> pts;
+            loop->intersect(line,&pts);
+//            if(!pt.isInvalid()){
+////                pt.z = ptOnLine(line, pt);
+//                points.append(pt.copy());
+            foreach(FAHVector3 pt, pts){
                 points.append(pt.copy());
             }
         }
@@ -152,11 +159,11 @@ bool getPointsInGrid(int i, int j, float stepsize, FAHLoopInXYPlane *outerloop ,
 
 
     foreach(FAHLine line,lines){
-        FAHVector3 pt;
-        outerloop->intersect(line,&pt);
-        if(!pt.isInvalid()){
+        QVector<FAHVector3> pts;
+        outerloop->intersect(line,&pts);
+        if(pts.size()>0){
             pointsFromOuterLoop = true;
-            edgepoints.append(pt.copy());
+            edgepoints.append(pts[0].copy());
             if(!inloop){
                 inloop=true;
                 numLoops++;
@@ -171,11 +178,11 @@ bool getPointsInGrid(int i, int j, float stepsize, FAHLoopInXYPlane *outerloop ,
         inloop= false;
         FAHLoopInXYPlane* loop = innerLoops.at(k);
         foreach(FAHLine line,lines){
-            FAHVector3 pt;
-            loop->intersect(line,&pt);
-            if(!pt.isInvalid()){
+            QVector<FAHVector3> pts;
+            loop->intersect(line,&pts);
+            if(pts.size()>0 ){
                 pointsFromOuterLoop = false;
-                edgepoints.append(pt.copy());
+                edgepoints.append(pts[0].copy());
                 if(!inloop){
                     inloop=true;
                     numLoops++;
@@ -482,12 +489,14 @@ void sortLoop(FAHLoopInXYPlane* loop)
     }
 }
 
-FAHLoopInXYPlane *mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid){
+FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid,bool withheights){
 
     QVector< FAHVector3 > curve;
     /////get heights of points
+
     for(int i=0;i<loop->points.size();i++){
-        float z = getHeightAt(loop->points[i].x,loop->points[i].y,grid);
+        float z =0;
+        if (withheights){z=getHeightAt(loop->points[i].x,loop->points[i].y,grid);}
         curve.append(FAHVector3(loop->points[i].x,loop->points[i].y,z));
     }
 
@@ -504,7 +513,8 @@ FAHLoopInXYPlane *mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid){
         QList<FAHLoopInXYPlane*> innerLoops;
         QVector<FAHVector3> intersected = intersection_points(lines,loop,innerLoops);
         foreach(FAHVector3 pt,intersected){
-            pt.z = getHeightAt(pt.x,pt.y,grid);
+            if(withheights){pt.z = getHeightAt(pt.x,pt.y,grid);
+            }else{pt.z=0;}
             curve.append(pt);
         }
     }

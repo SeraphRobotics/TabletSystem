@@ -63,6 +63,12 @@ template <class T>
 void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<T>* grid,STLMesh* mesh,bool inner );
 
 
+template <class T>
+void addBetweenTwoLoopsToSTL(XYGrid<T>* grid,STLMesh* mesh,
+                    FAHLoopInXYPlane* OuterLoop,
+                    FAHLoopInXYPlane* innerLoops);
+
+
 /**
  * Adds a facet with the points listed as the corners with either a normal facing up (true) or down (false)
  **/

@@ -77,9 +77,16 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopIn
 //    kChannelType type;
 
     FAHLoopInXYPlane* borderWithHeight = mapOntoGrid(OuterLoop,grid);
+    FAHLoopInXYPlane* angleloop = mapOntoGrid(angled,grid,false);
+
+    qDebug()<<"mapped:"<<borderWithHeight->points.size();
+    qDebug()<<"unmapped:"<<OuterLoop->points.size();
+    qDebug()<<"bottom:"<<angled->points.size();
+    qDebug()<<"bottom mapped"<<angleloop->points.size();
 
 
-    writeLoopToXDFL(angled,"angled.xdfl");
+
+    writeLoopToXDFL(angleloop,"angled.xdfl");
     for(int j=0;j<grid->ny()-1;j++){
         for(int i=0;i<grid->nx()-1;i++){
 
@@ -89,8 +96,10 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopIn
         }
     }
 
+    addBetweenTwoLoopsToSTL(grid,mesh,borderWithHeight,angleloop);
+
     delete borderWithHeight;
-//    delete angleloop;
+    delete angleloop;
 
     return mesh;
 }
@@ -628,6 +637,53 @@ void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* me
     }
 }
 
+template <class T>
+void addBetweenTwoLoopsToSTL(XYGrid<T>* grid,STLMesh* mesh,
+                    FAHLoopInXYPlane* OuterLoop,
+                    FAHLoopInXYPlane* innerLoops)
+{
+
+    for(int i=0;i<OuterLoop->points.size();i++){
+        FAHVector3 outpt = OuterLoop->points.at(i);
+        FAHVector3 nextoutpt = OuterLoop->points.at( (i+1)%OuterLoop->points.size());
+        float min_d=10000;
+        FAHVector3 min_pt(1000,1000,0);
+        FAHVector3 next_minpt;
+        for(int j=0;j<innerLoops->points.size();j++){
+            float d = fabs(innerLoops->points.at(j).x-outpt.x)+
+                      fabs(innerLoops->points.at(j).y-outpt.y)+
+                      fabs(innerLoops->points.at(j).x-nextoutpt.x)+
+                      fabs(innerLoops->points.at(j).y-nextoutpt.y);
+            if(d<min_d){
+                min_d = d;
+                min_pt = innerLoops->points.at(j);
+                next_minpt = innerLoops->points.at( (j-1)%innerLoops->points.size() );
+            }
+        }
+        addFacetWithDirection(outpt,nextoutpt,min_pt,mesh,FAHVector3(0,0,-1));
+        addFacetWithDirection(outpt,min_pt,next_minpt,mesh,FAHVector3(0,0,-1));
+    }
+
+//    for(int i=0; i<innerLoops->points.size();i++){
+//        FAHVector3 inpt = innerLoops->points.at(i);
+//        FAHVector3 next_inpt = innerLoops->points.at( (i+1)%innerLoops->points.size() );
+//        float min_d=10000;
+//        FAHVector3 min_pt(1000,1000,0);
+//        for(int j=0;j<OuterLoop->points.size();j++){
+//            float d = fabs(OuterLoop->points.at(j).x-inpt.x)+
+//                      fabs(OuterLoop->points.at(j).y-inpt.y)+
+//                      fabs(OuterLoop->points.at(j).x-next_inpt.x)+
+//                      fabs(OuterLoop->points.at(j).y-next_inpt.y);
+//            if(d<min_d){
+//                min_d = d;
+//                min_pt = OuterLoop->points.at(j);
+//            }
+//        }
+//        addFacetWithDirection(inpt,next_inpt,min_pt,mesh,FAHVector3(0,0,-1));
+//    }
+
+}
+
 
 template <class T>
 void addLoopToSTL(const FAHLoopInXYPlane& loop, XYGrid<T>* grid, STLMesh* mesh , bool inner){
@@ -1150,3 +1206,5 @@ template STLMesh* makeSTLfromScanSection(XYGrid<float>* grid, FAHLoopInXYPlane* 
 template STLMesh* makeSTLfromScanSection(XYGrid<int>* grid, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops);
 template void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<float>* grid,STLMesh* mesh, bool inner );
 template void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<int>* grid,STLMesh* mesh, bool inner );
+template void addBetweenTwoLoopsToSTL(XYGrid<int>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, FAHLoopInXYPlane* innerLoops);
+template void addBetweenTwoLoopsToSTL(XYGrid<float>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, FAHLoopInXYPlane* innerLoops);
