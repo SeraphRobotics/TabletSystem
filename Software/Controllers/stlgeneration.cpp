@@ -71,30 +71,26 @@ FAHLoopInXYPlane* angledBase(float theta, float min_threshold, float max_thresho
 }
 
 
-STLMesh* STLFromSection(XYGrid<float>* grid, float theta, float min_threshold, float max_threshold, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoop){
+STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoop){
     STLMesh* mesh= new STLMesh();
 
-    kChannelType type;
+//    kChannelType type;
 
     FAHLoopInXYPlane* borderWithHeight = mapOntoGrid(OuterLoop,grid);
 
-    FAHLoopInXYPlane* angleloop = angledBase(theta,min_threshold,max_threshold,borderWithHeight);
 
-    qDebug()<<borderWithHeight->points.size()<<","
-           <<angleloop->points.size()<<","
-           <<OuterLoop->points.size();
-    writeLoopToXDFL(angleloop,"angled.xdfl");
+    writeLoopToXDFL(angled,"angled.xdfl");
     for(int j=0;j<grid->ny()-1;j++){
         for(int i=0;i<grid->nx()-1;i++){
 
             addSquareToSTL(i,j,grid, mesh, OuterLoop, innerLoop,true);
 
-            addSquareToSTL(i,j,grid, mesh, angleloop, innerLoop,false);
+            addSquareToSTL(i,j,grid, mesh, angled, innerLoop,false);
         }
     }
 
     delete borderWithHeight;
-    delete angleloop;
+//    delete angleloop;
 
     return mesh;
 }

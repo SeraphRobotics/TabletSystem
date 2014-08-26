@@ -36,7 +36,7 @@ FAHLoopInXYPlane* angledBase(float theta, float min_threshold, float max_thresho
 
 
 
-STLMesh* STLFromSection(XYGrid<float>* grid, float theta, float min_threshold, float max_threshold,  FAHLoopInXYPlane *OuterLoop, QList<FAHLoopInXYPlane *> innerLoops);
+STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane *angled,  FAHLoopInXYPlane *OuterLoop, QList<FAHLoopInXYPlane *> innerLoops);
 /// STL Helper functions
 
 /**

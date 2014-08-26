@@ -19,6 +19,8 @@
 FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts);
 
 
+FAHLoopInXYPlane* bottomLoopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts);
+
 /**
  * @brief secondOrder make a list of points for the heal
  * @param heal_pts

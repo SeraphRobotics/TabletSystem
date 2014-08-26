@@ -7,6 +7,7 @@
 #include "UnitTest/debugfunctions.h"
 #include <Eigen/Eigenvalues>
 #include <iostream>
+#include "scannerfunctions.h"
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
@@ -17,6 +18,53 @@ using Eigen::Matrix3f;
 using Eigen::EigenSolver;
 //using Eigen::EigenvalueType;
 
+
+FAHLoopInXYPlane* bottomLoopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts){
+    QVector< FAHVector3 > healpts2;
+
+    QVector<FAHVector3> masterpts;
+    masterpts.append(healpts.first());
+    masterpts.append(healpts.last());
+    masterpts.append(forepts.first());
+    masterpts.append(forepts.last());
+
+    FAHVector3 cent(0,0,0);
+    foreach(FAHVector3 pt, masterpts){
+        cent.x=cent.x+pt.x;
+        cent.y=cent.y+pt.y;
+    }
+    cent.x=cent.x/masterpts.size();
+    cent.y=cent.y/masterpts.size();
+
+
+    foreach(FAHVector3 pt, healpts){
+        FAHVector3 pt2 = cent-pt;
+        pt2.normalize();
+        pt=pt+pt2*5.0;
+        healpts2.append(pt);
+    }
+
+    QVector< FAHVector3 > curve;
+
+    QVector<FAHVector3> pts;
+    pts.append(forepts.first());
+    pts.append(forepts.last());
+    foreach(FAHVector3 pt,pts){
+        FAHVector3 pt2 = cent-pt;
+        pt2.normalize();
+        pt=pt+pt2*10.0;
+        curve.append(pt);
+    }
+
+
+    curve += secondOrder(healpts2, 50);
+    curve += bezier_curve(forepts,50);
+    FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
+    loop->points=curve;
+    sortLoop(loop);
+    return loop;
+
+}
 
 FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts){
     QVector< FAHVector3 > curve = secondOrder(healpts, 50);
