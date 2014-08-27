@@ -59,9 +59,10 @@ void OrthoticController::processBoundary(){
     projectGridOntoPlane(planeVec.scale(1.0),d,orth_->getScan()->getProcessedXYGrid());
     //blurGrid(orth_->getScan()->getProcessedXYGrid(),6);
 //    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
+    anchorFront(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints());
     normalizeBorder(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),75);
-    blurInLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),10);
-//    blurGrid(orth_->getScan()->getProcessedXYGrid(),10);
+    blurInLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),7);
+//    blurGrid(orth_->getScan()->getProcessedXYGrid(),1);
 
 
     QFile f("processed.csv");
@@ -95,10 +96,10 @@ void OrthoticController::setPosting(Posting p){
 
 
     projectGridOntoPlane(planeAndCent[0],planeAndCent[1], posted);
-//    printPoint(planeAndCent[0]j);
+
     orth_->getScan()->setPostedGrid(posted);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
-    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
+
     float slope = 63.5/101;
     float heightoffset =0;
     scaleAndOffset(orth_->getScan()->getPostedXYGrid(),slope,heightoffset);
@@ -109,7 +110,7 @@ void OrthoticController::setPosting(Posting p){
     fs<<orth_->getScan()->getPostedXYGrid()->toCSV();
     f.close();
     makeSTLs();
-    qDebug()<<"Done";
+    qDebug()<<"STLs made";
 
 }
 

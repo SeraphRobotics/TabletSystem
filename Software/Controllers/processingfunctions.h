@@ -92,7 +92,7 @@ FAHVector3 normFrom3Pts(FAHVector3 p1, FAHVector3 p2,FAHVector3 p3);
  */
 void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane *loop);
 
-
+void anchorFront(XYGrid<float>* grid,QVector<FAHVector3>forepts);
 
 void normalizeBorder(XYGrid<float>* grid, FAHLoopInXYPlane* borderloop, int times);
 

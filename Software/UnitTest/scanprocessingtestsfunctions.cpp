@@ -216,12 +216,12 @@ void TestOrthoticsRx(){
     healPts.append(FAHVector3(26.0+offset,103.0,0));
 
     Posting forpost;
-    forpost.angle=0*M_PI/180.0;
+    forpost.angle=10*M_PI/180.0;
     forpost.verticle=0;
     forpost.varus_valgus=Posting::kValgus;
     forpost.for_rear=Posting::kForFoot;
     Posting rearpost;
-    rearpost.angle=0*M_PI/180.0;
+    rearpost.angle=10*M_PI/180.0;
     rearpost.verticle=0;
     rearpost.varus_valgus=Posting::kValgus;
     rearpost.for_rear=Posting::kRearFoot;

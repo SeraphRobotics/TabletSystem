@@ -446,6 +446,27 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     }
 }
 
+void anchorFront(XYGrid<float>* grid,QVector<FAHVector3>forepts){
+    QVector<FAHVector3> pts = bezier_curve(forepts,500);
+    float minz = 1000;
+    foreach(FAHVector3 pt,pts){
+        int i = int(pt.x);
+        int j = int(pt.y);
+        minz = std::min(grid->at(i,j),minz);
+    }
+
+    int bordersize=2;
+    foreach(FAHVector3 pt,pts){
+        int i = int(pt.x);
+        int j = int(pt.y);
+        for(int p=-bordersize;p<bordersize;p++){
+            grid->operator ()(i+p,j)=minz;
+            grid->operator ()(i,j+p)=minz;
+            grid->operator ()(i+p,j+p)=minz;
+        }
+    }
+}
+
 void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     FAHLoopInXYPlane* mapped = mapOntoGrid(borderloop,grid);
 
@@ -487,15 +508,20 @@ void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times
     }
 
     int size =  pts.size();
+    int bordersize = 2;
     for(int k=0; k<size-1; k++){
         FAHVector3 pt =  pts.at(k) ;
         int i = int(pt.x);
         int j = int(pt.y);
-        grid->operator ()(i,j)=pt.z;
-        grid->operator ()(i+1,j)=pt.z;
-        grid->operator ()(i-1,j)=pt.z;
-        grid->operator ()(i,j+1)=pt.z;
-        grid->operator ()(i,j-1)=pt.z;
+        for(int p=-bordersize;p<bordersize;p++){
+            grid->operator ()(i+p,j)=pt.z;
+            grid->operator ()(i,j+p)=pt.z;
+//            grid->operator ()(i+p,j+p)=pt.z;
+        }
+//        grid->operator ()(i+1,j)=pt.z;
+//        grid->operator ()(i-1,j)=pt.z;
+//        grid->operator ()(i,j+1)=pt.z;
+//        grid->operator ()(i,j-1)=pt.z;
     }
     delete mapped;
 
