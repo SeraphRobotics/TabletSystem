@@ -400,6 +400,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
 }
 
 
+
 void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     QList<FAHLoopInXYPlane*> innerLoops;
     for(int n=0;n<times;n++){
@@ -413,24 +414,39 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
 
                 QVector<FAHVector3> pts;
 
-                p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSize());
-                b1=loopsContain(p1,borderloop,innerLoops);
-                if(b1){pts.append(p1);}
-
-                p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSize());
-                b2=loopsContain(p2,borderloop,innerLoops);
-                if(b2){pts.append(p2);}
-
                 pcent = vectorFromIJ(i,j,copy.at(i,j),copy.stepSize());
                 bp = loopsContain(pcent,borderloop,innerLoops);
 
+                p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSize());
+                b1=loopsContain(p1,borderloop,innerLoops);
+                if(b1){pts.append(p1);
+                }else{
+                    p1.z=pcent.z;
+                    pts.append(p1);
+                }
+
+                p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSize());
+                b2=loopsContain(p2,borderloop,innerLoops);
+                if(b2){pts.append(p2);}else{
+                    p2.z=pcent.z;
+                    pts.append(p2);
+                }
+
+
+
                 p3=vectorFromIJ(i,j+1,copy.at(i,j-1),copy.stepSize());
                 b3=loopsContain(p3,borderloop,innerLoops);
-                if(b3){pts.append(p3);}
+                if(b3){pts.append(p3);}else{
+                    p3.z=pcent.z;
+                    pts.append(p3);
+                }
 
                 p4=vectorFromIJ(i+1,j+1,copy.at(i,j+1),copy.stepSize());
                 b4=loopsContain(p4,borderloop,innerLoops);
-                if(b4){pts.append(p4);}
+                if(b4){pts.append(p4);}else{
+                    p4.z=pcent.z;
+                    pts.append(p4);
+                }
 
                 if (pts.size()>0){
                     float z = 0;
@@ -455,7 +471,7 @@ void anchorFront(XYGrid<float>* grid,QVector<FAHVector3>forepts){
         minz = std::min(grid->at(i,j),minz);
     }
 
-    int bordersize=2;
+    int bordersize=3;
     foreach(FAHVector3 pt,pts){
         int i = int(pt.x);
         int j = int(pt.y);
@@ -466,6 +482,68 @@ void anchorFront(XYGrid<float>* grid,QVector<FAHVector3>forepts){
         }
     }
 }
+
+void blurByBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
+    FAHLoopInXYPlane* mapped = mapOntoGrid(borderloop,grid);
+    QList<FAHLoopInXYPlane*> innerLoops;
+    QVector<FAHVector3> pts;
+    foreach(FAHVector3 pt,mapped->points){
+        if(!pt.isInvalid()){pts.append(pt);}
+    }
+
+    int size =  pts.size();
+    int bordersize = 2;
+    for(int n=0; n<times;n++){
+        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSize());
+        for(int k=0; k<size-1; k++){
+            FAHVector3 pt =  pts.at(k) ;
+
+            for(int p=-bordersize;p<bordersize;p++){
+                for(int n=-bordersize;n<bordersize;n++)
+                {
+                    int i = int(pt.x)+p;
+                    int j = int(pt.y)+n;
+
+
+                    FAHVector3 p1,p2,p3,p4,pcent;
+                    bool b1=true,b2=true,b3=true,b4=true,bp=true;
+
+                    QVector<FAHVector3> pts;
+
+                    p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSize());
+                    b1=loopsContain(p1,borderloop,innerLoops);
+                    if(b1){pts.append(p1);}
+
+                    p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSize());
+                    b2=loopsContain(p2,borderloop,innerLoops);
+                    if(b2){pts.append(p2);}
+
+                    pcent = vectorFromIJ(i,j,copy.at(i,j),copy.stepSize());
+                    bp = loopsContain(pcent,borderloop,innerLoops);
+
+                    p3=vectorFromIJ(i,j+1,copy.at(i,j-1),copy.stepSize());
+                    b3=loopsContain(p3,borderloop,innerLoops);
+                    if(b3){pts.append(p3);}
+
+                    p4=vectorFromIJ(i+1,j+1,copy.at(i,j+1),copy.stepSize());
+                    b4=loopsContain(p4,borderloop,innerLoops);
+                    if(b4){pts.append(p4);}
+
+                    if (pts.size()>0){
+                        float z = 0;
+                        foreach(FAHVector3 pt,pts){
+                            z+=pt.z;
+                        }
+                        z= z/pts.size();
+                        grid->operator ()(i,j)=z;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 
 void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     FAHLoopInXYPlane* mapped = mapOntoGrid(borderloop,grid);

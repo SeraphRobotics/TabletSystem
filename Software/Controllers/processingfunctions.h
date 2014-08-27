@@ -94,6 +94,8 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane *loop);
 
 void anchorFront(XYGrid<float>* grid,QVector<FAHVector3>forepts);
 
+void blurByBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times);
+
 void normalizeBorder(XYGrid<float>* grid, FAHLoopInXYPlane* borderloop, int times);
 
 void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times);

@@ -59,9 +59,9 @@ void OrthoticController::processBoundary(){
     projectGridOntoPlane(planeVec.scale(1.0),d,orth_->getScan()->getProcessedXYGrid());
     //blurGrid(orth_->getScan()->getProcessedXYGrid(),6);
 //    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
-    anchorFront(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints());
-    normalizeBorder(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),75);
-    blurInLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),7);
+//    anchorFront(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints());
+//    normalizeBorder(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),75);
+//    blurInLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),7);
 //    blurGrid(orth_->getScan()->getProcessedXYGrid(),1);
 
 
@@ -98,6 +98,13 @@ void OrthoticController::setPosting(Posting p){
     projectGridOntoPlane(planeAndCent[0],planeAndCent[1], posted);
 
     orth_->getScan()->setPostedGrid(posted);
+
+    anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
+    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),75);
+//    blurByBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),10);
+//    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),15);
+    blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),10);
+//    blurGrid(orth_->getScan()->getPostedXYGrid(),1);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
 
     float slope = 63.5/101;
