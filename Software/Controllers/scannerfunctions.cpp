@@ -458,7 +458,8 @@ BoundaryMap boundaryGridDetection(XYGrid<float>* grid)
 
 void sortLoop(FAHLoopInXYPlane* loop)
 {
-    QVector< FAHVector3 > curve = loop->points;
+    QVector< FAHVector3 > curve =loop->points;
+
     ///// SORT POINTS
     int numpts = curve.size();
     //find center
@@ -473,7 +474,7 @@ void sortLoop(FAHLoopInXYPlane* loop)
 
     QMap<float,FAHVector3> thetamap;
     for(int i=0;i<numpts;i++){
-        float theta = atan2( (curve.at(i).y-cent.y), (curve.at(i).x - cent.x) );
+        float theta = M_PI + atan2( (curve.at(i).y-cent.y), (curve.at(i).x - cent.x) );
         thetamap[theta] = curve[i];
     }
 
@@ -482,10 +483,10 @@ void sortLoop(FAHLoopInXYPlane* loop)
     qSort(indecies);
 
     //Add to loop by polar angle
-
+    loop->points.clear();
     for(int i=0; i<numpts;i++){
-        loop->points[i] = FAHVector3(thetamap[indecies.at(i)]) ;
-//        printPoint(thetamap[indecies.at(i)]);
+        FAHVector3 pt = FAHVector3(thetamap[indecies.at(i)]) ;
+        if(!pt.isInvalid()){loop->points.append( pt) ;}
     }
 }
 
@@ -521,7 +522,6 @@ FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid,bool w
     FAHLoopInXYPlane* newloop = new FAHLoopInXYPlane();
     newloop->points=curve;
     sortLoop(newloop);
-
 
     return newloop;
 }

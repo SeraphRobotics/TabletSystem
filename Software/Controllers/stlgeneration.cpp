@@ -79,14 +79,14 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopIn
     FAHLoopInXYPlane* borderWithHeight = mapOntoGrid(OuterLoop,grid);
     FAHLoopInXYPlane* angleloop = mapOntoGrid(angled,grid,false);
 
-    qDebug()<<"mapped:"<<borderWithHeight->points.size();
-    qDebug()<<"unmapped:"<<OuterLoop->points.size();
-    qDebug()<<"bottom:"<<angled->points.size();
-    qDebug()<<"bottom mapped"<<angleloop->points.size();
+//    qDebug()<<"mapped:"<<borderWithHeight->points.size();
+//    qDebug()<<"unmapped:"<<OuterLoop->points.size();
+//    qDebug()<<"bottom:"<<angled->points.size();
+//    qDebug()<<"bottom mapped"<<angleloop->points.size();
 
 
 
-    writeLoopToXDFL(angleloop,"angled.xdfl");
+//    writeLoopToXDFL(angleloop,"angled.xdfl");
     for(int j=0;j<grid->ny()-1;j++){
         for(int i=0;i<grid->nx()-1;i++){
 
@@ -96,7 +96,7 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopIn
         }
     }
 
-    addBetweenTwoLoopsToSTL(grid,mesh,borderWithHeight,angleloop);
+    addBetweenTwoLoopsToSTL(mesh,borderWithHeight,angleloop);
 
     delete borderWithHeight;
     delete angleloop;
@@ -637,8 +637,8 @@ void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* me
     }
 }
 
-template <class T>
-void addBetweenTwoLoopsToSTL(XYGrid<T>* grid,STLMesh* mesh,
+
+void addBetweenTwoLoopsToSTL(STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
                     FAHLoopInXYPlane* innerLoops)
 {
@@ -710,7 +710,7 @@ void addBetweenTwoLoopsToSTL(XYGrid<T>* grid,STLMesh* mesh,
             innerLoops->points.pop_back();
             p2= innerLoops->points.last();
             n++;
-            qDebug()<<"n:"<<n;
+//            qDebug()<<"n:"<<n;
         }
         n=0;
         FAHVector3 outpt = pts.last();
@@ -1257,5 +1257,3 @@ template STLMesh* makeSTLfromScanSection(XYGrid<float>* grid, FAHLoopInXYPlane* 
 template STLMesh* makeSTLfromScanSection(XYGrid<int>* grid, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops);
 template void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<float>* grid,STLMesh* mesh, bool inner );
 template void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<int>* grid,STLMesh* mesh, bool inner );
-template void addBetweenTwoLoopsToSTL(XYGrid<int>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, FAHLoopInXYPlane* innerLoops);
-template void addBetweenTwoLoopsToSTL(XYGrid<float>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, FAHLoopInXYPlane* innerLoops);

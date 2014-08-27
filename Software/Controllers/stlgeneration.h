@@ -63,8 +63,8 @@ template <class T>
 void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<T>* grid,STLMesh* mesh,bool inner );
 
 
-template <class T>
-void addBetweenTwoLoopsToSTL(XYGrid<T>* grid,STLMesh* mesh,
+
+void addBetweenTwoLoopsToSTL(STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
                     FAHLoopInXYPlane* innerLoops);
 

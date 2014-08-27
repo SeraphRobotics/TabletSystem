@@ -53,24 +53,17 @@ void OrthoticController::processBoundary(){
     FAHVector3 minpt3 = orth_->getForePoints().first();
     minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(int(minpt3.x),int(minpt3.y));
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
-//    FAHVector3 planeVec = normFrom3Pts(minpt1,orth_->getForePoints().first(),orth_->getForePoints().last());
-//    qDebug()<<"\nplane vec";
-//    printPoint(planeVec);
-
-//    qDebug()<<"\nminpt1";
-//    printPoint(minpt1);
-
-//    qDebug()<<"\nminpt2";
-//    printPoint(minpt2);
-
-//    qDebug()<<"\nminpt3";
-//    printPoint(minpt3);
 
     FAHVector3 cent = orth_->getForePoints().first();
     FAHVector3 d(cent.x,cent.y,cent.z);
     projectGridOntoPlane(planeVec.scale(1.0),d,orth_->getScan()->getProcessedXYGrid());
-    blurGrid(orth_->getScan()->getProcessedXYGrid(),6);
+    //blurGrid(orth_->getScan()->getProcessedXYGrid(),6);
 //    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
+    normalizeBorder(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),75);
+    blurInLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),10);
+//    blurGrid(orth_->getScan()->getProcessedXYGrid(),10);
+
+
     QFile f("processed.csv");
     f.open(QFile::WriteOnly);
     QTextStream fs(&f);
@@ -116,6 +109,7 @@ void OrthoticController::setPosting(Posting p){
     fs<<orth_->getScan()->getPostedXYGrid()->toCSV();
     f.close();
     makeSTLs();
+    qDebug()<<"Done";
 
 }
 
@@ -167,14 +161,14 @@ void OrthoticController::makeSTLs(){
 //    STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),inners);
 //    m->scale(2,1,1.0);
 //    stlToFile(m,"original.stl");
-//    QList<View_3D_Item> toEmitList;
-//    View_3D_Item v3d;
+    QList<View_3D_Item> toEmitList;
+    View_3D_Item v3d;
 
-//    v3d.mesh = m;
-//    v3d.color = QColor(Qt::gray);
+    v3d.mesh = angleMesh;
+    v3d.color = QColor(Qt::gray);
 
-//    toEmitList.append(v3d);
-//    emit stlsGenerated(toEmitList);
+    toEmitList.append(v3d);
+    emit stlsGenerated(toEmitList);
 //    writeLoopToXDFL(orth_->getLoop(),"FINALLOOP.XDFL");
 
 

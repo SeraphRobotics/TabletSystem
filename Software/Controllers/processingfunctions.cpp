@@ -400,6 +400,107 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
 }
 
 
+void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
+    QList<FAHLoopInXYPlane*> innerLoops;
+    for(int n=0;n<times;n++){
+        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSize());
+
+        for(int j=1;j<grid->ny()-1;j++){
+            for(int i=1;i<grid->nx()-1;i++){
+
+                FAHVector3 p1,p2,p3,p4,pcent;
+                bool b1=true,b2=true,b3=true,b4=true,bp=true;
+
+                QVector<FAHVector3> pts;
+
+                p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSize());
+                b1=loopsContain(p1,borderloop,innerLoops);
+                if(b1){pts.append(p1);}
+
+                p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSize());
+                b2=loopsContain(p2,borderloop,innerLoops);
+                if(b2){pts.append(p2);}
+
+                pcent = vectorFromIJ(i,j,copy.at(i,j),copy.stepSize());
+                bp = loopsContain(pcent,borderloop,innerLoops);
+
+                p3=vectorFromIJ(i,j+1,copy.at(i,j-1),copy.stepSize());
+                b3=loopsContain(p3,borderloop,innerLoops);
+                if(b3){pts.append(p3);}
+
+                p4=vectorFromIJ(i+1,j+1,copy.at(i,j+1),copy.stepSize());
+                b4=loopsContain(p4,borderloop,innerLoops);
+                if(b4){pts.append(p4);}
+
+                if (pts.size()>0){
+                    float z = 0;
+                    foreach(FAHVector3 pt,pts){
+                        z+=pt.z;
+                    }
+                    z= z/pts.size();
+//                    (p1.z+p2.z+p3.z+p4.z)/4.0;
+                    grid->operator ()(i,j)=z;
+                }
+            }
+        }
+    }
+}
+
+void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
+    FAHLoopInXYPlane* mapped = mapOntoGrid(borderloop,grid);
+
+//    writeLoopToXDFL(mapped,"mapped.xdfl");
+
+    QVector<FAHVector3> pts;
+
+    foreach(FAHVector3 pt,mapped->points){
+        if(!pt.isInvalid()){pts.append(pt);}
+    }
+
+    for(int n=0; n<times;n++){
+        QVector<FAHVector3> newpts;
+        int size = pts.size();//mapped->points.size();
+        for(int i=0; i<size; i++){
+            float z1 = pts.at( i%size ).z;
+            float z2 = pts.at( (i+1)%size ).z;
+            float z3 = pts.at( (i-1)%size ).z;
+            if(i==0){
+                z3=pts.last().z;
+            }
+
+//            if(i==size-1){
+//                z1=0;//pts.last().z;
+//                z2=0;//pts.first().z;
+//                z3=0;//pts.at( (size-2) ).z;
+//            }
+
+            float z = (z1+z2+z3)/3.0;
+//            if (z1==0 || z2==0 ||z3==0 || (i==size-1 ) ){//|| z>1.1*z3 || z>1.1*z1
+//                qDebug()<<i<<": "<<z1<<","<<z2<<","<<z3;
+//            }
+            FAHVector3 pt =  pts[(i%size)] ;
+            pt.z=z;
+            newpts.append(pt);
+        }
+        pts.clear();
+        pts=newpts;
+    }
+
+    int size =  pts.size();
+    for(int k=0; k<size-1; k++){
+        FAHVector3 pt =  pts.at(k) ;
+        int i = int(pt.x);
+        int j = int(pt.y);
+        grid->operator ()(i,j)=pt.z;
+        grid->operator ()(i+1,j)=pt.z;
+        grid->operator ()(i-1,j)=pt.z;
+        grid->operator ()(i,j+1)=pt.z;
+        grid->operator ()(i,j-1)=pt.z;
+    }
+    delete mapped;
+
+}
+
 QVector< FAHVector3> transformPointsWithPosting(FAHVector3 p1,FAHVector3 p2,Posting p){
     p2.z=0;
     p1.z=0;

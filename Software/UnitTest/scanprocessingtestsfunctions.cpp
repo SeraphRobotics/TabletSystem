@@ -210,22 +210,20 @@ void TestOrthoticsRx(){
     forePts.append(FAHVector3(115.0+offset,125.0,0));
     forePts.append(FAHVector3(85.0+offset,130.0,0));
 
-
     QVector< FAHVector3 > healPts;
     healPts.append(FAHVector3(35.0+offset,50.0,0));
     healPts.append(FAHVector3(19.0+offset,70.0,0));
     healPts.append(FAHVector3(26.0+offset,103.0,0));
 
-
     Posting forpost;
     forpost.angle=0*M_PI/180.0;
     forpost.verticle=0;
-    forpost.varus_valgus=Posting::kVargus;
+    forpost.varus_valgus=Posting::kValgus;
     forpost.for_rear=Posting::kForFoot;
     Posting rearpost;
     rearpost.angle=0*M_PI/180.0;
     rearpost.verticle=0;
-    rearpost.varus_valgus=Posting::kVargus;
+    rearpost.varus_valgus=Posting::kValgus;
     rearpost.for_rear=Posting::kRearFoot;
 
     Top_Coat tc;
@@ -246,7 +244,6 @@ void TestOrthoticsRx(){
     oc->setBorderPoints(healPts, forePts);
 
     oc->setTopCoat(tc);
-
 
     oc->processBoundary();
 
