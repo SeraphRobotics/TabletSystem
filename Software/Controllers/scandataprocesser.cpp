@@ -53,8 +53,8 @@ void  ScanDataProcesser::processScan(QString folder){
 
 void ScanDataProcesser::processImage(QString file){
 
-    float x = QString(file).replace(".JPEG","").toFloat();//file.split(".")[0].toFloat();
-
+    float x = QString(file).toLower().replace(".jpeg","").toFloat();//file.split(".")[0].toFloat();
+//    qDebug()<<"x: "<<x<<"File: "<<file;
 
 
     ScanProcessing* worker = new ScanProcessing(x,dir_.absoluteFilePath(file));

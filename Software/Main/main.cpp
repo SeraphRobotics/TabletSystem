@@ -39,7 +39,9 @@ int main(int argc, char *argv[])
 
 //    TestmakeHeightMap();
 
-    TestOrthoticsRx();
+//    TestOrthoticsRx();
+
+    USBToScanProcessingTest();
 
     return a.exec();
 }

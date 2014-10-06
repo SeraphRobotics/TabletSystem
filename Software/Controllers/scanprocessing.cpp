@@ -160,6 +160,7 @@ void ScanProcessing::process(){
             }
             metOne = false;
         }
+//        qDebug()<<x_<<": "<<row;
         emit processed(x_,row);
 //        image_.save(QString::number(x_)+QString(".JPEG"));
         emit finished();
