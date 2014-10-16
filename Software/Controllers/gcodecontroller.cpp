@@ -11,14 +11,16 @@ GcodeController::GcodeController(QObject *parent) :
     dir_ = QDir(appdir);
 }
 
-void GcodeController::addSTLMeshINIPair(STLMesh* mesh, QString inifile, bool isValved){
-    QString name = dir_.absolutePath()+dir_.separator()+QString::number(pairs.size())+".stl";
-    STLFile stlfile;
-    stlfile.SetMesh(mesh);
-    stlfile.WriteASCII(name);
+void GcodeController::addSTLMeshINIPair(QString stlfile, QString inifile, bool isValved){
+    QString name = stlfile; //dir_.absolutePath()+"/"+
+//    STLFile stlfile;
+//    stlfile.SetMesh(stlfile);
+//    stlfile.WriteASCII(name);
     meshpair pair;
     pair.stlfilename=name;
-    pair.inifilename = inifile;
+//    pair.stlfilename = pair.stlfilename.replace("/","\\");
+    pair.inifilename =inifile;// dir_.absolutePath()+"/"+inifile;
+//    pair.inifilename = pair.inifilename.replace("/","\\");
     pair.isValved = isValved;
     pairs.append(pair);
 
@@ -30,12 +32,19 @@ void GcodeController::generateGcode(){
     //for each pair, generate a gcode file using the command  slicer+" \""+p.stlfilename+"\""+"--load \""+p.inifilename+"\""+" --output \""+gcodename+"\"";
     QStringList gcodes;
     foreach(meshpair p,pairs){
-        QString gcodename = p.stlfilename.remove(".stl")+".gcode";
+        QString gcodename = QString(p.stlfilename).remove(".stl")+".gcode";
         gcodes.append(gcodename);
         QStringList args;
-        args << p.stlfilename << "--load " << p.inifilename << "--output " << gcodename;
+        args << p.stlfilename << "--load" << p.inifilename << "--output" << gcodename;
         QProcess* slicing = new QProcess(this);
+        qDebug()<< slicer;
+        qDebug()<< args;
         slicing->start(slicer,args);
+        QString cmd=slicer ;
+        foreach(QString s,args){
+            cmd+=" "+s;
+        }
+        qDebug()<<"command:\n"<<cmd;
         if (!slicing->waitForStarted()){
             qDebug()<<"failed to start "<<slicer<<" for "<<p.stlfilename;
             emit processingFailed();
@@ -46,8 +55,7 @@ void GcodeController::generateGcode(){
             emit processingFailed();
             return;
         }
-        qDebug()<<slicing->readAll();
-
+//        qDebug()<<slicing->readAll();
 
         if(p.isValved){
             QProcess* makevalved = new QProcess(this);
@@ -65,9 +73,10 @@ void GcodeController::generateGcode(){
                 emit processingFailed();
                 return;
             }
-            qDebug()<<makevalved->readAll();
+//            qDebug()<<makevalved->readAll();
         }
     }
+
 
     // Merge files
     QString mergecommand = settings.value("printing/merge-python-script","merge.py").toString();
@@ -83,7 +92,7 @@ void GcodeController::generateGcode(){
         emit processingFailed();
         return;
     }
-    qDebug()<<merger->readAll();
+//    qDebug()<<merger->readAll();
 
     QString outputname = settings.value("printing/output-name","merged.gcode").toString();
     QFile gcodefile(dir_.absolutePath()+dir_.separator()+outputname);

@@ -26,7 +26,7 @@ signals:
     void gcodeGenerated(QString gcode);
 
 public slots:
-    void addSTLMeshINIPair(STLMesh* mesh,QString inifile,bool isValved);
+    void addSTLMeshINIPair(QString stlfile,QString inifile,bool isValved);
     void generateGcode();
     void setSlicer(QString slicer);
     void setDir(QString dir);

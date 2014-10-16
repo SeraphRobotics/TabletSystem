@@ -14,8 +14,7 @@ void TestGCodeSystem(){
 
     GcodeController gc;
     QStringList stlfiles;
-    stlfiles<<"TestCube.stl";
-//    stlfiles<<"Ball.stl";
+    stlfiles<<"Ball.stl";
     stlfiles<<"box.stl";
 
     QStringList inis;
@@ -24,19 +23,12 @@ void TestGCodeSystem(){
 
     qDebug()<<"RUNNING";
     for(int i=0; i<stlfiles.size(); i++){
-        STLFile f;
-        QString filepath = QDir::toNativeSeparators(QDir::currentPath())+QDir::separator()+stlfiles.at(i);
-        filepath.replace("\\","\\\\");
+        QString filepath = stlfiles.at(i);
         qDebug()<<"STL: "<<filepath;
-
-        f.read(filepath);
-        qDebug()<<"read ";
-        return;
-        qDebug()<<"with size:"<<f.GetMesh()->GetFacets().size();
-        STLMesh* m = new STLMesh(f.GetMesh());
-        qDebug()<<"Loaded file";
-        gc.addSTLMeshINIPair(m,inis.at(i),false);
+        gc.addSTLMeshINIPair(filepath,inis.at(i),false);
     }
+    qDebug()<<"ready to generate";
     gc.generateGcode();
+    qDebug()<<"generated";
 
 }
