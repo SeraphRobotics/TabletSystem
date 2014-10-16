@@ -51,7 +51,7 @@
 #include <QPixmap>
 #include <QImageReader>
 #include <QRgb>
-
+#include <QDebug>
 /**
   Detects the STL type at path and creates a mesh from the STL file.
   @param path  The path and filename to an STL file.
@@ -64,7 +64,9 @@ bool STLFile::read(QString path) {
   QFile stl(path);
 
   if (!stl.open(QFile::ReadOnly)) {
-    std::cout << "Could not open file." << std::endl;
+//    std::cout << "Could not open file." << std::endl;
+    qDebug()<<"could not open file: "<< path;
+    return false;
   }
   QDataStream stream(&stl);
   QString line;
@@ -72,6 +74,7 @@ bool STLFile::read(QString path) {
   if (stream.atEnd()) {
     // error
     std::cout << "There was an error reading the specified STL file.";
+    qDebug()<< "There was an error reading the specified STL file.";
     return false;
   }
 
@@ -86,7 +89,6 @@ bool STLFile::read(QString path) {
 
   stl.close();
   is_binary_file = !line.contains("endsolid", Qt::CaseInsensitive);
-
   return is_binary_file ? readBinary(path) : readASCII(path);
 }
 
@@ -174,6 +176,7 @@ bool STLFile::readASCII(QString path) {
     }
 
     // Add facet to the list.
+    qDebug()<<"norm: "<<facet.normal.x <<","<<facet.normal.y<<","<<facet.normal.z;;
     mesh_->AddFacet(facet);
   }
 
@@ -565,7 +568,7 @@ bool STLFile::ReadBMP(QString path) {
   return true;
 }
 
-const STLMesh *STLFile::GetMesh() {
+ STLMesh *STLFile::GetMesh() {
   return mesh_;
 }
 

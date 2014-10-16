@@ -76,7 +76,7 @@ public:
   /**
    * Gets the mesh of this STL file
    */
-  const STLMesh* GetMesh();
+  STLMesh *GetMesh();
 
   void SetMesh(STLMesh* mesh);
 

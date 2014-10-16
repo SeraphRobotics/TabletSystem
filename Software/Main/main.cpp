@@ -13,6 +13,7 @@
 
 #include "UnitTest/scansystemtester.h"
 #include "Controllers/processingfunctions.h"
+#include "UnitTest/gcodetests.h"
 
 int main(int argc, char *argv[])
 {
@@ -39,7 +40,10 @@ int main(int argc, char *argv[])
 
 //    TestmakeHeightMap();
 
-    TestOrthoticsRx();
+//    TestOrthoticsRx();
+
+    TestGCodeSystem();
+
 
     return a.exec();
 }

@@ -51,7 +51,7 @@ void GcodeController::generateGcode(){
 
         if(p.isValved){
             QProcess* makevalved = new QProcess(this);
-            QString to_valve_gcode = settings.value("printing/valving-python-script","toValve.py");
+            QString to_valve_gcode = settings.value("printing/valving-python-script","toValve.py").toString();
             QStringList valve_args;
             valve_args << gcodename;
             makevalved->start(to_valve_gcode,valve_args);
@@ -70,7 +70,7 @@ void GcodeController::generateGcode(){
     }
 
     // Merge files
-    QString mergecommand = settings.value("printing/merge-python-script","merge.py");;
+    QString mergecommand = settings.value("printing/merge-python-script","merge.py").toString();
     QProcess* merger = new QProcess(this);
     merger->start(mergecommand,gcodes);
     if (!merger->waitForStarted()){
@@ -85,7 +85,7 @@ void GcodeController::generateGcode(){
     }
     qDebug()<<merger->readAll();
 
-    QString outputname = settings.value("printing/output-name","merged.gcode");
+    QString outputname = settings.value("printing/output-name","merged.gcode").toString();
     QFile gcodefile(dir_.absolutePath()+dir_.separator()+outputname);
     if(!gcodefile.open(QIODevice::ReadOnly)){
         emit processingFailed();
@@ -95,16 +95,17 @@ void GcodeController::generateGcode(){
     QString gcode = QString(gcodefile.readAll());
     emit processingComplete();
     emit gcodeGenerated(gcode);
+    qDebug()<<gcode;
 
 }
 
 void GcodeController::setSlicer(QString slicer){
     QSettings settings;
-    settings.setvalue("printing/slicer",slicer);
+    settings.setValue("printing/slicer",slicer);
 }
 
 void GcodeController::setDir(QString dir){
     QSettings settings;
-    settings.setvalue("printing/dir",dir);
+    settings.setValue("printing/dir",dir);
     dir_ = QDir(dir);
 }
