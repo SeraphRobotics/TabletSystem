@@ -32,19 +32,21 @@ void GcodeController::generateGcode(){
     //for each pair, generate a gcode file using the command  slicer+" \""+p.stlfilename+"\""+"--load \""+p.inifilename+"\""+" --output \""+gcodename+"\"";
     QStringList gcodes;
     foreach(meshpair p,pairs){
-        QString gcodename = QString(p.stlfilename).remove(".stl")+".gcode";
-        gcodes.append(gcodename);
+        QString output = QString(p.stlfilename).remove(".stl")+".gcode";
+        QString gcodename;
+        if(p.isValved){
+            gcodes.append(QString(p.stlfilename).remove(".stl")+"extrude.gcode"); //the toValve sciprt will export a file ending in extrude.gcode
+        }else{
+            gcodes.append(output);
+        }
+
         QStringList args;
-        args << p.stlfilename << "--load" << p.inifilename << "--output" << gcodename;
+        args << p.stlfilename << "--load" << p.inifilename << "--output" << output;
         QProcess* slicing = new QProcess(this);
         qDebug()<< slicer;
         qDebug()<< args;
         slicing->start(slicer,args);
-        QString cmd=slicer ;
-        foreach(QString s,args){
-            cmd+=" "+s;
-        }
-        qDebug()<<"command:\n"<<cmd;
+
         if (!slicing->waitForStarted()){
             qDebug()<<"failed to start "<<slicer<<" for "<<p.stlfilename;
             emit processingFailed();
@@ -56,11 +58,13 @@ void GcodeController::generateGcode(){
             return;
         }
 //        qDebug()<<slicing->readAll();
+        slicing->close();
 
-        if(p.isValved){
+        if(p.isValved){ //if a valve tool, convert to valve tool gcode
             QProcess* makevalved = new QProcess(this);
-            QString to_valve_gcode = settings.value("printing/valving-python-script","toValve.py").toString();
+            QString to_valve_gcode = "python";
             QStringList valve_args;
+            valve_args << settings.value("printing/valving-python-script","toValve.py").toString();
             valve_args << gcodename;
             makevalved->start(to_valve_gcode,valve_args);
             if (!makevalved->waitForStarted()){
@@ -79,23 +83,27 @@ void GcodeController::generateGcode(){
 
 
     // Merge files
-    QString mergecommand = settings.value("printing/merge-python-script","merge.py").toString();
+    QString mergecommand = "python";
     QProcess* merger = new QProcess(this);
-    merger->start(mergecommand,gcodes);
+    QStringList merge_args;
+    merge_args<<settings.value("printing/merge-python-script","merge.py").toString();
+    merge_args<<gcodes;
+    merger->start(mergecommand,merge_args);
     if (!merger->waitForStarted()){
-        qDebug()<<"failed to start "<<mergecommand<<" with "<<gcodes;
+        qDebug()<<"failed to start "<<mergecommand<<" with "<<merge_args;
         emit processingFailed();
         return;
     }
     if (!merger->waitForFinished()){
-        qDebug()<<"failed to finish "<<mergecommand<<" with "<<gcodes;
+        qDebug()<<"failed to finish "<<mergecommand<<" with "<<merge_args;
         emit processingFailed();
         return;
     }
 //    qDebug()<<merger->readAll();
 
     QString outputname = settings.value("printing/output-name","merged.gcode").toString();
-    QFile gcodefile(dir_.absolutePath()+dir_.separator()+outputname);
+    //dir_.absolutePath()+dir_.separator()+
+    QFile gcodefile(outputname);
     if(!gcodefile.open(QIODevice::ReadOnly)){
         emit processingFailed();
         qDebug()<<"could not read gcode from "<<gcodefile.fileName();
