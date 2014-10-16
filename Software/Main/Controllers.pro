@@ -7,11 +7,13 @@ SOURCES += ../Controllers/scanprocessing.cpp \
     ../Controllers/processingfunctions.cpp \
     ../Controllers/orthoticscontroller.cpp \
     ../Controllers/stlgeneration.cpp\
-    ../Controllers/scannerfunctions.cpp
+    ../Controllers/scannerfunctions.cpp \
+    ../Controllers/gcodecontroller.cpp
 
 HEADERS += ../Controllers/scanprocessing.h \
     ../Controllers/scandataprocesser.h \
     ../Controllers/processingfunctions.h \
     ../Controllers/orthoticscontroller.h \
     ../Controllers/stlgeneration.h \
-    ../Controllers/scannerfunctions.h
+    ../Controllers/scannerfunctions.h \
+    ../Controllers/gcodecontroller.h
