@@ -6,7 +6,7 @@
 
 void TestGCodeSystem(){
     QSettings s;
-    s.setValue("printing/dir",QFileInfo(s.fileName()).absolutePath());
+    s.setValue("printing/dir",QFileInfo(s.fileName()).absolutePath());//QDir::currentPath());//
     s.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r\\Slic3r-console.exe");
     s.setValue("printing/valving-python-script","toValve.py");
     s.setValue("printing/merge-python-script","merge.py");

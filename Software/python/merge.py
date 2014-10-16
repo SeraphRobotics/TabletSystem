@@ -80,15 +80,19 @@ def merge(infiles, outfile, verbose=False):
     
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        sys.exit('usage: test.py <filename> <filename> [--verbose]')
-    i=1;
+    if len(sys.argv) < 3:
+        sys.exit('usage: test.py <output file name> <input file names> [--verbose]')
+    
+    outfilename = sys.argv[1] 
+    print outfilename;
+    
+    i=2;
     infiles=[]
-    for i in range(1,len(sys.argv) ):
+    for i in range(2,len(sys.argv) ):
         if(sys.argv[i] != '--verbose'):
             infiles.append( open(sys.argv[i]) )
             print "opened ",sys.argv[i] 
-    outfilename = "merged.gcode"
+    
     with open(outfilename, 'w') as outfile:
         merge(infiles, outfile, '--verbose' in sys.argv)
             
