@@ -36,8 +36,8 @@ ScanSystemTester::ScanSystemTester(QObject *parent) :
     usbdata.close();
 
     QDomElement usbdataEl = d.documentElement();
-    if(!("usbdata" == usbdataEl.nodeName().toLower())){
-        qDebug()<<"NO DATA IN FILE";
+    if(!("scandata" == usbdataEl.nodeName().toLower())){
+        qDebug()<<"NO DATA IN"<<filename;
         return;
     }
 
