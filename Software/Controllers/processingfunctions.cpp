@@ -351,9 +351,9 @@ FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
     for(int i=0; i<numpts;i++){
         float t = 1.0/numpts*i;
         testp = p+t*v;
-        int i = floor(testp.x);
+        int xi = floor(testp.x);
         int j = floor(testp.y);
-        testp.z=grid->operator ()(i,j);
+        testp.z=grid->operator ()(xi,j);
         if (lastz!=testp.z){
 //            printPoint(testp);
             lastz = testp.z;
