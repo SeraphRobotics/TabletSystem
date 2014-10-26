@@ -29,6 +29,8 @@ signals:
      * @param s
      */
     void scanProcessed(Scan* s);
+
+    void scannerNotCalibrated();
     
 public slots:
 
@@ -42,7 +44,6 @@ public slots:
 
     void calibrateWithScan(QString folder);
 
-    void scannerNotCalibrated();
 
 private slots:
 

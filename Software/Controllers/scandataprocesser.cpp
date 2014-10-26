@@ -33,7 +33,7 @@ void ScanDataProcesser::processScan(){
     processScan(dir_.absolutePath());
 }
 
-void calibrateWithScan(QString folder){
+void ScanDataProcesser::calibrateWithScan(QString folder){
     QDir d(folder);
 
     qDebug()<<"Scan calibratation Folder: "<<d.absolutePath();
