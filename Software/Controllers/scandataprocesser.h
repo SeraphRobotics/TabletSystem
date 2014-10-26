@@ -40,6 +40,10 @@ public slots:
      */
     void processScan(QString folder);
 
+    void calibrateWithScan(QString folder);
+
+    void scannerNotCalibrated();
+
 private slots:
 
 

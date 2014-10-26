@@ -3,12 +3,15 @@
 #include "scanprocessing.h"
 #include <QThread>
 #include <QUuid>
+#include <QSettings>
+#include <QDebug>
 
 ScanDataProcesser::ScanDataProcesser(QObject *parent) :
     QObject(parent),numFilesToProcess(0),numFilesProcessed(0)
 {
     id_=QUuid::createUuid().toString();
     dir_=QDir::current();
+
 }
 
 ScanDataProcesser::~ScanDataProcesser(){
@@ -30,7 +33,52 @@ void ScanDataProcesser::processScan(){
     processScan(dir_.absolutePath());
 }
 
+void calibrateWithScan(QString folder){
+
+    qDebug()<<"Scan calibratation Folder: "<<d.absolutePath();
+    QStringList filters;
+    filters<<"*.jpeg";
+    QStringList files = d.entryList(filters);
+
+    qDebug()<<"Files: \n"<<files;
+    qDebug()<<"Filter:"<<filters;
+    QString first = s+"//"+files.takeFirst();
+    cv::Mat baseImg = cv::imread( first.toStdString() );
+
+    foreach(QString filename, files){
+        QString file = folder+"//"+filename;
+        cv::Mat nextimg = cv::imread(file.toStdString() );
+        baseImg = baseImg+nextimg;
+    }
+
+
+    QSettings settings;
+    default_path = QFileInfo(settings.fileName()).absolutePath();
+    std::vector<int> params;
+    params.push_back(CV_IMWRITE_JPEG_QUALITY);
+    params.push_back(99);
+
+    QString writelocation = default_path+"//"+"summed.jpeg";
+    cv::imwrite(writelocation,baseImg,params);
+    settings.setValue("scanner/noisefile",writelocation);
+
+}
+
+
 void  ScanDataProcesser::processScan(QString folder){
+
+    cv::Mat noisesum;
+    QSettings settings;
+    summed_noise_file = settings.value("scanner/noisefile","").toString();
+    if(summed_noise_file != ""){
+        noisesum = cv::imread(summed_noise_file);
+    }
+    if (!noisesum.data){
+        qDebug()<<"scanner not calibrated, no noise file";
+        emit scannerNotCalibrated();
+        return;
+    }
+
 
     dir_ = QDir(folder);
     QFileInfoList list = dir_.entryInfoList();
