@@ -7,6 +7,7 @@
 #include "View/UI_structs.h"
 #include "DataStructures/orthotic.h"
 #include "DataStructures/orthoticmanager.h"
+#include "DataStructures/printingstructs.h"
 
 class OrthoticController : public QObject
 {
@@ -72,6 +73,7 @@ signals:
      * the system will make the STL files and emit them here with their color
      */
     void stlsGenerated(QList<View_3D_Item> items);
+    void printJobInputs(printjobinputs p);
 
     void topCoat(Top_Coat tc);
 
@@ -86,13 +88,11 @@ public slots:
     void setTopCoat(Top_Coat tc);
 
     void addManipulation(Manipulation m);
-    void undo();
-    void redo();
 
     void setPosting(Posting p);
 
-public:
     void processBoundary();
+    void save();
 
 private:
     void makeSTLs();

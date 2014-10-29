@@ -39,6 +39,7 @@ Orthotic* OrthoticManager::newOrthotic(QString scan_id){
 }
 
 bool OrthoticManager::hasOrthotic(QString id){
+    updateList();
     if (idlist_.contains(id)){return true;}
     return false;
 }

@@ -4,14 +4,9 @@
 #include <QObject>
 #include "libraries/shared/stl/STLMesh.h"
 #include "libraries/shared/stl/stlfile.h"
+#include "DataStructures/printingstructs.h"
 #include <QDir>
 
-struct meshpair{
-    QString stlfilename;
-    QString inifilename;
-    QString gcodefile;
-    bool isValved;
-};
 
 class GcodeController : public QObject
 {

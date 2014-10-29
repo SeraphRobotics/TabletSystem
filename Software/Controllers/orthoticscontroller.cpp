@@ -65,20 +65,20 @@ void OrthoticController::processBoundary(){
 //    blurGrid(orth_->getScan()->getProcessedXYGrid(),1);
 
 
-    QFile f("processed.csv");
-    f.open(QFile::WriteOnly);
-    QTextStream fs(&f);
-    fs<<orth_->getScan()->getProcessedXYGrid()->toCSV();
-    f.close();
+//    QFile f("processed.csv");
+//    f.open(QFile::WriteOnly);
+//    QTextStream fs(&f);
+//    fs<<orth_->getScan()->getProcessedXYGrid()->toCSV();
+//    f.close();
 }
 
 void OrthoticController::setTopCoat(Top_Coat tc){
     orth_->setTopCoat(tc);
 }
 
-void OrthoticController::addManipulation(Manipulation m){}
-void OrthoticController::undo(){}
-void OrthoticController::redo(){}
+void OrthoticController::addManipulation(Manipulation m){
+    orth_->addManipulation(m);
+}
 
 void OrthoticController::setPosting(Posting p){
     orth_->setPosting(p);
@@ -111,11 +111,11 @@ void OrthoticController::setPosting(Posting p){
     float heightoffset =0;
     scaleAndOffset(orth_->getScan()->getPostedXYGrid(),slope,heightoffset);
 
-    QFile f("posted.csv");
-    f.open(QFile::WriteOnly);
-    QTextStream fs(&f);
-    fs<<orth_->getScan()->getPostedXYGrid()->toCSV();
-    f.close();
+//    QFile f("posted.csv");
+//    f.open(QFile::WriteOnly);
+//    QTextStream fs(&f);
+//    fs<<orth_->getScan()->getPostedXYGrid()->toCSV();
+//    f.close();
     makeSTLs();
     qDebug()<<"STLs made";
 
@@ -127,11 +127,11 @@ void OrthoticController::makeSTLs(){
 
     QList<FAHLoopInXYPlane*> innerLoops3;
 //    innerLoops3.append(orth_->getLoop());
-    FAHLoopInXYPlane* outside = new FAHLoopInXYPlane();
-    outside->points.append(FAHVector3(0,0,0));
-    outside->points.append(FAHVector3(1000,0,0));
-    outside->points.append(FAHVector3(1000,1000,0));
-    outside->points.append(FAHVector3(0,1000,0));
+//    FAHLoopInXYPlane* outside = new FAHLoopInXYPlane();
+//    outside->points.append(FAHVector3(0,0,0));
+//    outside->points.append(FAHVector3(1000,0,0));
+//    outside->points.append(FAHVector3(1000,1000,0));
+//    outside->points.append(FAHVector3(0,1000,0));
 
 
 //    STLMesh* p = makeSTLfromScanSection(orth_->getScan()->getProcessedXYGrid(),
@@ -152,7 +152,7 @@ void OrthoticController::makeSTLs(){
     FAHLoopInXYPlane* bottomloop = bottomLoopFromPoints(orth_->getHealPoints(),orth_->getForePoints());
     STLMesh* angleMesh = STLFromSection(orth_->getScan()->getPostedXYGrid(),bottomloop,orth_->getLoop(),innerLoops3);
     angleMesh->scale(2,1,1);
-    stlToFile(angleMesh,"angled.stl");
+//    stlToFile(angleMesh,"angled.stl");
 
 
 //    innerLoops3.append(orth_->getLoop());
@@ -169,6 +169,12 @@ void OrthoticController::makeSTLs(){
 //    STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),inners);
 //    m->scale(2,1,1.0);
 //    stlToFile(m,"original.stl");
+
+    //Generate Printjob outputs
+    printjobinputs pji;
+    pji.shell = angleMesh;
+    emit printJobInputs(pji);
+
     QList<View_3D_Item> toEmitList;
     View_3D_Item v3d;
 
@@ -178,12 +184,12 @@ void OrthoticController::makeSTLs(){
     toEmitList.append(v3d);
     emit stlsGenerated(toEmitList);
 //    writeLoopToXDFL(orth_->getLoop(),"FINALLOOP.XDFL");
+}
 
 
-
-
-
-
+void OrthoticController::save(){
+    orth_->writeToDisk();
+//    om_->updateList();
 }
 
 Border OrthoticController::borderFromLoop(FAHLoopInXYPlane* loop){}
