@@ -18,4 +18,6 @@ void TestmakeHeightMap();
 
 void TestOrthoticsRx();
 
+void TestOrthoticsRxThroughGCode();
+
 #endif // SCANPROCESSINGTESTSFUNCTIONS_H

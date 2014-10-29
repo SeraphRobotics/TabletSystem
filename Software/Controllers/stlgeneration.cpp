@@ -579,7 +579,7 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid ){
 }
 
 void addFacetWithNormal(FAHVector3 p1, FAHVector3 p2, FAHVector3 p3, STLMesh* mesh, bool zpositive){
-    float thresh=0.01;
+    float thresh=0.05;
     if( p1.x<thresh || p2.x<thresh ||p3.x<thresh || p1.y<thresh || p2.y<thresh ||p3.y<thresh  ){
 //        printf("\nERROR IN Pts");
 //        printPoint(p1);
@@ -587,6 +587,10 @@ void addFacetWithNormal(FAHVector3 p1, FAHVector3 p2, FAHVector3 p3, STLMesh* me
 //        printPoint(p3);
         return;
     }
+
+    if (p1.z<thresh){p1.z=0;}
+    if (p2.z<thresh){p2.z=0;}
+    if (p3.z<thresh){p3.z=0;}
 
     FAHTriangle t1(p1,p2,p3);
     STLFacet s1;
@@ -606,7 +610,7 @@ void addFacetWithNormal(FAHVector3 p1, FAHVector3 p2, FAHVector3 p3, STLMesh* me
 }
 
 void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* mesh, FAHVector3 direction){
-    float thresh=0.01;
+    float thresh=0.05;
     if( p1.x<thresh || p2.x<thresh ||p3.x<thresh || p1.y<thresh || p2.y<thresh ||p3.y<thresh  ){
 //        printf("\nERROR IN Pts");
 //        printPoint(p1);
@@ -614,6 +618,10 @@ void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* me
 //        printPoint(p3);
         return;
     }
+
+    if (p1.z<thresh){p1.z=0;}
+    if (p2.z<thresh){p2.z=0;}
+    if (p3.z<thresh){p3.z=0;}
 
     FAHTriangle t1(p1,p2,p3);
     STLFacet s1;

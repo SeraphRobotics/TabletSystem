@@ -40,9 +40,11 @@ int main(int argc, char *argv[])
 
 //    TestmakeHeightMap();
 
-    TestOrthoticsRx();
+//    TestOrthoticsRx();
 
 //    TestGCodeSystem();
+
+    TestOrthoticsRxThroughGCode();
 
 
     return a.exec();

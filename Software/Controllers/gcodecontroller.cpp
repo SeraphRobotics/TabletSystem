@@ -55,7 +55,7 @@ void GcodeController::generateGcode(){
             emit processingFailed();
             return;
         }
-//        qDebug()<<slicing->readAll();
+        qDebug()<<slicing->readAll();
         slicing->close();
 
         if(p.isValved){ //if a valve tool, convert to valve tool gcode

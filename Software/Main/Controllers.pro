@@ -8,7 +8,8 @@ SOURCES += ../Controllers/scanprocessing.cpp \
     ../Controllers/orthoticscontroller.cpp \
     ../Controllers/stlgeneration.cpp\
     ../Controllers/scannerfunctions.cpp \
-    ../Controllers/gcodecontroller.cpp
+    ../Controllers/gcodecontroller.cpp \
+    ../Controllers/printjobcontroller.cpp
 
 HEADERS += ../Controllers/scanprocessing.h \
     ../Controllers/scandataprocesser.h \
@@ -16,4 +17,5 @@ HEADERS += ../Controllers/scanprocessing.h \
     ../Controllers/orthoticscontroller.h \
     ../Controllers/stlgeneration.h \
     ../Controllers/scannerfunctions.h \
-    ../Controllers/gcodecontroller.h
+    ../Controllers/gcodecontroller.h \
+    ../Controllers/printjobcontroller.h

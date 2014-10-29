@@ -8,10 +8,12 @@
 #include "UnitTest/debugfunctions.h"
 #include "UnitTest/usbtester.h"
 #include "UnitTest/orthoticcontrollertester.h"
+#include "UnitTest/printjobtester.h"
 
 
 #include "Controllers/processingfunctions.h"
 #include "Controllers/orthoticscontroller.h"
+#include "Controllers/printjobcontroller.h"
 
 
 void curveTests(){
@@ -248,6 +250,73 @@ void TestOrthoticsRx(){
     oc->processBoundary();
 
     oc->setPosting(forpost);
+    oc->setPosting(rearpost);
+
+}
+
+void TestOrthoticsRxThroughGCode(){
+    QSettings s;
+    s.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r\\Slic3r-console.exe");
+    s.setValue("printing/valving-python-script","toValve.py");
+    s.setValue("printing/merge-python-script","merge.py");
+
+
+    ScanManager* sm = new ScanManager();
+    OrthoticManager* om = new OrthoticManager(sm);
+    OrthoticController* oc = new OrthoticController(om);
+    OrthoticControllerTester* oct = new OrthoticControllerTester();
+    PrintJobController* pjc = new PrintJobController();
+    PrintJobTester* pjt = new PrintJobTester(pjc);
+
+
+    /// LOAD WHAT HTE USER WOULD SET
+    float offset = 3.0;
+    QVector< FAHVector3 > forePts;
+    forePts.append(FAHVector3(105.0+offset,60.0,0));
+    forePts.append(FAHVector3(120.0+offset,90.0,0));
+    forePts.append(FAHVector3(115.0+offset,125.0,0));
+    forePts.append(FAHVector3(85.0+offset,130.0,0));
+
+    QVector< FAHVector3 > healPts;
+    healPts.append(FAHVector3(35.0+offset,50.0,0));
+    healPts.append(FAHVector3(19.0+offset,70.0,0));
+    healPts.append(FAHVector3(26.0+offset,103.0,0));
+
+    Posting forpost;
+    forpost.angle=0*M_PI/180.0;
+    forpost.verticle=0;
+    forpost.varus_valgus=Posting::kValgus;
+    forpost.for_rear=Posting::kForFoot;
+    Posting rearpost;
+    rearpost.angle=0*M_PI/180.0;
+    rearpost.verticle=0;
+    rearpost.varus_valgus=Posting::kValgus;
+    rearpost.for_rear=Posting::kRearFoot;
+
+    Top_Coat tc;
+    tc.density = Top_Coat::kLow;
+    tc.depth=10;
+    tc.style=Top_Coat::kCloth;
+    tc.thickness=11;
+
+    QString scanid = sm->scanIds()[0];
+    qDebug()<<"using scan: "<<scanid;
+
+    oct->connect(oc,SIGNAL(boundaryLoopUpdated(FAHLoopInXYPlane*)),oct,SLOT(boundaryLoopUpdated(FAHLoopInXYPlane*)));
+    oct->connect(oc,SIGNAL(scanImageGenerated(QImage)),oct,SLOT(scanImageGenerated(QImage)));
+    oct->connect(oc,SIGNAL(stlsGenerated(QList<View_3D_Item>)),oct,SLOT(stlsGenerated(QList<View_3D_Item>)));
+
+
+    oc->setScan(scanid);
+    oc->setBorderPoints(healPts, forePts);
+
+    oc->setTopCoat(tc);
+
+    oc->processBoundary();
+
+    oc->setPosting(forpost);
+
+    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
 
 }

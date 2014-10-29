@@ -12,10 +12,14 @@ struct meshpair{
     bool isValved;
 };
 
+struct manipulationpair{
+    Manipulation manipulation;
+    STLMesh* mesh;
+};
 
 struct printjobinputs{
     STLMesh* shell;
-    QMap<Manipulation, STLMesh*> manipulations;
+    QList<manipulationpair> manipulationpairs;
 };
 
 Q_DECLARE_METATYPE(printjobinputs)

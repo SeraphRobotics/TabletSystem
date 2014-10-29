@@ -189,7 +189,6 @@ void OrthoticController::makeSTLs(){
 
 void OrthoticController::save(){
     orth_->writeToDisk();
-//    om_->updateList();
 }
 
 Border OrthoticController::borderFromLoop(FAHLoopInXYPlane* loop){}
