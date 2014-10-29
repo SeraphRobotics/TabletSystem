@@ -77,7 +77,7 @@ void  ScanDataProcesser::processScan(QString folder){
     if (!noisesum.data){
         qDebug()<<"scanner not calibrated, no noise file";
         emit scannerNotCalibrated();
-        return;
+//        return;
     }
 
 

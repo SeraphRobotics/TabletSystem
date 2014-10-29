@@ -16,6 +16,8 @@ ScanSystemTester::ScanSystemTester(QObject *parent) :
 
     sm_ = new ScanManager();
 
+    qDebug()<<"starting";
+
     QMap < QString, UI_USB_Item > items_;
 
     QDomDocument d;
@@ -38,6 +40,7 @@ ScanSystemTester::ScanSystemTester(QObject *parent) :
     QDomElement usbdataEl = d.documentElement();
     if(!("scandata" == usbdataEl.nodeName().toLower())){
         qDebug()<<"NO DATA IN"<<filename;
+        qDebug()<<"contained: "<<d.toString();
         return;
     }
 
