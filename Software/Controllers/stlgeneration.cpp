@@ -698,25 +698,33 @@ void addBetweenTwoLoopsToSTL(STLMesh* mesh,
         QVector<FAHVector3> pts = indexToOuterloop[k];
         QVector<FAHVector3> ptsp = indexToOuterloop[kp%innerLoop->points.size()];
 
-
+        FAHVector3 direction(0,0,1);
 
 
 
         for(int j=0; j<pts.size()-1;j++){
+            direction = pts.at(j)-cent;
+            direction.normalize();
             addFacetWithDirection(inner,pts.at(j),
                                   pts.at( (j+1)%pts.size() ),
-                                  mesh,FAHVector3(0,0,1));
+                                  mesh,direction);
         }
         addFacetWithDirection(inner,pts.last(),
                               ptsp.first(),
-                              mesh,FAHVector3(0,0,1));
+                              mesh,direction);
 
         for(int j=k;j<kp;j++){
+
             FAHVector3 p1 = innerLoop->points.at(j%innerLoop->points.size());
             FAHVector3 p2 = innerLoop->points.at( (j+1)%innerLoop->points.size());
+
+            direction = cent-ptsp.first();
+            direction.z=0;
+            direction.normalize();
+
             addFacetWithDirection(p1,p2,
                                   ptsp.first(),
-                                  mesh,FAHVector3(0,0,1));
+                                  mesh,direction);
         }
     }
     {
