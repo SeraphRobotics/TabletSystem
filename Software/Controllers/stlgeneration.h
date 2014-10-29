@@ -77,7 +77,7 @@ void addFacetWithNormal(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* mesh,
 /**
  * Adds a facet with the points in the direction specified
  **/
-void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* mesh, FAHVector3 direction);
+FAHVector3 addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* mesh, FAHVector3 direction);
 
 
 /**

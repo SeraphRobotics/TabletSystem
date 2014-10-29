@@ -123,7 +123,7 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
      *
      *
      **/
-    FAHVector3 p1,p2,p3,p4,d(0,0,-1);
+    FAHVector3 p1,p2,p3,p4,d(0,0,1);
     bool b1=true,b2=true,b3=true,b4=true;
 
     int numInBounds=0;
@@ -154,7 +154,7 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
         p2.z=0;
         p3.z=0;
         p4.z=0;
-        d.z=1;
+        d.z=-1;
     }
 
     FAHLine l12(p1,p2);
@@ -609,14 +609,14 @@ void addFacetWithNormal(FAHVector3 p1, FAHVector3 p2, FAHVector3 p3, STLMesh* me
 
 }
 
-void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* mesh, FAHVector3 direction){
+FAHVector3 addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* mesh, FAHVector3 direction){
     float thresh=0.05;
     if( p1.x<thresh || p2.x<thresh ||p3.x<thresh || p1.y<thresh || p2.y<thresh ||p3.y<thresh  ){
 //        printf("\nERROR IN Pts");
 //        printPoint(p1);
 //        printPoint(p2);
 //        printPoint(p3);
-        return;
+        return direction;
     }
 
     if (p1.z<thresh){p1.z=0;}
@@ -626,7 +626,7 @@ void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* me
     FAHTriangle t1(p1,p2,p3);
     STLFacet s1;
     bool used1=false;
-    if( (t1.normal().dot(direction))<0){
+    if( (t1.normal().dot(direction))>0){
         used1=true;
         s1.triangle=t1;
         s1.normal=t1.normal();
@@ -643,6 +643,7 @@ void addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMesh* me
 //        printPoint(p2);
 //        printPoint(p3);
     }
+    return s1.normal;
 }
 
 
@@ -699,17 +700,16 @@ void addBetweenTwoLoopsToSTL(STLMesh* mesh,
         QVector<FAHVector3> ptsp = indexToOuterloop[kp%innerLoop->points.size()];
 
         FAHVector3 direction(0,0,1);
-
+        direction = pts.at(0)-cent;
+        direction.normalize();
 
 
         for(int j=0; j<pts.size()-1;j++){
-            direction = pts.at(j)-cent;
-            direction.normalize();
-            addFacetWithDirection(inner,pts.at(j),
+            direction = addFacetWithDirection(inner,pts.at(j),
                                   pts.at( (j+1)%pts.size() ),
                                   mesh,direction);
         }
-        addFacetWithDirection(inner,pts.last(),
+        direction = addFacetWithDirection(inner,pts.last(),
                               ptsp.first(),
                               mesh,direction);
 
@@ -718,11 +718,9 @@ void addBetweenTwoLoopsToSTL(STLMesh* mesh,
             FAHVector3 p1 = innerLoop->points.at(j%innerLoop->points.size());
             FAHVector3 p2 = innerLoop->points.at( (j+1)%innerLoop->points.size());
 
-            direction = cent-ptsp.first();
-            direction.z=0;
-            direction.normalize();
 
-            addFacetWithDirection(p1,p2,
+
+            direction = addFacetWithDirection(p1,p2,
                                   ptsp.first(),
                                   mesh,direction);
         }
@@ -756,11 +754,11 @@ void addBetweenTwoLoopsToSTL(STLMesh* mesh,
 //        qDebug()<<"\n\n 0";
         addFacetWithDirection(p2,outpt,
                               ptsp.first(),
-                              mesh,FAHVector3(1,1,1));
+                              mesh,FAHVector3(-1,-1,-1));
 //        qDebug()<<"\n\n 1";
         addFacetWithDirection(p1,p2,
                               ptsp.first(),
-                              mesh,FAHVector3(1,1,1));
+                              mesh,FAHVector3(-1,-1,-1));
     }
 
 }
