@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QDebug>
 #include "stlgeneration.h"
+#include <QProcess>
 
 PrintJobController::PrintJobController(QObject *parent) :
     QObject(parent)
@@ -25,14 +26,43 @@ void PrintJobController::RunPrintJob(printjobinputs pji){
     QSettings s;
     QString plasticIni = s.value("printing/plastic_ini","p.ini").toString();
     QString shellfilename = "0.stl";
-    stlToFile(pji.shell,dir_+"//"+shellfilename);
-    gc_->addSTLMeshINIPair(shellfilename,plasticIni,false);
+    stlToFile(pji.shell,shellfilename);//,dir_+"//"+
+
+    /// REPAIR SHELL
+    QString slicer = s.value("printing/slicer","slic3r").toString();
+
+    QStringList args;
+    args << "--repair"<<shellfilename;
+    QProcess* repair = new QProcess(this);
+    qDebug()<< slicer;
+    qDebug()<< args;
+    repair->start(slicer,args);
+
+    if (!repair->waitForStarted()){
+        QString msg = "failed to start "+slicer+" for "+shellfilename;
+        qDebug()<<msg;
+        emit PrintJobFailed(msg);
+        return;
+    }
+    if (!repair->waitForFinished()){
+        QString msg = "failed to start "+slicer+" for "+shellfilename;
+        qDebug()<<msg;
+        emit PrintJobFailed(msg);
+        return;
+    }
+    qDebug()<<repair->readAll();
+    repair->close();
+
+
+
+
+    gc_->addSTLMeshINIPair(shellfilename.replace(".stl","_fixed.obj"),plasticIni,false);
 
 
     int i=1;
     foreach(manipulationpair mp, pji.manipulationpairs ){
-        QString stlfilename = QString::number(i)+'.stl';
-        stlToFile(mp.mesh,dir_+"//"+stlfilename);
+        QString stlfilename = QString::number(i)+QString('.stl');
+        stlToFile(mp.mesh,stlfilename);//dir_+"//"+
 
         QStringList inifilenames = makeIniFiles(mp.manipulation);
         foreach(QString ini,inifilenames){
