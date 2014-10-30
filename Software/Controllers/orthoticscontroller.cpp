@@ -108,7 +108,7 @@ void OrthoticController::setPosting(Posting p){
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
 
     float slope = 63.5/101;
-    float heightoffset =0;
+    float heightoffset =0.5;/// CANT BE ZERO OR A BAD STL IS MADE
     scaleAndOffset(orth_->getScan()->getPostedXYGrid(),slope,heightoffset);
 
 //    QFile f("posted.csv");

@@ -145,8 +145,6 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
     b4=loopsContain(p4,OuterLoop,innerLoops);
     if(b4){numInBounds++;}
 
-    if(numInBounds<1){return;}
-
 //    if(numInBounds!=2){return;}
 
     if(!top){// if its the bottom set all Z points to 0
@@ -253,6 +251,7 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
 
         break;
     case 2:
+
         intersected = intersection_points(lines,OuterLoop,innerLoops);
 
         points = outerpoints;
@@ -313,13 +312,13 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
             sorted_points = sortByIndex(points,0,false);
             anchor = p1;
         }else if(b2){
-            sorted_points = sortByIndex(points,0,false);
+            sorted_points = sortByIndex(points,1,false);
             anchor = p2;
         }else if(b3){
-            sorted_points = sortByIndex(points,1,false);
+            sorted_points = sortByIndex(points,0,true);
             anchor = p3;
         }else if(b4){
-            sorted_points = sortByIndex(points,1,false);
+            sorted_points = sortByIndex(points,0,true);
             anchor = p4;
         }
 
@@ -330,6 +329,21 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
             addFacetWithDirection(anchor,sorted_points[m],sorted_points[m+1],mesh,d);
         }
         break;
+    case 0:
+        intersected = intersection_points(lines,OuterLoop,innerLoops);
+        points = intersected;
+        points = points + outerpoints;
+        points = points + innerpoints;
+        for(int i=0;i<points.size();i++){
+            points[i].z=getHeightAt(points[i].x,points[i].y,p1,p2,p3,p4);
+        }
+        sorted_points = sortByIndex(points,0,false);
+        anchor = sorted_points.first();
+        for(int m=1 ; m<sorted_points.size()-1; m++){
+            addFacetWithDirection(anchor,sorted_points[m],sorted_points[m+1],mesh,d);
+        }
+
+
     default:
         break;
 
