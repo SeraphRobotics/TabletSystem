@@ -502,8 +502,9 @@ FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid,bool w
     }
 
 
-    //// FIND INTERSECTIONS WITH X lines
+
     FAHVector3 dim = grid->getDimensions();
+    //// FIND INTERSECTIONS WITH X lines
     for(int i=0;i<grid->nx()-1;i++){
         FAHVector3 p1(i,0,0);
         FAHVector3 p2(i,dim[1],0);
@@ -519,6 +520,23 @@ FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid,bool w
             if(!pt.isInvalid()){curve.append(pt);}
         }
     }
+     //// FIND INTERSECTIONS WITH Y lines
+    for(int i=0;i<grid->ny()-1;i++){
+        FAHVector3 p1(0,i,0);
+        FAHVector3 p2(dim[0],i,0);
+
+        FAHLine l12(p1,p2);
+        QList<FAHLine> lines;
+        lines.append(l12);
+        QList<FAHLoopInXYPlane*> innerLoops;
+        QVector<FAHVector3> intersected = intersection_points(lines,loop,innerLoops);
+        foreach(FAHVector3 pt,intersected){
+            if(withheights){pt.z = getHeightAt(pt.x,pt.y,grid);
+            }else{pt.z=0;}
+            if(!pt.isInvalid()){curve.append(pt);}
+        }
+    }
+
     FAHLoopInXYPlane* newloop = new FAHLoopInXYPlane();
     newloop->points=curve;
     sortLoop(newloop);

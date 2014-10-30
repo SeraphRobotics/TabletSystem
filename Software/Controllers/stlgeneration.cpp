@@ -90,9 +90,9 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopIn
     for(int j=0;j<grid->ny()-1;j++){
         for(int i=0;i<grid->nx()-1;i++){
 
-            addSquareToSTL(i,j,grid, mesh, OuterLoop, innerLoop,true);
+            addSquareToSTL(i,j,grid, mesh, borderWithHeight, innerLoop,true);
 
-            addSquareToSTL(i,j,grid, mesh, angled, innerLoop,false);
+            addSquareToSTL(i,j,grid, mesh, angleloop, innerLoop,false);
         }
     }
 
