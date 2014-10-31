@@ -19,7 +19,7 @@ signals:
     void GcodeGenerated(QString gcode);
 
 public slots:
-    void RunPrintJob(printjobinputs pji);
+    void RunPrintJob(Orthotic* orth);
 
 private slots:
     void processingStarted();
@@ -28,7 +28,7 @@ private slots:
     void gcodeGenerated(QString gcode);
 
 private:
-    QStringList makeIniFiles(Manipulation m);
+    QStringList makeIniFiles(float stiffness);
 
 private:
     GcodeController* gc_;

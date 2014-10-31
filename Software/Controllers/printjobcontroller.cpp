@@ -22,11 +22,13 @@ PrintJobController::~PrintJobController(){
     delete gc_;
 }
 
-void PrintJobController::RunPrintJob(printjobinputs pji){
+void PrintJobController::RunPrintJob(Orthotic* orth){
+
+
     QSettings s;
     QString plasticIni = s.value("printing/plastic_ini","p.ini").toString();
     QString shellfilename = "0.stl";
-    stlToFile(pji.shell,shellfilename);//,dir_+"//"+
+    stlToFile(orth->printjob.shell,shellfilename);//,dir_+"//"+
 
     /// REPAIR SHELL
     QString slicer = s.value("printing/slicer","slic3r").toString();
@@ -38,13 +40,13 @@ void PrintJobController::RunPrintJob(printjobinputs pji){
     qDebug()<< args;
     repair->start(slicer,args);
 
-    if (!repair->waitForStarted()){
+    if (!repair->waitForStarted(-1)){
         QString msg = "failed to start "+slicer+" for "+shellfilename;
         qDebug()<<msg;
         emit PrintJobFailed(msg);
         return;
     }
-    if (!repair->waitForFinished()){
+    if (!repair->waitForFinished(-1)){
         QString msg = "failed to start "+slicer+" for "+shellfilename;
         qDebug()<<msg;
         emit PrintJobFailed(msg);
@@ -60,11 +62,11 @@ void PrintJobController::RunPrintJob(printjobinputs pji){
 
 
     int i=1;
-    foreach(manipulationpair mp, pji.manipulationpairs ){
+    foreach(manipulationpair mp, orth->printjob.manipulationpairs ){
         QString stlfilename = QString::number(i)+QString('.stl');
         stlToFile(mp.mesh,stlfilename);//dir_+"//"+
 
-        QStringList inifilenames = makeIniFiles(mp.manipulation);
+        QStringList inifilenames = makeIniFiles(mp.stiffness);
         foreach(QString ini,inifilenames){
             gc_->addSTLMeshINIPair(stlfilename,ini,true);
         }
@@ -74,13 +76,13 @@ void PrintJobController::RunPrintJob(printjobinputs pji){
 
 }
 
-QStringList PrintJobController::makeIniFiles(Manipulation m){
+QStringList PrintJobController::makeIniFiles(float stiffness){
     //These are not the way to do it We will need to make composites.
     // this will mean making multiple inifiles for some materials and stitching them together
     QStringList inifiles;
-    if(m.stiffness>25){
+    if(stiffness>25){
         inifiles<<"hs.ini";
-    }else if (m.stiffness>12){
+    }else if (stiffness>12){
         inifiles<<"ms.ini";
     }else{
         inifiles<<"ls.ini";

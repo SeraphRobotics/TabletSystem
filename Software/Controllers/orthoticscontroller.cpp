@@ -32,6 +32,10 @@ void OrthoticController::setOrthotic(QString orthotic_id){
 }
 
 
+Orthotic* OrthoticController::getOrthotic(){
+    return orth_;
+}
+
 void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector3 > forePts){
     if(!(healPts.size()==3 && forePts.size()==4)){return;}
     orth_->setBorderPoints(healPts,forePts);
@@ -173,7 +177,8 @@ void OrthoticController::makeSTLs(){
     //Generate Printjob outputs
     printjobinputs pji;
     pji.shell = angleMesh;
-    emit printJobInputs(pji);
+//    emit printJobInputs(pji);
+    orth_->printjob=pji;
 
     QList<View_3D_Item> toEmitList;
     View_3D_Item v3d;

@@ -316,7 +316,7 @@ void TestOrthoticsRxThroughGCode(){
 
     oc->setPosting(forpost);
 
-    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
+//    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
 
 }

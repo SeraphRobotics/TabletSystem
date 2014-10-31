@@ -15,7 +15,7 @@ signals:
 
 public slots:
     void GcodeGenerated(QString gcode);
-    void printJobInputs(printjobinputs p);
+    void printJobInputs(Orthotic* orth);
 
 private:
     PrintJobController* pjc_;

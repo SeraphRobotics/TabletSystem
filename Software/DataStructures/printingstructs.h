@@ -12,15 +12,5 @@ struct meshpair{
     bool isValved;
 };
 
-struct manipulationpair{
-    Manipulation manipulation;
-    STLMesh* mesh;
-};
 
-struct printjobinputs{
-    STLMesh* shell;
-    QList<manipulationpair> manipulationpairs;
-};
-
-Q_DECLARE_METATYPE(printjobinputs)
 #endif // PRINTINGSTRUCTS_H

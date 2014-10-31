@@ -6,10 +6,20 @@
 #include "manipulations.h"
 #include <QStack>
 #include "scan.h"
+#include "printingstructs.h"
 
 
+struct manipulationpair{
+    float stiffness;
+    STLMesh* mesh;
+};
 
+struct printjobinputs{
+    STLMesh* shell;
+    QList<manipulationpair> manipulationpairs;
+};
 
+Q_DECLARE_METATYPE(printjobinputs)
 
 
 
@@ -58,6 +68,9 @@ public slots:
 
 private slots:
     void requestScanData();
+
+public:
+    printjobinputs printjob;
 
 private:
     QUuid id_;

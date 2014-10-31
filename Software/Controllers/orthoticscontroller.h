@@ -73,9 +73,13 @@ signals:
      * the system will make the STL files and emit them here with their color
      */
     void stlsGenerated(QList<View_3D_Item> items);
-    void printJobInputs(printjobinputs p);
+
+//    void printJobInputs(printjobinputs p);
 
     void topCoat(Top_Coat tc);
+
+public:
+    Orthotic* getOrthotic();
 
 public slots:
 
