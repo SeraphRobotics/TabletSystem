@@ -3,6 +3,8 @@
 #include <QDebug>
 #include "stlgeneration.h"
 #include <QProcess>
+#include "topcoatcontroller.h"
+
 
 PrintJobController::PrintJobController(QObject *parent) :
     QObject(parent)
@@ -55,7 +57,11 @@ void PrintJobController::RunPrintJob(Orthotic* orth){
     qDebug()<<repair->readAll();
     repair->close();
 
-
+    QThread* t = new QThread();
+    TopCoatController* tcc = new TopCoatController(orth,"");
+    tcc->moveToThread(t);
+    connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
+    tcc->generateTopCoat();
 
 
     gc_->addSTLMeshINIPair(shellfilename.replace(".stl","_fixed.obj"),plasticIni,false);
@@ -90,6 +96,10 @@ QStringList PrintJobController::makeIniFiles(float stiffness){
     return inifiles;
 }
 
+
+void PrintJobController::topcoatMade(QString file){
+    qDebug()<<"Top coat at" << file;
+}
 void PrintJobController::processingStarted(){
     qDebug()<<"Started Gcode process";
 }

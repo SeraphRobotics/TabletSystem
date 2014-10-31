@@ -27,6 +27,9 @@ private slots:
     void processingComplete();
     void gcodeGenerated(QString gcode);
 
+    void topcoatMade(QString file);
+
+
 private:
     QStringList makeIniFiles(float stiffness);
 
