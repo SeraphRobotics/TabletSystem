@@ -18,5 +18,5 @@ void PrintJobTester::GcodeGenerated(QString gcode){
     qDebug()<<"DONE";
 }
 void PrintJobTester::printJobInputs(Orthotic *orth){
-    pjc_->RunPrintJob(orth);
+    pjc_->RunPrintJob();
 }

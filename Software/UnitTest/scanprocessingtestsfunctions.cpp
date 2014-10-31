@@ -265,8 +265,7 @@ void TestOrthoticsRxThroughGCode(){
     OrthoticManager* om = new OrthoticManager(sm);
     OrthoticController* oc = new OrthoticController(om);
     OrthoticControllerTester* oct = new OrthoticControllerTester();
-    PrintJobController* pjc = new PrintJobController();
-    PrintJobTester* pjt = new PrintJobTester(pjc);
+
 
 
     /// LOAD WHAT HTE USER WOULD SET
@@ -318,5 +317,7 @@ void TestOrthoticsRxThroughGCode(){
 
 //    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
+    PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
+    PrintJobTester* pjt = new PrintJobTester(pjc);
 
 }

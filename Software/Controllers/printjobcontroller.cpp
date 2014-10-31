@@ -4,81 +4,59 @@
 #include "stlgeneration.h"
 #include <QProcess>
 #include "topcoatcontroller.h"
+#include "slicercontroller.h"
+#include "repaircontroller.h"
+#include "mergecontroller.h"
+#include <QThread>
 
 
-PrintJobController::PrintJobController(QObject *parent) :
-    QObject(parent)
+PrintJobController::PrintJobController(Orthotic *orth, QObject *parent) :
+    QObject(parent),numSTLsRepaired(0),numSTLsToRepair(0), numSTLsSliced(0), numSTLToSlice(0), topcoatdone(false)
 {
-    gc_ = new GcodeController();
+    orth_ = orth;
     QSettings s;
     dir_ = s.value("printing/directory",QDir::currentPath()).toString();
-    gc_->setDir(dir_);
-    connect(gc_,SIGNAL(processingStarted()),this,SLOT(processingStarted()));
-    connect(gc_,SIGNAL(processingFailed()),this,SLOT(processingFailed()));
-    connect(gc_,SIGNAL(processingComplete()),this,SLOT(processingComplete();));
-    connect(gc_,SIGNAL(gcodeGenerated(QString gcode)),this,SLOT(GcodeGenerated(QString gcode)));
-
+    workthread = new QThread;
+    workthread->start();
 }
 
 PrintJobController::~PrintJobController(){
-    delete gc_;
+
 }
 
-void PrintJobController::RunPrintJob(Orthotic* orth){
+void PrintJobController::RunPrintJob(){
 
 
-    QSettings s;
-    QString plasticIni = s.value("printing/plastic_ini","p.ini").toString();
-    QString shellfilename = "0.stl";
-    stlToFile(orth->printjob.shell,shellfilename);//,dir_+"//"+
+    QString shellfilename = "shell.stl";
 
-    /// REPAIR SHELL
-    QString slicer = s.value("printing/slicer","slic3r").toString();
 
-    QStringList args;
-    args << "--repair"<<shellfilename;
-    QProcess* repair = new QProcess(this);
-    qDebug()<< slicer;
-    qDebug()<< args;
-    repair->start(slicer,args);
 
-    if (!repair->waitForStarted(-1)){
-        QString msg = "failed to start "+slicer+" for "+shellfilename;
-        qDebug()<<msg;
-        emit PrintJobFailed(msg);
-        return;
+    numSTLsToRepair = 1+orth_->printjob.manipulationpairs.size();
+
+    RepairController* rs = new RepairController(orth_->printjob.shell,shellfilename);
+    connect(rs,SIGNAL(Success()),this,SLOT(repairSucessful()));
+    connect(workthread,SIGNAL(finished()),rs,SLOT(deleteLater()));
+    rs->moveToThread(workthread);
+    workthread->start();
+    rs->repairMesh();
+
+    for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
+        RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,QString::number(i)+".stl");
+        connect(r,SIGNAL(Success()),this,SLOT(repairSucessful()));
+        connect(workthread,SIGNAL(finished()),r,SLOT(deleteLater()));
+        r->moveToThread(workthread);
+        r->repairMesh();
+
     }
-    if (!repair->waitForFinished(-1)){
-        QString msg = "failed to start "+slicer+" for "+shellfilename;
-        qDebug()<<msg;
-        emit PrintJobFailed(msg);
-        return;
-    }
-    qDebug()<<repair->readAll();
-    repair->close();
 
-    QThread* t = new QThread();
-    TopCoatController* tcc = new TopCoatController(orth,"");
-    tcc->moveToThread(t);
+
+    ///Start topcoat
+    TopCoatController* tcc = new TopCoatController(orth_,"");
+    tcc->moveToThread(workthread);
     connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
     tcc->generateTopCoat();
 
 
-    gc_->addSTLMeshINIPair(shellfilename.replace(".stl","_fixed.obj"),plasticIni,false);
-
-
-    int i=1;
-    foreach(manipulationpair mp, orth->printjob.manipulationpairs ){
-        QString stlfilename = QString::number(i)+QString('.stl');
-        stlToFile(mp.mesh,stlfilename);//dir_+"//"+
-
-        QStringList inifilenames = makeIniFiles(mp.stiffness);
-        foreach(QString ini,inifilenames){
-            gc_->addSTLMeshINIPair(stlfilename,ini,true);
-        }
-        i++;
-    }
-    gc_->generateGcode();
 
 }
 
@@ -97,21 +75,74 @@ QStringList PrintJobController::makeIniFiles(float stiffness){
 }
 
 
-void PrintJobController::topcoatMade(QString file){
-    qDebug()<<"Top coat at" << file;
-}
-void PrintJobController::processingStarted(){
-    qDebug()<<"Started Gcode process";
-}
-void PrintJobController::processingFailed(){
-    qDebug()<<"Started Gcode process";
-    emit PrintJobFailed("Unknown reasons");
-}
-void PrintJobController::processingComplete(){
-    qDebug()<<"Finished Gcode process";
-    emit PrintJobComplete();
+void PrintJobController::stepFailed(QString s){
+    qDebug()<<s;
+    emit PrintJobFailed(s);
+
 }
 
-void PrintJobController::gcodeGenerated(QString gcode){
+void PrintJobController::repairSucessful(){
+    numSTLsRepaired++;
+    if(numSTLsRepaired >=numSTLsToRepair){
+        //Start Slicing
+        QSettings s;
+        QString plasticIni = s.value("printing/plastic_ini","p.ini").toString();
+
+        SlicerController* sc = new SlicerController("shell_fixed.obj",plasticIni,false);
+        numSTLToSlice++;
+        sc->moveToThread(workthread);
+        connect(sc,SIGNAL(Success()),this,SLOT(slicingSucessful()));
+        connect(workthread,SIGNAL(finished()),sc,SLOT(deleteLater()));
+        workthread->start();
+        sc->slice();
+
+
+        int i=0;
+        foreach(manipulationpair mp, orth_->printjob.manipulationpairs ){
+            QString stlfilename = QString::number(i)+QString('_fixed.obj');
+
+            QStringList inifilenames = makeIniFiles(mp.stiffness);
+            numSTLToSlice+=inifilenames.size();
+            foreach(QString ini,inifilenames){
+                SlicerController* sci = new SlicerController(stlfilename,ini,true);
+                connect(sci,SIGNAL(Success()),this,SLOT(slicingSucessful()));
+                connect(workthread,SIGNAL(finished()),sci,SLOT(deleteLater()));
+                sci->slice();
+            }
+            i++;
+        }
+
+    }
+}
+void PrintJobController::slicingSucessful(){
+    numSTLsSliced++;
+    if(numSTLsSliced>=numSTLToSlice && topcoatdone){
+        startMerge();
+    }
+}
+
+void PrintJobController::topcoatMade(QString file){
+    qDebug()<<"Top coat at" << file;
+    topcoatdone=true;
+    if(numSTLsSliced>=numSTLToSlice && topcoatdone){
+        startMerge();
+    }
+}
+
+void PrintJobController::startMerge(){
+    QDir d(dir_);
+    QStringList files = d.entryList(QStringList()<<"*.gcode");
+    MergeController* mc = new MergeController(files);
+    connect(mc,SIGNAL(GCodeMerged(QString)),this,SLOT(mergeSucessful(QString)));
+    mc->moveToThread(workthread);
+    workthread->start();
+    mc->mergeFiles();
+
+
+}
+
+void PrintJobController::mergeSucessful(QString gcode){
     emit GcodeGenerated(gcode);
 }
+
+

@@ -10,7 +10,7 @@ class PrintJobController : public QObject
 {
     Q_OBJECT
 public:
-    explicit PrintJobController(QObject *parent = 0);
+    explicit PrintJobController(Orthotic* orth, QObject *parent = 0);
     ~PrintJobController();
 
 signals:
@@ -19,23 +19,36 @@ signals:
     void GcodeGenerated(QString gcode);
 
 public slots:
-    void RunPrintJob(Orthotic* orth);
+    void RunPrintJob();
 
 private slots:
-    void processingStarted();
-    void processingFailed();
-    void processingComplete();
-    void gcodeGenerated(QString gcode);
+
+    void stepFailed(QString s);
+
+    void repairSucessful();
+    void slicingSucessful();
 
     void topcoatMade(QString file);
+    void startMerge();
+    void mergeSucessful(QString gcode);
+
+
 
 
 private:
     QStringList makeIniFiles(float stiffness);
 
 private:
-    GcodeController* gc_;
+    Orthotic* orth_;
+    QThread* workthread;
     QString dir_;
+    int numSTLsRepaired;
+    int numSTLsToRepair;
+    int numSTLsSliced;
+    int numSTLToSlice;
+    bool topcoatdone;
+
+
 };
 
 #endif // PRINTJOBCONTROLLER_H
