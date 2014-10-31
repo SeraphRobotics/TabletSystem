@@ -294,9 +294,9 @@ void TestOrthoticsRxThroughGCode(){
 
     Top_Coat tc;
     tc.density = Top_Coat::kLow;
-    tc.depth=10;
-    tc.style=Top_Coat::kCloth;
-    tc.thickness=11;
+    tc.depth=1;
+    tc.style=Top_Coat::kAuto;
+    tc.thickness=1;
 
     QString scanid = sm->scanIds()[0];
     qDebug()<<"using scan: "<<scanid;
@@ -319,5 +319,6 @@ void TestOrthoticsRxThroughGCode(){
     oc->setPosting(rearpost);
     PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
     PrintJobTester* pjt = new PrintJobTester(pjc);
+    pjc->RunPrintJob();
 
 }

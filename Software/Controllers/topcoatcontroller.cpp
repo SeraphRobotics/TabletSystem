@@ -12,13 +12,16 @@ TopCoatController::TopCoatController(Orthotic* orth, QString dir, QObject *paren
 
 void TopCoatController::generateTopCoat(){
     Top_Coat t =  orth_->getTopCoat();
-    if(t.style!=Top_Coat::kAuto){return;}
+    if(t.style!=Top_Coat::kAuto){
+        emit generatedCoatingFile("");
+        return;
+    }
 
     QVector< FAHVector3> pts;
     QSettings s;
     XYGrid<float>* grid = orth_->getScan()->getPostedXYGrid();
     float scaley = grid->stepSize();
-    float scalex = 1.0;
+    float scalex = 2.0;
     float path_width=1.0;
     float path_height=1.0;
     float z_offset=1.0;
@@ -56,9 +59,10 @@ void TopCoatController::generateTopCoat(){
     int n=0;
     while(x<stop && n<1000){
         xs.append(x);
-        xs+=path_width;
+        x+=path_width;
         n++;
     }
+
 
     int j=0;
     foreach(float x,xs){
@@ -83,14 +87,21 @@ void TopCoatController::generateTopCoat(){
             float xplus = scalex*xjplus;
             float zplus = grid->at(xjplus,index);
 
-            float m = (zplus-zminus)/(xplus-xminus);
+            float m;
+            if( (xplus-xminus)>0.001 ){
+                m = (zplus-zminus)/(xplus-xminus);
+            }else{
+                m = 0.0;
+            }
             float b = zplus-m*xplus;
 
             pt.z = m*x+b + z_offset;
 
+
             //append if inside outer border
             if (loopsContain(pt,outerLoop,innerLoops)){
                 pts.append(pt);
+                qDebug()<<"Z: "<< pt.z;
             }
         }
     }
@@ -104,28 +115,28 @@ void TopCoatController::generateTopCoat(){
 
     for(int layer=0;layer<numlayers;layer++){
         QString openLine = s.value("Printing/open","\nG4 P2\nM340 P0 S2100").toString();
-        QString closeLine = s.value("Printing/close","\nG4 P2\nM340 P0 S1650\n").toString();
-        QString relativelift = s.value("Printing/lift","\nG91 \nG1 Z20 F2400 \nG90 \n").toString();
+        QString closeLine = s.value("Printing/close","\nG4 P2\nM340 P0 S1650").toString();
+        QString relativelift = s.value("Printing/lift","\nG91 \nG1 Z20 F2400 \nG90").toString();
 
         FAHVector3 first = pts.first();
-        QString first_pt_line = "\nG1 X"+QString::number(first.x)+
+        QString first_pt_line = "G1 X"+QString::number(first.x)+
                            " Y"+QString::number(first.y)+
                            " Z"+QString::number(first.z+layer*path_height)+
-                            "F"+QString::number(speed);
+                           " F"+QString::number(speed);
 
         gcodes<<relativelift;
         gcodes<<first_pt_line;
         gcodes<<openLine;
         foreach(FAHVector3 pt,pts){
-            QString line = "\nG1 X"+QString::number(pt.x)+
+            QString line = "G1 X"+QString::number(pt.x)+
                                " Y"+QString::number(pt.y)+
                                " Z"+QString::number(pt.z+layer*path_height)+
-                                "F"+QString::number(speed);
+                               " F"+QString::number(speed);
             gcodes.append(line);
         }
         gcodes<<closeLine;
     }
-    QString filename = dir_+"\\"+"topcoat.gcode";
+    QString filename = "topcoat.gcode";
     QFile f(filename);
     if(!f.open(QFile::WriteOnly | QFile::Text)){
         return;

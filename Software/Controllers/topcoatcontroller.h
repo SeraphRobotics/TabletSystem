@@ -11,6 +11,7 @@ public:
     explicit TopCoatController(Orthotic* orth, QString dir, QObject *parent = 0);
 
 signals:
+    void Failed(QString s);
      void generatedCoatingFile(QString file);
 
 public slots:

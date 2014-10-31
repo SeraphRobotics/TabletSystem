@@ -7,6 +7,7 @@
 RepairController::RepairController(STLMesh *mesh, QString name, QObject *parent) :
     QObject(parent),name_(name)
 {
+    mesh_=mesh;
 }
 
 void RepairController::repairMesh(){

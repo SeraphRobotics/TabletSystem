@@ -36,14 +36,17 @@ void PrintJobController::RunPrintJob(){
     RepairController* rs = new RepairController(orth_->printjob.shell,shellfilename);
     connect(rs,SIGNAL(Success()),this,SLOT(repairSucessful()));
     connect(workthread,SIGNAL(finished()),rs,SLOT(deleteLater()));
+    connect(rs,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
     rs->moveToThread(workthread);
     workthread->start();
     rs->repairMesh();
+
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
         RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,QString::number(i)+".stl");
         connect(r,SIGNAL(Success()),this,SLOT(repairSucessful()));
         connect(workthread,SIGNAL(finished()),r,SLOT(deleteLater()));
+        connect(r,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
         r->moveToThread(workthread);
         r->repairMesh();
 
@@ -54,6 +57,7 @@ void PrintJobController::RunPrintJob(){
     TopCoatController* tcc = new TopCoatController(orth_,"");
     tcc->moveToThread(workthread);
     connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
+    connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
     tcc->generateTopCoat();
 
 

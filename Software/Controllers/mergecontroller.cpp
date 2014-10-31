@@ -36,7 +36,7 @@ void MergeController::mergeFiles(){
         return;
     }
 
-    qDebug()<<merger->readAll();
+//    qDebug()<<merger->readAll();
 
     qDebug()<<"GCode reading";
     QFile gcodefile(outputname);
