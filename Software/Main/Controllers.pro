@@ -10,7 +10,10 @@ SOURCES += ../Controllers/scanprocessing.cpp \
     ../Controllers/scannerfunctions.cpp \
     ../Controllers/gcodecontroller.cpp \
     ../Controllers/printjobcontroller.cpp \
-    ../Controllers/topcoatcontroller.cpp
+    ../Controllers/topcoatcontroller.cpp \
+    ../Controllers/repaircontroller.cpp \
+    ../Controllers/mergecontroller.cpp \
+    ../Controllers/slicercontroller.cpp
 
 HEADERS += ../Controllers/scanprocessing.h \
     ../Controllers/scandataprocesser.h \
@@ -20,4 +23,7 @@ HEADERS += ../Controllers/scanprocessing.h \
     ../Controllers/scannerfunctions.h \
     ../Controllers/gcodecontroller.h \
     ../Controllers/printjobcontroller.h \
-    ../Controllers/topcoatcontroller.h
+    ../Controllers/topcoatcontroller.h \
+    ../Controllers/repaircontroller.h \
+    ../Controllers/mergecontroller.h \
+    ../Controllers/slicercontroller.h
