@@ -296,7 +296,7 @@ void TestOrthoticsRxThroughGCode(){
     tc.density = Top_Coat::kLow;
     tc.depth=1;
     tc.style=Top_Coat::kAuto;
-    tc.thickness=1;
+    tc.thickness=5;
 
     QString scanid = sm->scanIds()[0];
     qDebug()<<"using scan: "<<scanid;

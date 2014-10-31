@@ -39,7 +39,7 @@ void PrintJobController::RunPrintJob(){
     connect(rs,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
     rs->moveToThread(workthread);
     workthread->start();
-    rs->repairMesh();
+    //rs->repairMesh();
 
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){

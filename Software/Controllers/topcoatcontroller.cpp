@@ -2,6 +2,7 @@
 #include <math.h>
 #include "scannerfunctions.h"
 #include <QSettings>
+#include "UnitTest/debugfunctions.h"
 
 TopCoatController::TopCoatController(Orthotic* orth, QString dir, QObject *parent):
     QObject(parent),dir_(dir)
@@ -20,16 +21,20 @@ void TopCoatController::generateTopCoat(){
     QVector< FAHVector3> pts;
     QSettings s;
     XYGrid<float>* grid = orth_->getScan()->getPostedXYGrid();
-    float scaley = grid->stepSize();
+    float scaley = 1.0*grid->stepSize();
     float scalex = 2.0;
     float path_width=1.0;
     float path_height=1.0;
     float z_offset=1.0;
     float speed = 10.0;
 
-    FAHLoopInXYPlane* outerLoop = orth_->getLoop();
+    FAHLoopInXYPlane* outerLoop = mapOntoGrid( orth_->getLoop(), grid,false);
+    FAHVector3 minp = outerLoop->min();
+    minp.x = minp.x*scalex;
+    minp.y = minp.y*scaley;
     QList<FAHLoopInXYPlane* > innerLoops;
 
+    printPoint(minp);
     //    enum Style{ kNone,kAuto,kCloth};
     //   enum Density {kLow,kMedium,kHigh};
 
@@ -55,7 +60,7 @@ void TopCoatController::generateTopCoat(){
 
     QVector<float> xs;
     float x=0;
-    float stop=grid->nx();
+    float stop=grid->nx()*scalex;
     int n=0;
     while(x<stop && n<1000){
         xs.append(x);
@@ -67,41 +72,45 @@ void TopCoatController::generateTopCoat(){
     int j=0;
     foreach(float x,xs){
         j++;
+
         for(int i=0; i<grid->ny();i++){
 
             ///Oscilate directions
-            int index;
+            int index = i;
             if(j%2==0){index = i;}
             else{index = grid->ny()-i;}
 
 
 
-            FAHVector3 pt(x,i*scaley,0);
+
 
             //Calculate hights
             int xjminus = floor(x/scalex);
-            float xminus = scalex*xjminus;
+            float xminus = xjminus;
             float zminus = grid->at(xjminus,index);
 
             int xjplus = ceil(x/scalex);
-            float xplus = scalex*xjplus;
+            float xplus = xjplus;
             float zplus = grid->at(xjplus,index);
 
             float m;
-            if( (xplus-xminus)>0.001 ){
+            if( (xplus-xminus)>0.1 && (zplus-zminus)>0.1 ){
                 m = (zplus-zminus)/(xplus-xminus);
             }else{
                 m = 0.0;
             }
-            float b = zplus-m*xplus;
+//            float b = zplus-m*xplus;
 
-            pt.z = m*x+b + z_offset;
-
+//            pt.z = m*x+b + z_offset;
+             FAHVector3 pt(xplus,index,0);
+             pt.z = zplus + z_offset;
 
             //append if inside outer border
-            if (loopsContain(pt,outerLoop,innerLoops)){
+            if (loopsContain(pt,outerLoop,innerLoops) ){
+                pt.x = x - minp.x+6;
+                pt.y = pt.y*scaley + 10;
                 pts.append(pt);
-                qDebug()<<"Z: "<< pt.z;
+//                qDebug()<<"Z: "<< pt.z;
             }
         }
     }
@@ -111,12 +120,13 @@ void TopCoatController::generateTopCoat(){
     //// GENERATE GCODE FOR THE PATTERN
     QStringList gcodes;
     speed = 60*speed;
-    int numlayers = floor(t.depth/path_height);
+    int numlayers = floor(t.thickness/path_height);
 
     for(int layer=0;layer<numlayers;layer++){
+        qDebug()<<"Layer: "<<layer;
         QString openLine = s.value("Printing/open","\nG4 P2\nM340 P0 S2100").toString();
         QString closeLine = s.value("Printing/close","\nG4 P2\nM340 P0 S1650").toString();
-        QString relativelift = s.value("Printing/lift","\nG91 \nG1 Z20 F2400 \nG90").toString();
+        QString relativelift = s.value("Printing/lift","\nG91 \nG1 Z40 F2400 \nG90").toString();
 
         FAHVector3 first = pts.first();
         QString first_pt_line = "G1 X"+QString::number(first.x)+

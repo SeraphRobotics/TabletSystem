@@ -10,11 +10,11 @@ PrintJobTester::PrintJobTester(PrintJobController *pjc, QObject *parent) :
 
 void PrintJobTester::GcodeGenerated(QString gcode){
 
-    QFile f("processed.gcode");
-    f.open(QFile::WriteOnly);
-    QTextStream fs(&f);
-    fs<<gcode;
-    f.close();
+//    QFile f("processed.gcode");
+//    f.open(QFile::WriteOnly);
+//    QTextStream fs(&f);
+//    fs<<gcode;
+//    f.close();
     qDebug()<<"DONE";
 }
 void PrintJobTester::printJobInputs(Orthotic *orth){
