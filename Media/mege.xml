@@ -1,0 +1,20 @@
+<merge>
+    <shell>
+        <file> shell.gcode</file>
+        <zoffset units = "mm">0</zoffset>
+    </shell>
+    <pads>
+        <pad>
+            <file>1.gcode</file>
+            <zoffset>10</zoffset>
+        </pad>
+        <pad>
+            <file>1.gcode</file>
+            <zoffset>10</zoffset>
+        </pad>
+    </pads>
+    <topcoat>
+        <file>topcoat.gcode</file>
+        <zoffset>10</zoffset>
+    </topcoat>
+</merge>
