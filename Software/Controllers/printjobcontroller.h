@@ -5,6 +5,8 @@
 #include "gcodecontroller.h"
 #include "libraries/shared/stl/stlfile.h"
 #include "DataStructures/printingstructs.h"
+#include "Controllers/mergecontroller.h"
+#include <QTimer>
 
 class PrintJobController : public QObject
 {
@@ -36,7 +38,7 @@ private slots:
 
 
 private:
-    QStringList makeIniFiles(float stiffness);
+    QStringList makeIniFiles(QString stlfilename, float stiffness);
 
 private:
     Orthotic* orth_;
@@ -48,6 +50,11 @@ private:
     int numSTLToSlice;
     bool topcoatdone;
 
+    file_z_pair shell_;
+    QList< file_z_pair> pad_files_;
+    file_z_pair topcoat_file_;
+
+    QTimer* timer_;
 
 };
 

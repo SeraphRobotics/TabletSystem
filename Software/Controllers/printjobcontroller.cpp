@@ -17,10 +17,18 @@ PrintJobController::PrintJobController(Orthotic *orth, QObject *parent) :
     QSettings s;
     dir_ = s.value("printing/directory",QDir::currentPath()).toString();
     workthread = new QThread;
-    workthread->start();
+    timer_ = new QTimer();
+    timer_->setInterval(10);
+    connect(timer_,SIGNAL(timeout()),workthread,SLOT(start()));
+    timer_->start();
+
+//    workthread->start();
 }
 
 PrintJobController::~PrintJobController(){
+    timer_->stop();
+    delete timer_;
+    delete workthread;
 
 }
 
@@ -39,8 +47,10 @@ void PrintJobController::RunPrintJob(){
     connect(rs,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
     rs->moveToThread(workthread);
     workthread->start();
-    //rs->repairMesh();
+    rs->repairMesh();
 
+    shell_.file = shellfilename.replace(".stl","_fixed.gcode") ;
+    shell_.z = 0;
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
         RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,QString::number(i)+".stl");
@@ -62,19 +72,34 @@ void PrintJobController::RunPrintJob(){
 
 
 
+
 }
 
-QStringList PrintJobController::makeIniFiles(float stiffness){
+QStringList PrintJobController::makeIniFiles(QString stlfilename, float stiffness){
     //These are not the way to do it We will need to make composites.
     // this will mean making multiple inifiles for some materials and stitching them together
+
     QStringList inifiles;
     if(stiffness>25){
         inifiles<<"hs.ini";
+        file_z_pair p;
+        p.file = stlfilename;
+        p.z = 10.0;
+        pad_files_.append(p);
     }else if (stiffness>12){
         inifiles<<"ms.ini";
+        file_z_pair p;
+        p.file = stlfilename;
+        p.z = 10.0;
+        pad_files_.append(p);
     }else{
         inifiles<<"ls.ini";
+        file_z_pair p;
+        p.file = stlfilename;
+        p.z = 10.0;
+        pad_files_.append(p);
     }
+
     return inifiles;
 }
 
@@ -105,7 +130,7 @@ void PrintJobController::repairSucessful(){
         foreach(manipulationpair mp, orth_->printjob.manipulationpairs ){
             QString stlfilename = QString::number(i)+QString('_fixed.obj');
 
-            QStringList inifilenames = makeIniFiles(mp.stiffness);
+            QStringList inifilenames = makeIniFiles(stlfilename,mp.stiffness);
             numSTLToSlice+=inifilenames.size();
             foreach(QString ini,inifilenames){
                 SlicerController* sci = new SlicerController(stlfilename,ini,true);
@@ -128,18 +153,20 @@ void PrintJobController::slicingSucessful(){
 void PrintJobController::topcoatMade(QString file){
     qDebug()<<"Top coat at" << file;
     topcoatdone=true;
+    topcoat_file_.file = file;
     if(numSTLsSliced>=numSTLToSlice && topcoatdone){
         startMerge();
     }
 }
 
 void PrintJobController::startMerge(){
-    QDir d(dir_);
-    QStringList files = d.entryList(QStringList()<<"*.gcode");
-    MergeController* mc = new MergeController(files);
+    qDebug()<<numSTLsSliced<<":"<<numSTLToSlice<<" "<<topcoatdone;
+
+    MergeController* mc = new MergeController(shell_,pad_files_,topcoat_file_);
     connect(mc,SIGNAL(GCodeMerged(QString)),this,SLOT(mergeSucessful(QString)));
+    connect(workthread,SIGNAL(finished()),mc,SLOT(deleteLater()));
     mc->moveToThread(workthread);
-    workthread->start();
+//    workthread->start();
     mc->mergeFiles();
 
 
