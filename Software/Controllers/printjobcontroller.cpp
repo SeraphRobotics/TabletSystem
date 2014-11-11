@@ -53,7 +53,9 @@ void PrintJobController::RunPrintJob(){
     shell_.z = 0;
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
-        RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,QString::number(i)+".stl");
+        QString fn = QString::number(i);
+        fn.append(".stl");
+        RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,fn);
         connect(r,SIGNAL(Success()),this,SLOT(repairSucessful()));
         connect(workthread,SIGNAL(finished()),r,SLOT(deleteLater()));
         connect(r,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
@@ -83,22 +85,23 @@ QStringList PrintJobController::makeIniFiles(QString stlfilename, float stiffnes
     if(stiffness>25){
         inifiles<<"hs.ini";
         file_z_pair p;
-        p.file = stlfilename;
+        p.file = stlfilename.replace(".obj",".extrude.gcode");
         p.z = 10.0;
         pad_files_.append(p);
     }else if (stiffness>12){
         inifiles<<"ms.ini";
         file_z_pair p;
-        p.file = stlfilename;
+        p.file = stlfilename.replace(".obj",".extrude.gcode");;
         p.z = 10.0;
         pad_files_.append(p);
     }else{
-        inifiles<<"ls.ini";
+        inifiles<<"p.ini";
         file_z_pair p;
-        p.file = stlfilename;
+        p.file = stlfilename.replace(".obj",".extrude.gcode");;
         p.z = 10.0;
         pad_files_.append(p);
     }
+    qDebug()<<"size: "<<inifiles.size();
 
     return inifiles;
 }
@@ -118,17 +121,20 @@ void PrintJobController::repairSucessful(){
         QString plasticIni = s.value("printing/plastic_ini","p.ini").toString();
 
         SlicerController* sc = new SlicerController("shell_fixed.obj",plasticIni,false);
-        numSTLToSlice++;
+//        numSTLToSlice++;
         sc->moveToThread(workthread);
         connect(sc,SIGNAL(Success()),this,SLOT(slicingSucessful()));
         connect(workthread,SIGNAL(finished()),sc,SLOT(deleteLater()));
         workthread->start();
-        sc->slice();
+        //sc->slice();
 
 
-        int i=0;
-        foreach(manipulationpair mp, orth_->printjob.manipulationpairs ){
-            QString stlfilename = QString::number(i)+QString('_fixed.obj');
+//        int i=0;
+//        foreach(manipulationpair mp, orth_->printjob.manipulationpairs ){
+        for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
+            manipulationpair mp = orth_->printjob.manipulationpairs.at(i);
+            QString stlfilename = QString::number(i);
+            stlfilename.append("_fixed.obj");
 
             QStringList inifilenames = makeIniFiles(stlfilename,mp.stiffness);
             numSTLToSlice+=inifilenames.size();
