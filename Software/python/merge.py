@@ -257,8 +257,8 @@ def mergeFromXML(infilename, outfilename, verbose):
     padnodes = root.findall("pad")
     topcoatnode = root.find("topcoat")
     
-    BUILDTRAY_OFFSET = [0,0,0]#[20,50,5]
-    TOOLHEAD_OFFSET  = [0,0,0]#[-21,56,-4.5]
+    BUILDTRAY_OFFSET = [20,50,5]#[0,0,0]#[20,50,5]
+    TOOLHEAD_OFFSET  = [-21,56,-4.5]#[0,0,0]#[-21,56,-4.5]
     
     ## make shell layer list
     [shellfile,zshell_offset,zshell] = nodeToFileOffset(shellnode)
