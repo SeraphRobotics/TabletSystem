@@ -41,7 +41,7 @@ void PrintJobController::RunPrintJob(){
 
     numSTLsToRepair = 1+orth_->printjob.manipulationpairs.size();
 
-    RepairController* rs = new RepairController(orth_->printjob.shell,shellfilename);
+    RepairController* rs = new RepairController(orth_->printjob.shellpair.mesh,shellfilename);
     connect(rs,SIGNAL(Success()),this,SLOT(repairSucessful()));
     connect(workthread,SIGNAL(finished()),rs,SLOT(deleteLater()));
     connect(rs,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
@@ -49,9 +49,12 @@ void PrintJobController::RunPrintJob(){
     workthread->start();
     rs->repairMesh();
 
-    shell_.file = shellfilename.replace(".stl","_fixed.gcode") ;
+    shell_.stlfile = shellfilename ;
+    shell_.gcode_file = shellfilename.replace(".stl","_fixed.gcode");
     shell_.z_offset = 0;
     shell_.z_translate = 0;
+    shell_.x_center = orth_->printjob.shellpair.x_center;
+    shell_.y_center = orth_->printjob.shellpair.y_center;
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
         QString fn = QString::number(i);
@@ -78,35 +81,32 @@ void PrintJobController::RunPrintJob(){
 
 }
 
-QStringList PrintJobController::makeIniFiles(QString stlfilename, float stiffness, float z){
+void PrintJobController::makeIniFiles(QString stlfilename, manipulationpair pair){
     //These are not the way to do it We will need to make composites.
     // this will mean making multiple inifiles for some materials and stitching them together
+    file_z_pair p;
+    p.stlfile = stlfilename;
 
-    QStringList inifiles;
-    if(stiffness>25){
-        inifiles<<"hs.ini";
-        file_z_pair p;
-        p.file = stlfilename.replace(".obj",".extrude.gcode");
-        p.z_offset = 10.0;
-        p.z_translate = z;
-        pad_files_.append(p);
-    }else if (stiffness>12){
-        inifiles<<"ms.ini";
-        file_z_pair p;
-        p.file = stlfilename.replace(".obj",".extrude.gcode");;
-        p.z_offset = 10.0;
-        p.z_translate = z;
-        pad_files_.append(p);
+    p.z_offset = 10.0;
+    p.z_translate = pair.z_height;
+    p.x_center = pair.x_center;
+    p.y_center = pair.y_center;
+
+    if(pair.stiffness>50){
+        p.inifile = "p.ini";
+        p.gcode_file = stlfilename.replace(".obj",".gcode");
+    }else if(pair.stiffness>25){
+        p.inifile = "hs.ini";
+        p.gcode_file = stlfilename.replace(".obj",".extrude.gcode");
+    }else if (pair.stiffness>12){
+        p.inifile="ms.ini";
+        p.gcode_file = stlfilename.replace(".obj",".extrude.gcode");
     }else{
-        inifiles<<"p.ini";
-        file_z_pair p;
-        p.file = stlfilename.replace(".obj",".extrude.gcode");;
-        p.z_offset = 10.0;
-        p.z_translate = z;
-        pad_files_.append(p);
-    }
+        p.gcode_file = stlfilename.replace(".obj",".extrude.gcode");
+        p.inifile="p.ini";
 
-    return inifiles;
+    }
+    pad_files_.append(p);
 }
 
 
@@ -123,7 +123,7 @@ void PrintJobController::repairSucessful(){
         QSettings s;
         QString plasticIni = s.value("printing/plastic_ini","p.ini").toString();
 
-        SlicerController* sc = new SlicerController("shell_fixed.obj",plasticIni,false);
+        SlicerController* sc = new SlicerController("shell_fixed.obj",plasticIni,shell_.x_center,shell_.y_center,false);
         numSTLToSlice++;
         sc->moveToThread(workthread);
         connect(sc,SIGNAL(Success()),this,SLOT(slicingSucessful()));
@@ -139,10 +139,11 @@ void PrintJobController::repairSucessful(){
             QString stlfilename = QString::number(i);
             stlfilename.append("_fixed.obj");
 
-            QStringList inifilenames = makeIniFiles(stlfilename,mp.stiffness,mp.z_height);
-            numSTLToSlice+=inifilenames.size();
-            foreach(QString ini,inifilenames){
-                SlicerController* sci = new SlicerController(stlfilename,ini,true);
+            makeIniFiles(stlfilename,mp);
+
+            numSTLToSlice+=pad_files_.size();
+            foreach(file_z_pair p,pad_files_){
+                SlicerController* sci = new SlicerController(p.stlfile,p.inifile,p.x_center,p.y_center,true);
                 connect(sci,SIGNAL(Success()),this,SLOT(slicingSucessful()));
                 connect(workthread,SIGNAL(finished()),sci,SLOT(deleteLater()));
                 sci->slice();
@@ -162,7 +163,8 @@ void PrintJobController::slicingSucessful(){
 void PrintJobController::topcoatMade(QString file){
     qDebug()<<"Top coat at" << file;
     topcoatdone=true;
-    topcoat_file_.file = file;
+    topcoat_file_.stlfile = file;
+    topcoat_file_.gcode_file = file;
     topcoat_file_.z_offset=0;
     topcoat_file_.z_translate=0;
     if(numSTLsSliced>=numSTLToSlice && topcoatdone){

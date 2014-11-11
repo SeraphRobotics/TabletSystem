@@ -6,9 +6,13 @@
 #include <QDomElement>
 
 struct file_z_pair{
-    QString file;
+    QString stlfile;
+    QString gcode_file;
+    QString inifile;
     float z_offset;
     float z_translate;
+    float x_center;
+    float y_center;
 };
 
 QDomElement nodeFromPair(QString name, file_z_pair pair);

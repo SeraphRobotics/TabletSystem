@@ -6,8 +6,8 @@
 
 
 
-SlicerController::SlicerController(QString stlfile, QString inifile, bool isValved, QObject *parent) :
-    QObject(parent),objfile_(stlfile),inifile_(inifile),isvalved_(isValved)
+SlicerController::SlicerController(QString stlfile, QString inifile, float x, float y, bool isValved, QObject *parent) :
+    QObject(parent),objfile_(stlfile),inifile_(inifile),isvalved_(isValved),x_(x),y_(y)
 {
 }
 
@@ -19,10 +19,13 @@ void SlicerController::slice(){
     QString output = QString(objfile_).remove(".stl").remove(".obj")+".gcode";
 
     QStringList args;
-    args << objfile_ << "--load" <<inifile_ << "--output" << output;
+    QString cent = QString::number(x_)+","+QString::number(y_);
+
+    args <<objfile_ << "--load" <<inifile_ << "--output" << output
+         <<"--print-center"<<cent;
     QProcess* slicing = new QProcess(this);
     qDebug()<< slicer;
-    qDebug()<< args;
+    qDebug()<< args.join(" ");
     qDebug()<<"Starting slicer";
     slicing->start(slicer,args);
 
@@ -37,7 +40,15 @@ void SlicerController::slice(){
         return;
     }
     qDebug()<<"Done slicing";
-    qDebug()<<slicing->readAll();
+//    qDebug()<<slicing->readAll();
+
+//    QFile f(objfile_.append(".txt"));
+//    if(f.open(QIODevice::WriteOnly)){
+//        QTextStream s(&f);
+//        s<<QString(slicing->readAll());
+//        f.close();
+//    }
+
     slicing->close();
 
     if(isvalved_){ //if a valve tool, convert to valve tool gcode

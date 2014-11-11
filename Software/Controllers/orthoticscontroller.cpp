@@ -156,6 +156,9 @@ void OrthoticController::makeSTLs(){
         pair.mesh = m_mesh;
         pair.stiffness = m.stiffness;
         pair.z_height = min_z;
+        FAHVector3 cent = m.outerloop->center();
+        pair.x_center = cent.x;
+        pair.y_center = cent.y;
         pji.manipulationpairs.append(pair);
     }
 
@@ -167,8 +170,14 @@ void OrthoticController::makeSTLs(){
     shell->scale(2,1,1);
 
     //Generate Printjob outputs
-
-    pji.shell = shell;
+    manipulationpair pair;
+    pair.mesh = shell;
+    pair.z_height=0;
+    pair.stiffness=0;
+    FAHVector3 cent = orth_->getLoop()->center();
+    pair.x_center = 1.45*cent.x;
+    pair.y_center = cent.y;
+    pji.shellpair = pair;
     orth_->printjob=pji;
 
 

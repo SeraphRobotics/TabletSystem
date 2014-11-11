@@ -107,8 +107,8 @@ void TopCoatController::generateTopCoat(){
 
             //append if inside outer border
             if (loopsContain(pt,outerLoop,innerLoops) ){
-                pt.x = x - minp.x+6;
-                pt.y = pt.y*scaley + 10;
+                pt.x = x - minp.x+3;
+                pt.y = pt.y*scaley;// + 10;
                 pts.append(pt);
 //                qDebug()<<"Z: "<< pt.z;
             }

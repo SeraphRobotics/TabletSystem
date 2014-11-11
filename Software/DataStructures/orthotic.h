@@ -12,11 +12,13 @@
 struct manipulationpair{
     float stiffness;
     float z_height;
+    float x_center;
+    float y_center;
     STLMesh* mesh;
 };
 
 struct printjobinputs{
-    STLMesh* shell;
+    manipulationpair shellpair;
     QList<manipulationpair> manipulationpairs;
 };
 

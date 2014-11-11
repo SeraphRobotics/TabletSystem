@@ -94,7 +94,7 @@ QDomElement nodeFromPair(QString name, file_z_pair pair){
     QDomDocument d;
     QDomElement node = d.createElement(name);
     QDomElement fileEl = d.createElement("file");
-    fileEl.appendChild(d.createTextNode( pair.file ));
+    fileEl.appendChild(d.createTextNode( pair.gcode_file ));
     QDomElement offsetEl = d.createElement("zoffset");
     offsetEl.appendChild(d.createTextNode( QString::number(pair.z_offset,'f',5) ));
     QDomElement translateEl = d.createElement("ztranslate");
