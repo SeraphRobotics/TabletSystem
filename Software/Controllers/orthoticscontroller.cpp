@@ -145,6 +145,7 @@ void OrthoticController::makeSTLs(){
     QList<FAHLoopInXYPlane*> inners;
     foreach(Manipulation m, orth_->getManipulations()){
         STLMesh* m_mesh = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,shell);
+        inners.append(m.outerloop);
         m_mesh->scale(2,1,1);
         View_3D_Item v3d;
         v3d.mesh =  m_mesh;

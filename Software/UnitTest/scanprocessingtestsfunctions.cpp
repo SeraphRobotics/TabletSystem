@@ -329,6 +329,6 @@ void TestOrthoticsRxThroughGCode(){
 
     PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
     PrintJobTester* pjt = new PrintJobTester(pjc);
-    //pjc->RunPrintJob();
+    pjc->RunPrintJob();
 
 }

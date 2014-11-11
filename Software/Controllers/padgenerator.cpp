@@ -48,8 +48,8 @@ STLMesh* GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* she
         pad_grid->operator ()(pt.i,pt.j)=  h+delta;
 //        qDebug()<<heightOverShell/max_d*pt[2];
         ///  delta_h = height over shell / max distance * current distance
-
-        shell_grid->operator ()(pt.i,pt.j) = floorz;
+        shell_grid->operator ()(pt.i,pt.j) = h+delta;
+//        shell_grid->operator ()(pt.i,pt.j) = floorz;
         /// Set shell Z to depth
 
 
