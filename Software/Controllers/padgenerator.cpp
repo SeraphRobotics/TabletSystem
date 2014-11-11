@@ -2,7 +2,7 @@
 #include "UnitTest/debugfunctions.h"
 #include <math.h>
 
-float GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* shell_grid, STLMesh* mesh, STLMesh *shell_mesh, float min_z){
+float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell_grid, STLMesh* mesh, STLMesh *shell_mesh, float min_z){
 //    STLMesh* mesh= new STLMesh();
 
     float kMinThick = 0.4;
@@ -15,8 +15,8 @@ float GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* shell_
     for(int j=0;j<pad_grid->ny()-1;j++){
         for(int i=0;i<pad_grid->nx()-1;i++){
             FAHVector3 p1=vectorFromIJ(i,j,pad_grid->at(i,j),pad_grid->stepSize());
-            if ( loopsContain(p1,m.outerloop,m.innerloops) ){
-                float d = m.outerloop->distanceToPoint(p1);
+            if ( loopsContain(p1,m->outerloop,m->innerloops) ){
+                float d = m->outerloop->distanceToPoint(p1);
                 ijd pt;
                 pt.i=i;
                 pt.j=j;
@@ -32,11 +32,11 @@ float GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* shell_
     qDebug()<<"Min Z: "<<min_z;
 
     ///ADJUST Heights of pad and shell
-    float heightOverShell = m.thickness - m.depth;
+    float heightOverShell = m->thickness - m->depth;
     qDebug()<<"height: "<<heightOverShell;
     qDebug()<<"Npts:"<<modpts.size();
 
-    float floorz = min_z - m.depth-kMinThick;
+    float floorz = min_z - m->depth-kMinThick;
 
     foreach(ijd pt, modpts){
 //        printPoint(pt);
@@ -58,9 +58,11 @@ float GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* shell_
 
 
     //// MAP loops to Heights
-    FAHLoopInXYPlane* outer = mapOntoGrid(m.outerloop,pad_grid);
+    FAHLoopInXYPlane* outer = mapOntoGrid(m->outerloop,pad_grid);
+    delete m->outerloop;
+    m->outerloop = outer;
     QList<FAHLoopInXYPlane*> inners;
-    foreach(FAHLoopInXYPlane* loop,m.innerloops){
+    foreach(FAHLoopInXYPlane* loop,m->innerloops){
         inners.append(mapOntoGrid(loop,pad_grid,true) );
     }
 
@@ -76,11 +78,11 @@ float GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* shell_
             addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,0,false);
         }
     }
-    FAHLoopInXYPlane* outer_floor = mapOntoGrid(m.outerloop,shell_grid,true,floorz);
+    FAHLoopInXYPlane* outer_floor = mapOntoGrid(m->outerloop,shell_grid,true,floorz);
     addBetweenTwoLoopsToSTL(mesh,outer,outer_floor);
     addBetweenTwoLoopsToSTL(shell_mesh,outer,outer_floor,false);
     delete outer_floor;
-    delete outer;
+//    delete outer;
 
     foreach(FAHLoopInXYPlane* l, inners){
         FAHLoopInXYPlane* l2 = mapOntoGrid(l,shell_grid,true,floorz);

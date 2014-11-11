@@ -11,7 +11,7 @@
 
 struct manipulationpair{
     float stiffness;
-    float z;
+    float z_height;
     STLMesh* mesh;
 };
 

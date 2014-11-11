@@ -50,7 +50,8 @@ void PrintJobController::RunPrintJob(){
     rs->repairMesh();
 
     shell_.file = shellfilename.replace(".stl","_fixed.gcode") ;
-    shell_.z = 0;
+    shell_.z_offset = 0;
+    shell_.z_translate = 0;
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
         QString fn = QString::number(i);
@@ -86,22 +87,24 @@ QStringList PrintJobController::makeIniFiles(QString stlfilename, float stiffnes
         inifiles<<"hs.ini";
         file_z_pair p;
         p.file = stlfilename.replace(".obj",".extrude.gcode");
-        p.z = 10.0+z;
+        p.z_offset = 10.0;
+        p.z_translate = z;
         pad_files_.append(p);
     }else if (stiffness>12){
         inifiles<<"ms.ini";
         file_z_pair p;
         p.file = stlfilename.replace(".obj",".extrude.gcode");;
-        p.z = 10.0+z;
+        p.z_offset = 10.0;
+        p.z_translate = z;
         pad_files_.append(p);
     }else{
         inifiles<<"p.ini";
         file_z_pair p;
         p.file = stlfilename.replace(".obj",".extrude.gcode");;
-        p.z = 10.0+z;
+        p.z_offset = 10.0;
+        p.z_translate = z;
         pad_files_.append(p);
     }
-    qDebug()<<"size: "<<inifiles.size();
 
     return inifiles;
 }
@@ -136,7 +139,7 @@ void PrintJobController::repairSucessful(){
             QString stlfilename = QString::number(i);
             stlfilename.append("_fixed.obj");
 
-            QStringList inifilenames = makeIniFiles(stlfilename,mp.stiffness,mp.z);
+            QStringList inifilenames = makeIniFiles(stlfilename,mp.stiffness,mp.z_height);
             numSTLToSlice+=inifilenames.size();
             foreach(QString ini,inifilenames){
                 SlicerController* sci = new SlicerController(stlfilename,ini,true);
@@ -160,6 +163,8 @@ void PrintJobController::topcoatMade(QString file){
     qDebug()<<"Top coat at" << file;
     topcoatdone=true;
     topcoat_file_.file = file;
+    topcoat_file_.z_offset=0;
+    topcoat_file_.z_translate=0;
     if(numSTLsSliced>=numSTLToSlice && topcoatdone){
         startMerge();
     }

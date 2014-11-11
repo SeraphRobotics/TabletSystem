@@ -318,7 +318,7 @@ void TestOrthoticsRxThroughGCode(){
 //    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
 
-    FAHLoopInXYPlane* c = circle(90.0,90.0,10.0);
+    FAHLoopInXYPlane* c = circle(40.0,90.0,10.0);
     writeLoopToXDFL(c,"circle.xdfl");
     Manipulation m;
     m.stiffness=10;

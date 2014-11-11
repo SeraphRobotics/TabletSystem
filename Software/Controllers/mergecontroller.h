@@ -7,7 +7,8 @@
 
 struct file_z_pair{
     QString file;
-    float z;
+    float z_offset;
+    float z_translate;
 };
 
 QDomElement nodeFromPair(QString name, file_z_pair pair);

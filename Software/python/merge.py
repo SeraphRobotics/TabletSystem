@@ -141,9 +141,10 @@ def parity(layerlist, verbose=False):
                 out_line_list.append(line)
         layer.cmds = out_line_list
     
-def translate(layerlist, delta, verbose=False):
+def translate(layerlist, delta, verbose=False, shiftlayer=False):
     for layer in layerlist :
         out_line_list=[]
+        if shiftlayer: layer.stackz = layer.stackz+delta[2]
         for line in layer.cmds:
             xy_move_match = re.match(r'^G1 X([-\d\.]+) Y([-\d\.]+)($| F)*([-\d\.]+)',line.rstrip())
             z_move_match = re.match(r'^G1 Z([-\d\.]+)($| F)*([-\d\.]+)',line.rstrip())
@@ -247,7 +248,8 @@ def mergeFromXML(infilename, outfilename, verbose):
     def nodeToFileOffset(node):
         file = node.find("file").text
         zoffset = float(node.find("zoffset").text)
-        return [file,zoffset]
+        ztranslate = float(node.find("ztranslate").text)
+        return [file,zoffset,ztranslate]
     
     ## Process file 
     root = fabTree.getroot()
@@ -255,11 +257,11 @@ def mergeFromXML(infilename, outfilename, verbose):
     padnodes = root.findall("pad")
     topcoatnode = root.find("topcoat")
     
-    BUILDTRAY_OFFSET =[20,50,5];
-    TOOLHEAD_OFFSET =[-21,56,-4.5];
+    BUILDTRAY_OFFSET = [0,0,0]#[20,50,5]
+    TOOLHEAD_OFFSET  = [0,0,0]#[-21,56,-4.5]
     
     ## make shell layer list
-    [shellfile,zshell] = nodeToFileOffset(shellnode)
+    [shellfile,zshell_offset,zshell] = nodeToFileOffset(shellnode)
     shell_list = processFileIntoLayers(shellfile,True,verbose)
     translate(shell_list,[0,0,zshell],verbose)
     parity(shell_list,verbose)
@@ -269,17 +271,19 @@ def mergeFromXML(infilename, outfilename, verbose):
     ## make Pad layer lists
     
     for padnode in padnodes:
-        [padfile,padz] = nodeToFileOffset(padnode)
+        [padfile,padz,locationz] = nodeToFileOffset(padnode)
         pad_list = processFileIntoLayers(padfile,False,verbose)
+        translate(pad_list,[0,0,locationz],verbose,True)
         translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
         parity(pad_list,verbose)
         translate(pad_list,BUILDTRAY_OFFSET,verbose)
         mergelist.append(pad_list)
     
     ## make TopCoat layer lists
-    [topcoat_file,z_topcoat] = nodeToFileOffset(topcoatnode)
+    [topcoat_file,z_topcoat,z_offset] = nodeToFileOffset(topcoatnode)
     topcoat_list = processFileIntoLayers(topcoat_file,True,verbose)
-    translate(topcoat_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+z_topcoat],verbose)
+    translate(topcoat_list,[0,0,z_topcoat],verbose, True)
+    translate(topcoat_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+z_offset],verbose)
     parity(topcoat_list,verbose)
     translate(topcoat_list,BUILDTRAY_OFFSET,verbose)
     
