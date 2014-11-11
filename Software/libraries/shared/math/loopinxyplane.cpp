@@ -268,6 +268,17 @@ bool LoopInXYPlane::crossedBy(const Line& segment) const {
   return false;
 }
 
+
+float LoopInXYPlane::distanceToPoint(Vector3 point){
+    Float min = 100000;
+    for (int i = 1; i < points.size() + 1; ++i) {
+      Line current_segment(points[i-1], points[i%points.size()]);
+      Float f = current_segment.segmentDistanceTo2DXY(point);
+      min = std::min(f,min);
+    }
+    return min;
+}
+
 bool LoopInXYPlane::intersect(const Line& segment, QVector<Vector3>* results) const{
   for (int i = 1; i < points.size() + 1; ++i) {
     Line current_segment(points[i-1], points[i%points.size()]);
@@ -370,7 +381,16 @@ void LoopInXYPlane::simplify() {
   } while (points_at_start != points.size());
 }
 
-
+Vector3 LoopInXYPlane::center(){
+    Vector3 cent(0,0,0);
+    foreach(Vector3 pt, points){
+        cent.x=cent.x+pt.x;
+        cent.y=cent.y+pt.y;
+    }
+    cent.x=cent.x/points.size();
+    cent.y=cent.y/points.size();
+    return cent;
+}
 
 void LoopInXYPlane::simplifyAndExpand(Float amount, QVector<LoopInXYPlane>* expanded_loops) {
   simplify();

@@ -36,7 +36,7 @@ FAHLoopInXYPlane* angledBase(float theta, float min_threshold, float max_thresho
 
 
 
-STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane *angled,  FAHLoopInXYPlane *OuterLoop, QList<FAHLoopInXYPlane *> innerLoops);
+void STLFromSection(STLMesh *mesh, XYGrid<float>* grid, FAHLoopInXYPlane *angled,  FAHLoopInXYPlane *OuterLoop, QList<FAHLoopInXYPlane *> innerLoops);
 /// STL Helper functions
 
 /**
@@ -45,7 +45,7 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane *angled,  FAHLoopI
 template <class T>
 void addSquareToSTL(int i, int j, XYGrid<T>* grid,STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
-                    QList<FAHLoopInXYPlane*> innerLoops, bool top);
+                    QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top=true);
 
 
 enum kChannelType{cleft,cright,ctop,cbottom,
@@ -66,7 +66,8 @@ void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<T>* grid,STLMesh* mesh,boo
 
 void addBetweenTwoLoopsToSTL(STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
-                    FAHLoopInXYPlane* innerLoops);
+                    FAHLoopInXYPlane* innerLoops,
+                    bool outside = true);
 
 
 /**

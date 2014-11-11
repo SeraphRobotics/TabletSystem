@@ -71,8 +71,8 @@ FAHLoopInXYPlane* angledBase(float theta, float min_threshold, float max_thresho
 }
 
 
-STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoop){
-    STLMesh* mesh= new STLMesh();
+void STLFromSection(STLMesh* mesh,XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoop){
+//    STLMesh* mesh= new STLMesh();
 
 //    kChannelType type;
 
@@ -90,9 +90,9 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopIn
     for(int j=0;j<grid->ny()-1;j++){
         for(int i=0;i<grid->nx()-1;i++){
 
-            addSquareToSTL(i,j,grid, mesh, borderWithHeight, innerLoop,true);
+            addSquareToSTL(i,j,grid, mesh, borderWithHeight, innerLoop,-1);
 
-            addSquareToSTL(i,j,grid, mesh, angleloop, innerLoop,false);
+            addSquareToSTL(i,j,grid, mesh, angleloop, innerLoop,0,false);
         }
     }
 
@@ -101,7 +101,7 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopIn
     delete borderWithHeight;
     delete angleloop;
 
-    return mesh;
+//    return mesh;
 }
 
 
@@ -110,7 +110,7 @@ STLMesh* STLFromSection(XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopIn
 template <class T>
 void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
                     FAHLoopInXYPlane* OuterLoop,
-                    QList<FAHLoopInXYPlane*> innerLoops, bool top){
+                    QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top){
 
     /** calculated vOuterLoophe 4 points and determin case
      *  p1--p2 -->i x  thesebounds
@@ -147,13 +147,14 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
 
 //    if(numInBounds!=2){return;}
 
-    if(!top){// if its the bottom set all Z points to 0
-        p1.z=0;
-        p2.z=0;
-        p3.z=0;
-        p4.z=0;
-        d.z=-1;
+    if(setz!=-1){// if its the bottom set all Z points to 0
+        p1.z=setz;
+        p2.z=setz;
+        p3.z=setz;
+        p4.z=setz;
+
     }
+    if(!top){d.z=-1;}
 
     FAHLine l12(p1,p2);
     l12.a.z=0;
@@ -388,7 +389,7 @@ void addChannelToSTL(int i, int j, XYGrid<float>* grid, STLMesh* mesh, FAHLoopIn
 
 
     if(numInBounds<4){
-        addSquareToSTL(i,j,grid, mesh, OuterLoop, innerLoops,true);
+        addSquareToSTL(i,j,grid, mesh, OuterLoop, innerLoops,-1,false);
         return;
     }
 
@@ -663,7 +664,7 @@ FAHVector3 addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMe
 
 void addBetweenTwoLoopsToSTL(STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
-                    FAHLoopInXYPlane* innerLoop)
+                    FAHLoopInXYPlane* innerLoop, bool outside)
 {
     QMap<int, QVector<FAHVector3> >indexToOuterloop;
 
@@ -714,7 +715,8 @@ void addBetweenTwoLoopsToSTL(STLMesh* mesh,
         QVector<FAHVector3> ptsp = indexToOuterloop[kp%innerLoop->points.size()];
 
         FAHVector3 direction(0,0,1);
-        direction = pts.at(0)-cent;
+        if(outside){direction = pts.at(0)-cent;}
+        else{direction = cent-pts.at(0);}
         direction.normalize();
 
 
@@ -1291,8 +1293,8 @@ bool stlToFile(STLMesh* m, QString file){
 }
 
 
-template void addSquareToSTL(int i, int j, XYGrid<float>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops, bool top);
-template void addSquareToSTL(int i, int j, XYGrid<int>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops, bool top);
+template void addSquareToSTL(int i, int j, XYGrid<float>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops,float setz, bool top);
+template void addSquareToSTL(int i, int j, XYGrid<int>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top);
 template STLMesh* makeSTLfromScan(XYGrid<float>* grid );
 template STLMesh* makeSTLfromScan(XYGrid<int>* grid );
 template STLMesh* makeSTLfromScanSection(XYGrid<float>* grid, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops);

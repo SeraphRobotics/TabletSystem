@@ -490,14 +490,20 @@ void sortLoop(FAHLoopInXYPlane* loop)
     }
 }
 
-FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid,bool withheights){
+FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid, bool withheights, float setheight){
 
     QVector< FAHVector3 > curve;
     /////get heights of points
 
     for(int i=0;i<loop->points.size();i++){
         float z =0;
-        if (withheights){z=getHeightAt(loop->points[i].x,loop->points[i].y,grid);}
+        if (withheights){
+            if(setheight==-1){
+                z=getHeightAt(loop->points[i].x,loop->points[i].y,grid);
+            }else{
+                z=setheight;
+            }
+        }
         curve.append(FAHVector3(loop->points[i].x,loop->points[i].y,z));
     }
 
@@ -515,7 +521,13 @@ FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid,bool w
         QList<FAHLoopInXYPlane*> innerLoops;
         QVector<FAHVector3> intersected = intersection_points(lines,loop,innerLoops);
         foreach(FAHVector3 pt,intersected){
-            if(withheights){pt.z = getHeightAt(pt.x,pt.y,grid);
+            if(withheights){
+                if(setheight==-1){
+                    pt.z = getHeightAt(pt.x,pt.y,grid);
+                }else{
+                    pt.z =setheight;
+                }
+
             }else{pt.z=0;}
             if(!pt.isInvalid()){curve.append(pt);}
         }
@@ -531,7 +543,12 @@ FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid,bool w
         QList<FAHLoopInXYPlane*> innerLoops;
         QVector<FAHVector3> intersected = intersection_points(lines,loop,innerLoops);
         foreach(FAHVector3 pt,intersected){
-            if(withheights){pt.z = getHeightAt(pt.x,pt.y,grid);
+            if(withheights){
+                if(setheight==-1){
+                    pt.z = getHeightAt(pt.x,pt.y,grid);
+                }else{
+                    pt.z =setheight;
+                }
             }else{pt.z=0;}
             if(!pt.isInvalid()){curve.append(pt);}
         }

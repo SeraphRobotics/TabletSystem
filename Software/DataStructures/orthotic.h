@@ -48,6 +48,7 @@ public:
     QVector< FAHVector3 > getHealPoints();
     QVector< FAHVector3 > getForePoints();
     Top_Coat getTopCoat();
+    QVector<Manipulation> getManipulations();
 
 signals:
     void manipulated();
@@ -71,6 +72,8 @@ private slots:
 
 public:
     printjobinputs printjob;
+    XYGrid<float>* topcoatgrid;
+    XYGrid<float>* shellgrid;
 
 private:
     QUuid id_;
@@ -87,6 +90,7 @@ private:
     QVector< FAHVector3 > healPts_;
     QVector< FAHVector3 > forePts_;
     Top_Coat tc_;
+
 };
 
 #endif // ORTHOTIC_H

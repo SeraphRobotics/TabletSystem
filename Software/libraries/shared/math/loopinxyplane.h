@@ -162,6 +162,11 @@ public:
    * Invokes simplify(), then expand().  This is the safest way to call 'expand'.
    */
   void simplifyAndExpand(Float amount, QVector<LoopInXYPlane>* expanded_loops);
+
+
+  Vector3 center();
+
+  float distanceToPoint(Vector3 point);
 };
 
 

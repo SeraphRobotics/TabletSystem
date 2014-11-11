@@ -11,6 +11,7 @@ Manipulation::Manipulation(QDomNode node):depth(0),stiffness(0),location(0,0,0){
             <type>12</type>
             <stiffness units="MPA">12312</stiffness>
             <depth units="mm">10</depth>
+            <thickness units="mm">10</depth>
             <location>
                 <x>1</x>
                 <y>1</y>
@@ -42,6 +43,8 @@ Manipulation::Manipulation(QDomNode node):depth(0),stiffness(0),location(0,0,0){
             stiffness = el.text().toFloat();
         }else if ("depth"==name){
             depth = el.text().toFloat();
+        }else if ("thickness"==name){
+            thickness = el.text().toFloat();
         }else if ("location"==name){
             QDomNodeList lchildren = mchild.childNodes();
             if(1>lchildren.length()){continue;}
@@ -92,6 +95,10 @@ QDomNode Manipulation::toNode(){
     QDomElement depthEl = d.createElement("depth");
     depthEl.appendChild(d.createTextNode(QString::number(depth)));
     node.appendChild(depthEl);
+
+    QDomElement thicknessEl = d.createElement("thickness");
+    thicknessEl.appendChild(d.createTextNode(QString::number(thickness)));
+    node.appendChild(thicknessEl);
 
     QDomElement locationEl = d.createElement("location");
     QDomElement xEl = d.createElement("x");

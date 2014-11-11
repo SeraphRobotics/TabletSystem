@@ -11,6 +11,8 @@ Orthotic::Orthotic(QObject *parent) :
     scanid_=scan_->getID();
     forfoot_ = Posting();
     rearfoot_=Posting();
+    topcoatgrid = new XYGrid<float>();
+    shellgrid = new XYGrid<float>();
 
 
 }
@@ -19,6 +21,8 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
     filename_=filename;
     id_=QUuid::createUuid();
     scan_ = new Scan();
+    topcoatgrid = new XYGrid<float>();
+    shellgrid = new XYGrid<float>();
     QDomDocument d("OrthoticFile");
 
     QFile file(filename_);
@@ -232,6 +236,7 @@ void Orthotic::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector
 QVector< FAHVector3 > Orthotic::getHealPoints(){return healPts_;}
 QVector< FAHVector3 > Orthotic::getForePoints(){return forePts_;}
 Top_Coat Orthotic::getTopCoat(){return tc_;}
+QVector<Manipulation> Orthotic::getManipulations(){return manipulations_;}
 
 
 void Orthotic::setBoundary(FAHLoopInXYPlane* loop){boundaryloop_=loop;}

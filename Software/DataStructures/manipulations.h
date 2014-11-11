@@ -25,6 +25,7 @@ struct Manipulation {
     FAHLoopInXYPlane* outerloop;
     QList<FAHLoopInXYPlane*> innerloops;
     float depth;
+    float thickness;
     float stiffness;
     FAHVector3 location;
 

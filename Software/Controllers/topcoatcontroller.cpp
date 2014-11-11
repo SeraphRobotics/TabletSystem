@@ -20,7 +20,7 @@ void TopCoatController::generateTopCoat(){
 
     QVector< FAHVector3> pts;
     QSettings s;
-    XYGrid<float>* grid = orth_->getScan()->getPostedXYGrid();
+    XYGrid<float>* grid = orth_->topcoatgrid;
     float scaley = 1.0*grid->stepSize();
     float scalex = 2.0;
     float path_width=1.0;

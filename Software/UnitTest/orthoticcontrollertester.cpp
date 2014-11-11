@@ -36,7 +36,8 @@ void OrthoticControllerTester::healPoints(QList<QPointF> ps){
 
 void OrthoticControllerTester::stlsGenerated(QList<View_3D_Item> items){
     for(int i=0;i<items.size();i++){
-//        stlToFile(items.at(i).mesh, QString::number(i)+".stl");
+        stlToFile(items.at(i).mesh, QString::number(i)+".stl");
+        qDebug()<<"Made:"<<i;
     }
 }
 

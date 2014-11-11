@@ -2,6 +2,7 @@
 #include "processingfunctions.h"
 #include "stlgeneration.h"
 #include "UnitTest/debugfunctions.h"
+#include "padgenerator.h"
 
 OrthoticController::OrthoticController(OrthoticManager* om, QObject *parent) :
     QObject(parent),om_(om)
@@ -82,6 +83,7 @@ void OrthoticController::setTopCoat(Top_Coat tc){
 
 void OrthoticController::addManipulation(Manipulation m){
     orth_->addManipulation(m);
+    makeSTLs();
 }
 
 void OrthoticController::setPosting(Posting p){
@@ -126,64 +128,50 @@ void OrthoticController::setPosting(Posting p){
 }
 
 void OrthoticController::makeSTLs(){
+
+
+
+    printjobinputs pji;
+    QList<View_3D_Item> toEmitList;
+
+    delete orth_->shellgrid;
+    delete orth_->topcoatgrid;
+    orth_->shellgrid = new XYGrid<float>(orth_->getScan()->getPostedXYGrid());
+    orth_->topcoatgrid = new XYGrid<float>(orth_->getScan()->getPostedXYGrid());
+
+    STLMesh* shell = new STLMesh();
+
+    /// GENERATE PADS
     QList<FAHLoopInXYPlane*> inners;
-//    STLMesh* mp = makeSTLfromScan(orth_->getScan()->getPostedXYGrid());
+    foreach(Manipulation m, orth_->getManipulations()){
+        STLMesh* m_mesh = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,shell);
+        m_mesh->scale(2,1,1);
+        View_3D_Item v3d;
+        v3d.mesh =  m_mesh;
+        v3d.color = QColor(Qt::black);
+        toEmitList.append(v3d);
+        manipulationpair pair;
+        pair.mesh = m_mesh;
+        pair.stiffness = m.stiffness;
+        pji.manipulationpairs.append(pair);
+    }
 
-    QList<FAHLoopInXYPlane*> innerLoops3;
-//    innerLoops3.append(orth_->getLoop());
-//    FAHLoopInXYPlane* outside = new FAHLoopInXYPlane();
-//    outside->points.append(FAHVector3(0,0,0));
-//    outside->points.append(FAHVector3(1000,0,0));
-//    outside->points.append(FAHVector3(1000,1000,0));
-//    outside->points.append(FAHVector3(0,1000,0));
-
-
-//    STLMesh* p = makeSTLfromScanSection(orth_->getScan()->getProcessedXYGrid(),
-//                                         outside,
-//                                         innerLoops3);
-//    p->scale(2,1,1.0);
-//    stlToFile(p,"prepost.stl");
-
-
-//    STLMesh* mp = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
-//                                         outside,
-//                                         innerLoops3);
-
-//    mp->scale(2,1,1.0);
-//    stlToFile(mp,"full.stl");
 
 
     FAHLoopInXYPlane* bottomloop = bottomLoopFromPoints(orth_->getHealPoints(),orth_->getForePoints());
-    STLMesh* angleMesh = STLFromSection(orth_->getScan()->getPostedXYGrid(),bottomloop,orth_->getLoop(),innerLoops3);
-    angleMesh->scale(2,1,1);
-//    stlToFile(angleMesh,"angled.stl");
-
-
-//    innerLoops3.append(orth_->getLoop());
-//    STLMesh* mn = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),
-//                                         outside,
-//                                         innerLoops3);
-//    mn->scale(2,1,1.0);
-//    stlToFile(mn,"cutout.stl");
-
-
-
-
-
-//    STLMesh* m = makeSTLfromScanSection(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),inners);
-//    m->scale(2,1,1.0);
-//    stlToFile(m,"original.stl");
+//    STLMesh* angleMesh =
+    STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);
+    shell->scale(2,1,1);
 
     //Generate Printjob outputs
-    printjobinputs pji;
-    pji.shell = angleMesh;
-//    emit printJobInputs(pji);
+
+    pji.shell = shell;
     orth_->printjob=pji;
 
-    QList<View_3D_Item> toEmitList;
+
     View_3D_Item v3d;
 
-    v3d.mesh = angleMesh;
+    v3d.mesh = shell;
     v3d.color = QColor(Qt::gray);
 
     toEmitList.append(v3d);

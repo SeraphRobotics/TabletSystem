@@ -13,7 +13,8 @@ SOURCES += ../Controllers/scanprocessing.cpp \
     ../Controllers/topcoatcontroller.cpp \
     ../Controllers/repaircontroller.cpp \
     ../Controllers/mergecontroller.cpp \
-    ../Controllers/slicercontroller.cpp
+    ../Controllers/slicercontroller.cpp \
+    ../Controllers/padgenerator.cpp
 
 HEADERS += ../Controllers/scanprocessing.h \
     ../Controllers/scandataprocesser.h \
@@ -26,4 +27,5 @@ HEADERS += ../Controllers/scanprocessing.h \
     ../Controllers/topcoatcontroller.h \
     ../Controllers/repaircontroller.h \
     ../Controllers/mergecontroller.h \
-    ../Controllers/slicercontroller.h
+    ../Controllers/slicercontroller.h \
+    ../Controllers/padgenerator.h

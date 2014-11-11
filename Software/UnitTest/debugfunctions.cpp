@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <QFile>
 #include <QTextStream>
+#include <math.h>
 
 void printPoint(FAHVector3 pt){
     printf("\n %.4f\t%.4f\t%.4f",pt.x,pt.y,pt.z);
@@ -71,4 +72,14 @@ void writeLoopToXDFL(FAHLoopInXYPlane *loop, QString file){
          f.close();
      }
 
+}
+
+FAHLoopInXYPlane* circle(float x, float y,float r){
+    FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
+    for( int i=0; i<100; i++){
+        float theta = i*Math::k2Pi/100.0;
+        FAHVector3 pt(r*sin(theta)+x,r*cos(theta)+y,0);
+        loop->add(pt);
+    }
+    return loop;
 }
