@@ -121,12 +121,12 @@ void PrintJobController::repairSucessful(){
         QString plasticIni = s.value("printing/plastic_ini","p.ini").toString();
 
         SlicerController* sc = new SlicerController("shell_fixed.obj",plasticIni,false);
-//        numSTLToSlice++;
+        numSTLToSlice++;
         sc->moveToThread(workthread);
         connect(sc,SIGNAL(Success()),this,SLOT(slicingSucessful()));
         connect(workthread,SIGNAL(finished()),sc,SLOT(deleteLater()));
         workthread->start();
-        //sc->slice();
+        sc->slice();
 
 
 //        int i=0;
