@@ -1,5 +1,6 @@
 #include "padgenerator.h"
 #include "UnitTest/debugfunctions.h"
+#include "processingfunctions.h"
 #include <math.h>
 
 float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell_grid, STLMesh* mesh, STLMesh *shell_mesh, float min_z){
@@ -55,7 +56,8 @@ float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell
 
     }
 
-
+    blurInLoop(pad_grid,m->outerloop,3);
+    blurInLoop(shell_grid,m->outerloop,3);
 
     //// MAP loops to Heights
     FAHLoopInXYPlane* outer = mapOntoGrid(m->outerloop,pad_grid);
