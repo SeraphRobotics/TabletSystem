@@ -10,6 +10,6 @@ struct ijd{
     float d;
 };
 
-STLMesh* GeneratePad(Manipulation m,XYGrid<float>* pad_grid, XYGrid<float>* shell_grid,STLMesh* shell_mesh);
+float GeneratePad(Manipulation m,XYGrid<float>* pad_grid, XYGrid<float>* shell_grid,STLMesh* mesh, STLMesh* shell_mesh, float min_z);
 
 #endif // PADGENERATOR_H

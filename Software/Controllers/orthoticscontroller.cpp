@@ -144,7 +144,8 @@ void OrthoticController::makeSTLs(){
     /// GENERATE PADS
     QList<FAHLoopInXYPlane*> inners;
     foreach(Manipulation m, orth_->getManipulations()){
-        STLMesh* m_mesh = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,shell);
+        STLMesh* m_mesh = new STLMesh();
+        float min_z = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,min_z);
         inners.append(m.outerloop);
         m_mesh->scale(2,1,1);
         View_3D_Item v3d;
@@ -154,6 +155,7 @@ void OrthoticController::makeSTLs(){
         manipulationpair pair;
         pair.mesh = m_mesh;
         pair.stiffness = m.stiffness;
+        pair.z = min_z;
         pji.manipulationpairs.append(pair);
     }
 

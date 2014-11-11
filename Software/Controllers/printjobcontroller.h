@@ -38,7 +38,7 @@ private slots:
 
 
 private:
-    QStringList makeIniFiles(QString stlfilename, float stiffness);
+    QStringList makeIniFiles(QString stlfilename, float stiffness, float z);
 
 private:
     Orthotic* orth_;

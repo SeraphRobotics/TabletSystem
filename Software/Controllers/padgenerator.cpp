@@ -2,15 +2,15 @@
 #include "UnitTest/debugfunctions.h"
 #include <math.h>
 
-STLMesh* GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* shell_grid, STLMesh *shell_mesh){
-    STLMesh* mesh= new STLMesh();
+float GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* shell_grid, STLMesh* mesh, STLMesh *shell_mesh, float min_z){
+//    STLMesh* mesh= new STLMesh();
 
     float kMinThick = 0.4;
 
     ////// Find maximum distance
     QList<ijd> modpts;
     float max_d = -10000;
-    float min_z = 10000;
+    min_z = 10000;
 
     for(int j=0;j<pad_grid->ny()-1;j++){
         for(int i=0;i<pad_grid->nx()-1;i++){
@@ -90,19 +90,19 @@ STLMesh* GeneratePad(Manipulation m, XYGrid<float>* pad_grid, XYGrid<float>* she
     }
 
 
-    QFile f("topcoat.csv");
-    if(f.open(QIODevice::WriteOnly)){
-        QTextStream s(&f);
-        s<<pad_grid->toCSV();
-        f.close();
-    }
+//    QFile f("topcoat.csv");
+//    if(f.open(QIODevice::WriteOnly)){
+//        QTextStream s(&f);
+//        s<<pad_grid->toCSV();
+//        f.close();
+//    }
 
-    QFile f2("base.csv");
-    if(f2.open(QIODevice::WriteOnly)){
-        QTextStream s(&f2);
-        s<<shell_grid->toCSV();
-        f2.close();
-    }
+//    QFile f2("base.csv");
+//    if(f2.open(QIODevice::WriteOnly)){
+//        QTextStream s(&f2);
+//        s<<shell_grid->toCSV();
+//        f2.close();
+//    }
 
-    return mesh;
+    return floorz;
 }

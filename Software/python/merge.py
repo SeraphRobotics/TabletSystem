@@ -271,7 +271,7 @@ def mergeFromXML(infilename, outfilename, verbose):
     for padnode in padnodes:
         [padfile,padz] = nodeToFileOffset(padnode)
         pad_list = processFileIntoLayers(padfile,False,verbose)
-        translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz].verbose)
+        translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
         parity(pad_list,verbose)
         translate(pad_list,BUILDTRAY_OFFSET,verbose)
         mergelist.append(pad_list)

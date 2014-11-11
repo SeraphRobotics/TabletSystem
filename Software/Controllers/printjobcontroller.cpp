@@ -77,7 +77,7 @@ void PrintJobController::RunPrintJob(){
 
 }
 
-QStringList PrintJobController::makeIniFiles(QString stlfilename, float stiffness){
+QStringList PrintJobController::makeIniFiles(QString stlfilename, float stiffness, float z){
     //These are not the way to do it We will need to make composites.
     // this will mean making multiple inifiles for some materials and stitching them together
 
@@ -86,19 +86,19 @@ QStringList PrintJobController::makeIniFiles(QString stlfilename, float stiffnes
         inifiles<<"hs.ini";
         file_z_pair p;
         p.file = stlfilename.replace(".obj",".extrude.gcode");
-        p.z = 10.0;
+        p.z = 10.0+z;
         pad_files_.append(p);
     }else if (stiffness>12){
         inifiles<<"ms.ini";
         file_z_pair p;
         p.file = stlfilename.replace(".obj",".extrude.gcode");;
-        p.z = 10.0;
+        p.z = 10.0+z;
         pad_files_.append(p);
     }else{
         inifiles<<"p.ini";
         file_z_pair p;
         p.file = stlfilename.replace(".obj",".extrude.gcode");;
-        p.z = 10.0;
+        p.z = 10.0+z;
         pad_files_.append(p);
     }
     qDebug()<<"size: "<<inifiles.size();
@@ -136,7 +136,7 @@ void PrintJobController::repairSucessful(){
             QString stlfilename = QString::number(i);
             stlfilename.append("_fixed.obj");
 
-            QStringList inifilenames = makeIniFiles(stlfilename,mp.stiffness);
+            QStringList inifilenames = makeIniFiles(stlfilename,mp.stiffness,mp.z);
             numSTLToSlice+=inifilenames.size();
             foreach(QString ini,inifilenames){
                 SlicerController* sci = new SlicerController(stlfilename,ini,true);
