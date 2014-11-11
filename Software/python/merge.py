@@ -48,6 +48,99 @@ def processFileIntoLayers(filename,isplastic,verbose):
     infile.close()
     return cmd_group   ## A LIST OF LAYERS
 
+def parity(layerlist, verbose=False):
+    for layer in layerlist :
+        out_line_list=[]
+        for line in layer.cmds:
+            xy_move_match = re.match(r'^G1 X([-\d\.]+) Y([-\d\.]+)($| F)*([-\d\.]+)',line.rstrip())
+            z_move_match = re.match(r'^G1 Z([-\d\.]+)($| F)*([-\d\.]+)',line.rstrip())
+            extrude_match = re.match(r'^G1 X([-\d\.]+) Y([-\d\.]+) E([-\d\.]+)($| F)*([-\d\.]+)',  ##$
+                             line.rstrip())
+            topcoat_match = re.match(r'^G1 X([-\d\.]+) Y([-\d\.]+) Z([-\d\.]+)($| F)*([-\d\.]+)',  ##$
+                             line.rstrip())
+            if topcoat_match:
+                if verbose: print "extrude: ", topcoat_match.groups()
+                p2 =[0]*4
+                
+                for j in range(0,4):
+                    group = topcoat_match.groups()[j]
+                    if not (type(group)==type(None)):
+                        if "f" in group.lower():
+                            p2[3]=topcoat_match.groups()[j+1]
+                            break
+                        else:
+                            p2[j]=float(group)
+                speed=""
+                if p2[3]>0:
+                    speed = " F%f"%float(p2[3])
+                
+                newline = "G1 X%f Y%f Z%f%s\n"%(p2[1],p2[0],p2[2],speed)
+                out_line_list.append(newline)
+            
+            elif extrude_match:
+
+                if verbose: print "extrude: ", extrude_match.groups()
+                p2 =[0]*4
+                
+                for j in range(0,4):
+                    group = extrude_match.groups()[j]
+                    if not (type(group)==type(None)):
+                        if "f" in group.lower():
+                            p2[3]=extrude_match.groups()[j+1]
+                            break
+                        else:
+                            p2[j]=float(group)
+                speed=""
+                if p2[3]>0:
+                    speed = " F%f"%float(p2[3])
+                
+                newline = "G1 X%f Y%f E%f%s\n"%(p2[1],p2[0],p2[2],speed)
+                out_line_list.append(newline)
+                
+                
+            elif xy_move_match:
+                if verbose: 
+                    print "move: ", xy_move_match.groups()
+                
+                m1 = [0]*3
+                for j in range(0,3):
+                    group = xy_move_match.groups()[j]
+                    if not (type(group)==type(None)):
+                        if "f" in group.lower():
+                            m1[2]=xy_move_match.groups()[j+1]
+                            break
+                        else:
+                            m1[j]=float(group)
+                
+                speed = ""
+                if m1[2]>0: 
+                    speed = " F%f"%float(m1[2])
+
+                newline = "G1 X%f Y%f%s\n"%(m1[1],m1[0],speed)
+                out_line_list.append(newline)
+                
+            elif z_move_match:
+                if verbose: print "Z_move: ", z_move_match.groups()
+
+                z1 = [0]*2
+                for j in range(0,2):
+                    group = z_move_match.groups()[j]
+                    if not (type(group)==type(None)):
+                        if "f" in group.lower():
+                            z1[1]=float(z_move_match.groups()[j+1])
+                            break
+                        else:
+                            z1[j]=float(group)        
+
+                layer.actualz = z1[0]
+                newline = "G1 Z%f F%f\n"%(z1[0],z1[1])
+                out_line_list.append(newline)
+                
+            else:
+                if verbose: print line
+                out_line_list.append(line)
+        layer.cmds = out_line_list
+    
 def translate(layerlist, delta, verbose=False):
     for layer in layerlist :
         out_line_list=[]
@@ -162,30 +255,40 @@ def mergeFromXML(infilename, outfilename, verbose):
     padnodes = root.findall("pad")
     topcoatnode = root.find("topcoat")
     
+    BUILDTRAY_OFFSET =[20,50,5];
+    TOOLHEAD_OFFSET =[-21,56,-4.5];
+    
     ## make shell layer list
     [shellfile,zshell] = nodeToFileOffset(shellnode)
     shell_list = processFileIntoLayers(shellfile,True,verbose)
     translate(shell_list,[0,0,zshell],verbose)
-    
+    parity(shell_list,verbose)
+    translate(shell_list,BUILDTRAY_OFFSET,verbose)
     mergelist = [shell_list]
     
     ## make Pad layer lists
-    TOOLHEAD_OFFSET =[0,33,0];
+    
     for padnode in padnodes:
         [padfile,padz] = nodeToFileOffset(padnode)
         pad_list = processFileIntoLayers(padfile,False,verbose)
         translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz].verbose)
+        parity(pad_list,verbose)
+        translate(pad_list,BUILDTRAY_OFFSET,verbose)
         mergelist.append(pad_list)
     
     ## make TopCoat layer lists
     [topcoat_file,z_topcoat] = nodeToFileOffset(topcoatnode)
     topcoat_list = processFileIntoLayers(topcoat_file,True,verbose)
     translate(topcoat_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+z_topcoat],verbose)
+    parity(topcoat_list,verbose)
+    translate(topcoat_list,BUILDTRAY_OFFSET,verbose)
+    
+    
+
+    
     
     output_cmd_list=[]
-    
-    
-    #write first files startup code to file dumps the rest of the startup code
+    #write first files startup code to file dumps the rest of the startup codes
     for cmd in mergelist[0][0].cmds:
         output_cmd_list.append(cmd)
         
@@ -198,6 +301,9 @@ def mergeFromXML(infilename, outfilename, verbose):
             newlist.append(layer)
             #print layer.z
     newlist.sort(key=lambda x: x.stackz)
+    
+
+    
     
     previous_layer_type = 0
     lowercmds="G4 P2\nM340 P1 S1000\n"
@@ -219,6 +325,9 @@ def mergeFromXML(infilename, outfilename, verbose):
         previous_layer_type = cmd_layer.type
         for cmd in cmd_layer.cmds:
             output_cmd_list.append(cmd)
+    
+    
+
     
     outfile = open(outfilename, 'w')
     for line in output_cmd_list:
