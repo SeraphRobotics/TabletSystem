@@ -1,0 +1,18 @@
+<!DOCTYPE MergeFile>
+<merge>
+ <shell>
+  <file>shell_fixed.gcode</file>
+  <zoffset>0.00000</zoffset>
+  <ztranslate>0.00000</ztranslate>
+ </shell>
+ <pad>
+  <file>0_fixed.extrude.gcode</file>
+  <zoffset>10.00000</zoffset>
+  <ztranslate>6.70186</ztranslate>
+ </pad>
+ <topcoat>
+  <file>topcoat.gcode</file>
+  <zoffset>0.00000</zoffset>
+  <ztranslate>0.00000</ztranslate>
+ </topcoat>
+</merge>

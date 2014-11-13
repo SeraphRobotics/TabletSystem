@@ -293,7 +293,7 @@ void TestOrthoticsRxThroughGCode(){
     rearpost.for_rear=Posting::kRearFoot;
 
     Top_Coat tc;
-    tc.density = Top_Coat::kLow;
+    tc.density = Top_Coat::kHigh;
     tc.depth=1;
     tc.style=Top_Coat::kAuto;
     tc.thickness=5;
@@ -318,7 +318,7 @@ void TestOrthoticsRxThroughGCode(){
 //    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
 
-    FAHLoopInXYPlane* c = circle(40.0,90.0,10.0);
+    FAHLoopInXYPlane* c = circle(90.0,90.0,10.0);
     writeLoopToXDFL(c,"circle.xdfl");
     Manipulation m;
     m.stiffness=10;

@@ -96,11 +96,13 @@ void PrintJobController::makeIniFiles(QString stlfilename, manipulationpair pair
         p.inifile = "p.ini";
         p.gcode_file = stlfilename.replace(".obj",".gcode");
     }else if(pair.stiffness>25){
-        p.inifile = "hs.ini";
+        p.inifile = "pattern39.ini";
         p.gcode_file = stlfilename.replace(".obj",".extrude.gcode");
+        p.z_offset = 3.0;
     }else if (pair.stiffness>12){
-        p.inifile="ms.ini";
+        p.inifile="pattern60.ini";
         p.gcode_file = stlfilename.replace(".obj",".extrude.gcode");
+        p.z_offset = 4.0;
     }else{
         p.gcode_file = stlfilename.replace(".obj",".extrude.gcode");
         p.inifile="p.ini";

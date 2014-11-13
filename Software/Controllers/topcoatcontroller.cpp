@@ -41,19 +41,19 @@ void TopCoatController::generateTopCoat(){
 
 
     if(t.density == Top_Coat::kLow){
-        path_width = s.value("printing/topcoat/low/pw","1.0").toFloat();
-        path_height = s.value("printing/topcoat/low/ph","1.0").toFloat();
-        z_offset = s.value("printing/topcoat/low/zo","1.0").toFloat();
-        speed =  s.value("printing/topcoat/low/ps","10").toFloat();
+        path_width = s.value("printing/topcoat/low/pw","0.5").toFloat();
+        path_height = s.value("printing/topcoat/low/ph","1.3").toFloat();
+        z_offset = s.value("printing/topcoat/low/zo","5.0").toFloat();
+        speed =  s.value("printing/topcoat/low/ps","30").toFloat();
     }else if(t.density == Top_Coat::kMedium){
-        path_width = s.value("printing/topcoat/medium/pw","1.0").toFloat();
-        path_height = s.value("printing/topcoat/medium/ph","1.0").toFloat();
-        z_offset = s.value("printing/topcoat/medium/zo","1.0").toFloat();
-        speed =  s.value("printing/topcoat/medium/ps","10").toFloat();
+        path_width = s.value("printing/topcoat/medium/pw","0.9").toFloat();
+        path_height = s.value("printing/topcoat/medium/ph","0.8").toFloat();
+        z_offset = s.value("printing/topcoat/medium/zo","3.0").toFloat();
+        speed =  s.value("printing/topcoat/medium/ps","20").toFloat();
     }else if(t.density == Top_Coat::kHigh){
         path_width = s.value("printing/topcoat/high/pw","1.0").toFloat();
-        path_height = s.value("printing/topcoat/high/ph","1.0").toFloat();
-        z_offset = s.value("printing/topcoat/high/zo","1.0").toFloat();
+        path_height = s.value("printing/topcoat/high/ph","0.85").toFloat();
+        z_offset = s.value("printing/topcoat/high/zo","3.0").toFloat();
         speed =  s.value("printing/topcoat/high/ps","10").toFloat();
     }
 
