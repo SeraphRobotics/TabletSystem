@@ -5,6 +5,9 @@ import os
 import re
 import sys
 
+closeLine = "G4 P2\nM340 P0 S1650\n"
+openLine = "G4 P2\nM340 P0 S2100\n"
+
 class State:
     Moving = 1
     Extruding = 2
@@ -73,8 +76,7 @@ def setspeeds(inlist, outlist, xyspeed, zspeed, verbose=False):
     
 def translateToValvetool(infile, outlist, verbose=False):
     
-    closeLine = "G4 P2\nM340 P0 S1650\n"
-    openLine = "G4 P2\nM340 P0 S2100\n"
+
     
     state = State.Moving
     
@@ -171,7 +173,9 @@ def translateToValvetool(infile, outlist, verbose=False):
                 #outfile.write(closeLine)
                 #state = State.Moving
             outlist.append(line)
-
+    
+    
+            
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         sys.exit('usage: test.py <filename> [--verbose]')
@@ -183,6 +187,7 @@ if __name__ == '__main__':
             outlist2=[]
             translateToValvetool(infile, outlist1, '--verbose' in sys.argv)
             setspeeds(outlist1,outlist2,1800,600, '--verbose' in sys.argv)
+            outlist2.append(closeLine)
             for line in outlist2:
                 outfile.write(line)
     
