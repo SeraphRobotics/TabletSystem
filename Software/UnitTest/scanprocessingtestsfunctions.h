@@ -20,4 +20,6 @@ void TestOrthoticsRx();
 
 void TestOrthoticsRxThroughGCode();
 
+void TestOrthoticsRxFromLoad();
+
 #endif // SCANPROCESSINGTESTSFUNCTIONS_H

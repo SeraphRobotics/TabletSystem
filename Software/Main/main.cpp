@@ -44,8 +44,9 @@ int main(int argc, char *argv[])
 
 //    TestGCodeSystem();
 
-    TestOrthoticsRxThroughGCode();
+//    TestOrthoticsRxThroughGCode();
 
+    TestOrthoticsRxFromLoad();
 
     return a.exec();
 }

@@ -255,6 +255,7 @@ void TestOrthoticsRx(){
 }
 
 void TestOrthoticsRxThroughGCode(){
+
     QSettings s;
     s.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r\\Slic3r-console.exe");
     s.setValue("printing/valving-python-script","toValve.py");
@@ -321,14 +322,53 @@ void TestOrthoticsRxThroughGCode(){
     FAHLoopInXYPlane* c = circle(90.0,90.0,10.0);
     writeLoopToXDFL(c,"circle.xdfl");
     Manipulation m;
-    m.stiffness=10;
+    m.stiffness=25;
     m.depth=0;
     m.thickness = 3;
     m.outerloop = c;
+    m.type = Manipulation::kCustom;
+    m.location = FAHVector3(0,0,0);
+    m.innerloops = QList<FAHLoopInXYPlane*>();
     oc->addManipulation(m);
-
+    oc->save();
     PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
 //    PrintJobTester* pjt = new PrintJobTester(pjc);
     pjc->RunPrintJob();
 
+}
+
+void TestOrthoticsRxFromLoad(){
+    QSettings s;
+    s.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r\\Slic3r-console.exe");
+    s.setValue("printing/valving-python-script","toValve.py");
+    s.setValue("printing/merge-python-script","merge.py");
+
+
+    ScanManager* sm = new ScanManager();
+    OrthoticManager* om = new OrthoticManager(sm);
+    OrthoticController* oc = new OrthoticController(om);
+    OrthoticControllerTester* oct = new OrthoticControllerTester();
+    oct->connect(oc,SIGNAL(boundaryLoopUpdated(FAHLoopInXYPlane*)),oct,SLOT(boundaryLoopUpdated(FAHLoopInXYPlane*)));
+    oct->connect(oc,SIGNAL(scanImageGenerated(QImage)),oct,SLOT(scanImageGenerated(QImage)));
+    oct->connect(oc,SIGNAL(stlsGenerated(QList<View_3D_Item>)),oct,SLOT(stlsGenerated(QList<View_3D_Item>)));
+
+    qDebug()<<om->getList()[0];
+    oc->setOrthotic(om->getList()[0]);
+    Orthotic* orth_ = oc->getOrthotic();
+
+    QVector<FAHVector3> forePts = orth_->getForePoints();
+    QVector<FAHVector3> healPts = orth_->getHealPoints();
+    Posting forpost = orth_->getForFootPosting();
+    Posting rearpost = orth_->getRearFootPosting();
+
+    oc->setBorderPoints(healPts, forePts);
+
+    oc->processBoundary();
+
+    oc->setPosting(forpost);
+    oc->setPosting(rearpost);
+    qDebug()<<"loaded";
+//    oc->save();
+    PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
+    pjc->RunPrintJob();
 }

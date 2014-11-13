@@ -17,7 +17,8 @@ void OrthoticController::setScan(QString scan_id){
 void OrthoticController::setOrthotic(QString orthotic_id){
     if(!om_->hasOrthotic(orthotic_id)){return;}
     orth_=om_->getOrthotic(orthotic_id);
-    emit scanImageGenerated(makeHeightMap (orth_->getScan()->getProcessedXYGrid()));
+
+    emit scanImageGenerated(makeHeightMap(orth_->getScan()->getProcessedXYGrid()));
 
     if(orth_->getLoop()->points.size()>4){
         emit boundaryLoopUpdated(orth_->getLoop());
@@ -52,7 +53,7 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
 
 void OrthoticController::processBoundary(){
 
-
+    orth_->getScan()->reset();
     FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
     FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
     FAHVector3 minpt3 = orth_->getForePoints().first();
@@ -196,5 +197,7 @@ void OrthoticController::save(){
     orth_->writeToDisk();
 }
 
-Border OrthoticController::borderFromLoop(FAHLoopInXYPlane* loop){}
-QList<QPointF> OrthoticController::qpointfListFromFAHVector3(QVector<FAHVector3> points){}
+Border OrthoticController::borderFromLoop(FAHLoopInXYPlane* loop){return Border();}
+QList<QPointF> OrthoticController::qpointfListFromFAHVector3(QVector<FAHVector3> points){
+    return QList<QPointF>();
+}

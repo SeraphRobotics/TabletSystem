@@ -110,16 +110,16 @@ QDomNode Manipulation::toNode(){
     node.appendChild(locationEl);
 
 
-    QDomElement outerEl = d.createElement("outerloop");
-    QDomNode ol=nodeFromLoop(outerloop);
-    outerEl.appendChild(ol);
-    node.appendChild(outerEl);
+//    QDomElement outerEl = d.createElement("outerloop");
+//    QDomNode ol=nodeFromLoop(outerloop);
+//    outerEl.appendChild(ol);
+//    node.appendChild(outerEl);
 
-    QDomElement innerEl = d.createElement("innerloops");
-    for(int i=0; i<innerloops.size();i++){
-        innerEl.appendChild(nodeFromLoop(innerloops.at(i)));
-    }
-    node.appendChild(innerEl);
+//    QDomElement innerEl = d.createElement("innerloops");
+//    for(int i=0; i<innerloops.size();i++){
+//        innerEl.appendChild(nodeFromLoop(innerloops.at(i)));
+//    }
+//    node.appendChild(innerEl);
 
     return node;
 }

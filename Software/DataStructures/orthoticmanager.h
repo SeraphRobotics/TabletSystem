@@ -14,6 +14,7 @@ public:
     Orthotic* getOrthotic(QString id);
     Orthotic* newOrthotic(QString scan_id);
     bool hasOrthotic(QString id);
+    QStringList getList();
 
 
 private slots:

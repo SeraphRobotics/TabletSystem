@@ -18,11 +18,17 @@ OrthoticManager::OrthoticManager(ScanManager* sm, QObject *parent) :
     updateList();
 }
 
+QStringList OrthoticManager::getList(){
+    return idlist_;
+}
+
+
 Orthotic* OrthoticManager::getOrthotic(QString id){
     if(!hasOrthotic(id)){
         return new Orthotic();
     }
     QString filename = id+QString(".")+extension_;
+    qDebug()<<filename;
     Orthotic* Orth = new Orthotic(filename);
     QString sid = Orth->getScanID();
     Scan* s = sm_->getScan(sid);

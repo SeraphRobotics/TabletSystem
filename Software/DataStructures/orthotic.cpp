@@ -42,7 +42,6 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
     //ADD SCANID HERE
     scanid_ = ortho.attribute("scanid","");
 //    QTimer::singleShot(0,this,SLOT(requestScanData()));
-
     QDomNodeList mchildren = ortho.childNodes();
     for(unsigned int i=0;i<mchildren.length();i++){
         QDomNode mchild = mchildren.at(i);
@@ -50,7 +49,6 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
 
         QDomElement el = mchild.toElement();
         QString name = mchild.nodeName().toLower();
-
         if("foot"==name){
             foot_= static_cast<Orthotic::foot_type>(el.text().toUInt());
         }else if("bottom"==name){
@@ -93,7 +91,7 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
     QFile file(filename_);
     if (!file.open(QIODevice::WriteOnly)){return;}
 
-    scan_->writeToDisk();
+    //scan_->writeToDisk();
 
     QDomElement node = d.createElement("Orthotic");
     node.setAttribute(QString("id"),id_.toString());
@@ -118,7 +116,7 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
     node.appendChild(rpostEl);
 
 
-    //Boarder loop
+//    Boarder loop
     QDomElement borderEl = d.createElement("boundaryloop");
     QDomNode bl=nodeFromLoop(boundaryloop_);
     borderEl.appendChild(bl);
@@ -127,6 +125,45 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
 
     // Manipulations added
     for(int i=0;i<manipulations_.size();i++){
+//        Manipulation m=manipulations_.at(i);
+//        QDomElement mnode = d.createElement("Manipulation");
+//        QDomElement typeEl = d.createElement("type");
+//        typeEl.appendChild(d.createTextNode(QString::number(m.type)));
+//        mnode.appendChild(typeEl);
+
+//        QDomElement stiffEl = d.createElement("stiffness");
+//        stiffEl.appendChild(d.createTextNode(QString::number(m.stiffness)));
+//        mnode.appendChild(stiffEl);
+
+//        QDomElement depthEl = d.createElement("depth");
+//        depthEl.appendChild(d.createTextNode(QString::number(m.depth)));
+//        mnode.appendChild(depthEl);
+
+//        QDomElement thicknessEl = d.createElement("thickness");
+//        thicknessEl.appendChild(d.createTextNode(QString::number(m.thickness)));
+//        mnode.appendChild(thicknessEl);
+
+//        QDomElement locationEl = d.createElement("location");
+//        QDomElement xEl = d.createElement("x");
+//        QDomElement yEl = d.createElement("y");
+//        xEl.appendChild(d.createTextNode(QString::number(m.location.x)));
+//        yEl.appendChild(d.createTextNode(QString::number(m.location.y)));
+//        locationEl.appendChild(xEl);
+//        locationEl.appendChild(yEl);
+//        mnode.appendChild(locationEl);
+
+
+        //        QDomElement outerEl = d.createElement("outerloop");
+        //        QDomNode ol=nodeFromLoop(m.outerloop);
+        //        outerEl.appendChild(ol);
+        //        mnode.appendChild(outerEl);
+
+//        QDomElement innerEl = d.createElement("innerloops");
+//        for(int j=0; j<m.innerloops.size();j++){
+//            innerEl.appendChild(nodeFromLoop(m.innerloops.at(j)));
+//        }
+//        mnode.appendChild(innerEl);
+//        node.appendChild(mnode);
         node.appendChild(manipulations_[i].toNode());
     }
 

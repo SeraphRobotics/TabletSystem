@@ -7,8 +7,8 @@
  </shell>
  <pad>
   <file>0_fixed.extrude.gcode</file>
-  <zoffset>10.00000</zoffset>
-  <ztranslate>6.70186</ztranslate>
+  <zoffset>4.00000</zoffset>
+  <ztranslate>9.83286</ztranslate>
  </pad>
  <topcoat>
   <file>topcoat.gcode</file>
