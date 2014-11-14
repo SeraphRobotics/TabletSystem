@@ -152,6 +152,7 @@ def translate(layerlist, delta, verbose=False, shiftlayer=False):
                              line.rstrip())
             topcoat_match = re.match(r'^G1 X([-\d\.]+) Y([-\d\.]+) Z([-\d\.]+)($| F)*([-\d\.]+)',  ##$
                              line.rstrip())
+            fan_match = re.match("r'^M106 S([-\d\.]+)",line.rstrip())
             if topcoat_match:
                 if verbose: print "extrude: ", topcoat_match.groups()
                 p2 =[0]*4
@@ -236,6 +237,12 @@ def translate(layerlist, delta, verbose=False, shiftlayer=False):
                 newline = "G1 Z%f F%f\n"%(z1[0],z1[1])
                 out_line_list.append(newline)
                 
+            elif fan_match:
+                if verbose:
+                    print "temp: ",fan_match.groups()
+                m1 = [0]
+                
+                out_line_list.append("M106 S100");
             else:
                 if verbose: print line
                 out_line_list.append(line)
@@ -257,8 +264,8 @@ def mergeFromXML(infilename, outfilename, verbose):
     padnodes = root.findall("pad")
     topcoatnode = root.find("topcoat")
     
-    BUILDTRAY_OFFSET = [20,50,5]#[0,0,0]#[20,50,5]
-    TOOLHEAD_OFFSET  = [-21,56,-4.5]#[0,0,0]#[-21,56,-4.5]
+    BUILDTRAY_OFFSET = [0,20,10]#[0,0,0]#[20,50,5]
+    TOOLHEAD_OFFSET  = [21,56,-4.5]#[0,0,0]#[-21,56,-4.5]
     
     ## make shell layer list
     [shellfile,zshell_offset,zshell] = nodeToFileOffset(shellnode)
