@@ -42,6 +42,7 @@ def processFileIntoLayers(filename,isplastic,verbose):
             newlayer=Layer(z1[0])
             
         if(isplastic==True): newlayer.type = Layer.displacement
+        else: newlayer.stackz+=10;
         newlayer.cmds.append(line)
 
     cmd_group.append(newlayer)
@@ -141,6 +142,56 @@ def parity(layerlist, verbose=False):
                 out_line_list.append(line)
         layer.cmds = out_line_list
     
+
+def setTopcoatSpeed(layerlist,xyspeed, verbose=False):
+     for layer in layerlist :
+        out_line_list=[]
+        previous=[0]*4
+        for line in layer.cmds:
+            topcoat_match = re.match(r'^G1 X([-\d\.]+) Y([-\d\.]+) Z([-\d\.]+)($| F)*([-\d\.]+)',  ##$
+                             line.rstrip())
+            if topcoat_match:
+                if verbose: print "extrude: ", topcoat_match.groups()
+                p2 =[0]*4
+                delta=[0]*3
+                
+                for j in range(0,4):
+                    group = topcoat_match.groups()[j]
+                    if not (type(group)==type(None)):
+                        if "f" in group.lower():
+                            p2[3]=topcoat_match.groups()[j+1]
+                            break
+                        else:
+                            p2[j]=float(group)
+                speed=""
+                if (previous[0]==0 and previous[1]==0):
+                    if p2[3]>0:
+                        speed = " F%f"%float(p2[3])
+                else:
+                    delta[0] = p2[0]-previous[0]
+                    delta[1] = p2[1]-previous[1]
+                    delta[2] = p2[2]-previous[2]
+                    dxyz = math.sqrt(delta[0]*delta[0]+delta[1]*delta[1]+delta[2]*delta[2])
+                    dxy = math.sqrt(delta[0]*delta[0]+delta[1]*delta[1])
+                    dz = math.sqrt(delta[2]*delta[2])
+                    f=0
+                    if dxyz: f = xyspeed*1+600*dz/dxyz #dxy/dxyz+1200*dz/dxyz
+                    else: f=xyspeed
+                    #print dxyz,dxy,f
+                    speed = " F%f"%f
+                    
+                previous = p2
+                
+
+                newline = "G1 X%f Y%f Z%f%s\n"%(p2[0],p2[1],p2[2],speed)
+                out_line_list.append(newline)
+            else:
+                if verbose: print line
+                out_line_list.append(line)
+                
+        layer.cmds = out_line_list
+
+                             
 def translate(layerlist, delta, verbose=False, shiftlayer=False):
     for layer in layerlist :
         out_line_list=[]
@@ -170,7 +221,7 @@ def translate(layerlist, delta, verbose=False, shiftlayer=False):
                     speed = " F%f"%float(p2[3])
                 p2[0] = delta[0] + p2[0]
                 p2[1] = delta[1] + p2[1]
-                
+                p2[2] = delta[2] + p2[2]
                 newline = "G1 X%f Y%f Z%f%s\n"%(p2[0],p2[1],p2[2],speed)
                 out_line_list.append(newline)
             
@@ -292,9 +343,8 @@ def mergeFromXML(infilename, outfilename, verbose):
     translate(topcoat_list,[0,0,z_topcoat],verbose, True)
     translate(topcoat_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+z_offset],verbose)
     parity(topcoat_list,verbose)
-    translate(topcoat_list,BUILDTRAY_OFFSET,verbose)
-    
-    
+    translate(topcoat_list,[BUILDTRAY_OFFSET[0]+1,BUILDTRAY_OFFSET[1]-44,BUILDTRAY_OFFSET[2]-7.5+48],verbose)
+    #setTopcoatSpeed(topcoat_list,1200,verbose)
 
     
     
@@ -342,7 +392,8 @@ def mergeFromXML(infilename, outfilename, verbose):
     
     outfile = open(outfilename, 'w')
     for line in output_cmd_list:
-        outfile.write(line)
+        pass
+        #outfile.write(line)
     
     
     for layer in topcoat_list:
