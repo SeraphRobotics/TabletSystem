@@ -8,6 +8,13 @@ float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell
 
     float kMinThick = 0.4;
 
+//    qDebug()<< m->depth;
+//    qDebug()<< m->innerloops.size();
+//    qDebug()<< m->location.x;
+//    qDebug()<<m->outerloop->points.size();
+//    qDebug()<< m->stiffness;
+//    qDebug()<< m->thickness;
+
     ////// Find maximum distance
     QList<ijd> modpts;
     float max_d = -10000;

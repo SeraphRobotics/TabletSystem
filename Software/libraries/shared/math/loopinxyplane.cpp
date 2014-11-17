@@ -108,7 +108,7 @@ Float LoopInXYPlane::areaEstimate() const {
 
 
 void LoopInXYPlane::add(const Vector3& point) {
-  points.push_back(point);
+  points.push_back(point.copy());
 }
 
 

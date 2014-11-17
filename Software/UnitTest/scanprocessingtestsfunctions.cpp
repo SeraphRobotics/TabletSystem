@@ -319,18 +319,21 @@ void TestOrthoticsRxThroughGCode(){
 //    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
 
-    FAHLoopInXYPlane* c = circle(40.0,80.0,12.0);
-    writeLoopToXDFL(c,"circle.xdfl");
-    Manipulation m;
-    m.stiffness=25;
-    m.depth=0;
-    m.thickness = 3;
-    m.outerloop = c;
-    m.type = Manipulation::kCustom;
-    m.location = FAHVector3(0,0,0);
-    m.innerloops = QList<FAHLoopInXYPlane*>();
-    oc->addManipulation(m);
+    for(int i=0;i<3;i++){
+        FAHLoopInXYPlane* c = circle(40.0+i*25,80.0+i*5,15.0);
+        Manipulation* m = new Manipulation();
+        m->stiffness=25+i*25;
+        m->depth=0;
+        m->thickness = 3;
+        m->outerloop = c;
+        m->type = Manipulation::kCustom;
+        m->location = FAHVector3(0,0,0);
+        m->innerloops = QList<FAHLoopInXYPlane*>();
+        oc->addManipulation(m);
+    }
 //    oc->save();
+    qDebug()<<"generated manipulations";
+    oc->makeSTLs();
     PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
 //    PrintJobTester* pjt = new PrintJobTester(pjc);
     pjc->RunPrintJob();
@@ -369,6 +372,7 @@ void TestOrthoticsRxFromLoad(){
     oc->setPosting(rearpost);
     qDebug()<<"loaded";
 //    oc->save();
+
     PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
     pjc->RunPrintJob();
 }

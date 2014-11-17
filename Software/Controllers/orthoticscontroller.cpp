@@ -82,9 +82,9 @@ void OrthoticController::setTopCoat(Top_Coat tc){
     orth_->setTopCoat(tc);
 }
 
-void OrthoticController::addManipulation(Manipulation m){
+void OrthoticController::addManipulation(Manipulation *m){
     orth_->addManipulation(m);
-    makeSTLs();
+//    makeSTLs();
 }
 
 void OrthoticController::setPosting(Posting p){
@@ -123,7 +123,7 @@ void OrthoticController::setPosting(Posting p){
 //    QTextStream fs(&f);
 //    fs<<orth_->getScan()->getPostedXYGrid()->toCSV();
 //    f.close();
-    makeSTLs();
+//    makeSTLs();
     qDebug()<<"STLs made";
 
 }
@@ -134,20 +134,22 @@ void OrthoticController::makeSTLs(){
 
     printjobinputs pji;
     QList<View_3D_Item> toEmitList;
-
+    qDebug()<<"starting to make;";
     delete orth_->shellgrid;
     delete orth_->topcoatgrid;
     orth_->shellgrid = new XYGrid<float>(orth_->getScan()->getPostedXYGrid());
     orth_->topcoatgrid = new XYGrid<float>(orth_->getScan()->getPostedXYGrid());
-
+    blurGrid(orth_->shellgrid,2);
     STLMesh* shell = new STLMesh();
 
     /// GENERATE PADS
+    int i=0;
     QList<FAHLoopInXYPlane*> inners;
-    foreach(Manipulation m, orth_->getManipulations()){
+    foreach(Manipulation* m, orth_->getManipulations()){
+
         STLMesh* m_mesh = new STLMesh();
-        float min_z = GeneratePad(&m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,min_z);
-        inners.append(m.outerloop);
+        float min_z = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,min_z);
+        inners.append(m->outerloop);
         m_mesh->scale(2,1,1);
         View_3D_Item v3d;
         v3d.mesh =  m_mesh;
@@ -155,14 +157,16 @@ void OrthoticController::makeSTLs(){
         toEmitList.append(v3d);
         manipulationpair pair;
         pair.mesh = m_mesh;
-        pair.stiffness = m.stiffness;
+        pair.stiffness = m->stiffness;
         pair.z_height = min_z;
-        FAHVector3 cent = m.outerloop->center();
-        pair.x_center = cent.x;
+        FAHVector3 cent = m->outerloop->center();
+        pair.x_center = 2*cent.x;
         pair.y_center = cent.y;
+        pair.id=QString::number(i);
+        i++;
         pji.manipulationpairs.append(pair);
-    }
-
+        //stlToFile(m_mesh,QString::number(cent.x)+QString(".stl"));
+    };
 
 
     FAHLoopInXYPlane* bottomloop = bottomLoopFromPoints(orth_->getHealPoints(),orth_->getForePoints());
@@ -176,7 +180,7 @@ void OrthoticController::makeSTLs(){
     pair.z_height=0;
     pair.stiffness=0;
     FAHVector3 cent = orth_->getLoop()->center();
-    pair.x_center = 1.45*cent.x;
+    pair.x_center = 2*cent.x;
     pair.y_center = cent.y;
     pji.shellpair = pair;
     orth_->printjob=pji;
@@ -190,6 +194,7 @@ void OrthoticController::makeSTLs(){
     toEmitList.append(v3d);
     emit stlsGenerated(toEmitList);
 //    writeLoopToXDFL(orth_->getLoop(),"FINALLOOP.XDFL");
+    qDebug()<<"made all stls";
 }
 
 

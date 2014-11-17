@@ -15,6 +15,7 @@ struct manipulationpair{
     float x_center;
     float y_center;
     STLMesh* mesh;
+    QString id;
 };
 
 struct printjobinputs{
@@ -51,14 +52,14 @@ public:
     QVector< FAHVector3 > getHealPoints();
     QVector< FAHVector3 > getForePoints();
     Top_Coat getTopCoat();
-    QVector<Manipulation> getManipulations();
+    QVector<Manipulation*> getManipulations();
 
 signals:
     void manipulated();
     void needScan(QString s);
 
 public slots:
-    void addManipulation(Manipulation m);
+    void addManipulation(Manipulation *m);
     void setTopCoat(Top_Coat tc);
     void undo();
     void redo();
@@ -86,8 +87,8 @@ private:
     FAHLoopInXYPlane* boundaryloop_;
     Posting forfoot_;
     Posting rearfoot_;
-    QVector<Manipulation> manipulations_;
-    QStack<Manipulation> undo_stack_;
+    QVector<Manipulation*> manipulations_;
+    QStack<Manipulation*> undo_stack_;
     foot_type foot_;
     bottom_type bottom_;
     QVector< FAHVector3 > healPts_;

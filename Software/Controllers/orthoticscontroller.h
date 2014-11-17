@@ -91,15 +91,16 @@ public slots:
 
     void setTopCoat(Top_Coat tc);
 
-    void addManipulation(Manipulation m);
+    void addManipulation(Manipulation* m);
 
     void setPosting(Posting p);
 
     void processBoundary();
     void save();
+    void makeSTLs();
 
 private:
-    void makeSTLs();
+
     Border borderFromLoop(FAHLoopInXYPlane* loop);
     QList<QPointF> qpointfListFromFAHVector3(QVector<FAHVector3> points);
 

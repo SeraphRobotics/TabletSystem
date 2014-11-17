@@ -57,7 +57,7 @@ void PrintJobController::RunPrintJob(){
     shell_.y_center = orth_->printjob.shellpair.y_center;
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
-        QString fn = QString::number(i);
+        QString fn = orth_->printjob.manipulationpairs.at(i).id;
         fn.append(".stl");
         RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,fn);
         connect(r,SIGNAL(Success()),this,SLOT(repairSucessful()));
@@ -92,9 +92,12 @@ void PrintJobController::makeIniFiles(QString stlfilename, manipulationpair pair
     p.x_center = pair.x_center;
     p.y_center = pair.y_center;
 
-    if(pair.stiffness>50){
+    if(pair.stiffness>76){
         p.inifile = "p.ini";
         p.gcode_file = stlfilename.replace(".obj",".gcode");
+    }else if(pair.stiffness>50){
+        p.inifile = "pattern29.ini";
+        p.gcode_file = stlfilename.replace(".obj",".extrude.gcode");
     }else if(pair.stiffness>25){
         p.inifile = "pattern39.ini";
         p.gcode_file = stlfilename.replace(".obj",".extrude.gcode");
@@ -108,6 +111,7 @@ void PrintJobController::makeIniFiles(QString stlfilename, manipulationpair pair
         p.inifile="p.ini";
 
     }
+    qDebug()<<"added "<<p.stlfile;
     pad_files_.append(p);
 }
 
@@ -136,11 +140,14 @@ void PrintJobController::repairSucessful(){
 
 //        int i=0;
 //        foreach(manipulationpair mp, orth_->printjob.manipulationpairs ){
+        qDebug()<<"\n\nManipulations: "<<orth_->printjob.manipulationpairs.size();
         for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
             manipulationpair mp = orth_->printjob.manipulationpairs.at(i);
-            QString stlfilename = QString::number(i);
+            QString stlfilename = orth_->printjob.manipulationpairs.at(i).id;
             stlfilename.append("_fixed.obj");
-
+//            qDebug()<<"\n\n\n\n"<<i;
+//            qDebug()<<"filename: "<<stlfilename;
+//            qDebug()<<"stiffness: "<<mp.stiffness;
             makeIniFiles(stlfilename,mp);
 
             numSTLToSlice+=pad_files_.size();
@@ -150,7 +157,6 @@ void PrintJobController::repairSucessful(){
                 connect(workthread,SIGNAL(finished()),sci,SLOT(deleteLater()));
                 sci->slice();
             }
-            i++;
         }
 
     }

@@ -68,7 +68,7 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
             for(int k=0;k<manips.size();k++){
                 QDomNode manip = manips.at(k);
                 if("manipulation" == manip.nodeName().toLower()){
-                    manipulations_.append(Manipulation(manip));
+                    manipulations_.append(new Manipulation(manip));
                 }
             }
         }else if("healpoints"==name){
@@ -164,7 +164,7 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
 //        }
 //        mnode.appendChild(innerEl);
 //        node.appendChild(mnode);
-        node.appendChild(manipulations_[i].toNode());
+        node.appendChild(manipulations_[i]->toNode());
     }
 
     //  QVector< FAHVector3 > healPts_;
@@ -216,7 +216,7 @@ void Orthotic::setTopCoat(Top_Coat tc){
     tc_=tc;
 }
 
-void Orthotic::addManipulation(Manipulation m){
+void Orthotic::addManipulation(Manipulation* m){
     manipulations_.append(m);
     emit manipulated();
 }
@@ -273,7 +273,7 @@ void Orthotic::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector
 QVector< FAHVector3 > Orthotic::getHealPoints(){return healPts_;}
 QVector< FAHVector3 > Orthotic::getForePoints(){return forePts_;}
 Top_Coat Orthotic::getTopCoat(){return tc_;}
-QVector<Manipulation> Orthotic::getManipulations(){return manipulations_;}
+QVector<Manipulation *> Orthotic::getManipulations(){return manipulations_;}
 
 
 void Orthotic::setBoundary(FAHLoopInXYPlane* loop){boundaryloop_=loop;}
