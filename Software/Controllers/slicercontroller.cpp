@@ -19,7 +19,7 @@ void SlicerController::slice(){
     QString output = QString(objfile_).remove(".stl").remove(".obj")+".gcode";
 
     QStringList args;
-    QString cent = QString::number(x_)+","+QString::number(y_);
+    QString cent = QString::number(x_/2.0)+","+QString::number(y_/2.0);
 
     args <<objfile_ << "--load" <<inifile_ << "--output" << output
          <<"--print-center"<<cent;

@@ -260,7 +260,7 @@ void TestOrthoticsRxThroughGCode(){
     s.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r\\Slic3r-console.exe");
     s.setValue("printing/valving-python-script","toValve.py");
     s.setValue("printing/merge-python-script","merge.py");
-
+    s.setValue("printing/scale","0.75");
 
     ScanManager* sm = new ScanManager();
     OrthoticManager* om = new OrthoticManager(sm);
@@ -319,7 +319,7 @@ void TestOrthoticsRxThroughGCode(){
 //    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
 
-    FAHLoopInXYPlane* c = circle(90.0,90.0,10.0);
+    FAHLoopInXYPlane* c = circle(40.0,80.0,12.0);
     writeLoopToXDFL(c,"circle.xdfl");
     Manipulation m;
     m.stiffness=25;
@@ -330,7 +330,7 @@ void TestOrthoticsRxThroughGCode(){
     m.location = FAHVector3(0,0,0);
     m.innerloops = QList<FAHLoopInXYPlane*>();
     oc->addManipulation(m);
-    oc->save();
+//    oc->save();
     PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
 //    PrintJobTester* pjt = new PrintJobTester(pjc);
     pjc->RunPrintJob();

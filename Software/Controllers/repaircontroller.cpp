@@ -13,6 +13,8 @@ RepairController::RepairController(STLMesh *mesh, QString name, QObject *parent)
 void RepairController::repairMesh(){
     QSettings s;
     QString shellfilename = name_;
+    float scale = s.value("printing/scale","1").toFloat();
+    mesh_->scale(scale,scale,scale);
     stlToFile(mesh_,shellfilename);
 
     /// REPAIR SHELL

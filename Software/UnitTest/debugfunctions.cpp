@@ -78,7 +78,7 @@ FAHLoopInXYPlane* circle(float x, float y,float r){
     FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
     for( int i=0; i<100; i++){
         float theta = i*Math::k2Pi/100.0;
-        FAHVector3 pt(r*sin(theta)+x,r*cos(theta)+y,0);
+        FAHVector3 pt(0.5*r*sin(theta)+x,r*cos(theta)+y,0);
         loop->add(pt);
     }
     return loop;
