@@ -70,6 +70,19 @@ FAHLoopInXYPlane* angledBase(float theta, float min_threshold, float max_thresho
     return returnloop;
 }
 
+void FixedThicknessSTL(STLMesh *mesh, XYGrid<float>* grid, FAHLoopInXYPlane *OuterLoop, QList<FAHLoopInXYPlane *> innerLoops, float Thickness){
+    FAHLoopInXYPlane* borderWithHeight = mapOntoGrid(OuterLoop,grid);
+    for(int j=0;j<grid->ny()-1;j++){
+        for(int i=0;i<grid->nx()-1;i++){
+
+            addSquareToSTL(i,j,grid, mesh, borderWithHeight, innerLoops,-1);
+            addSquareToSTL(i,j,grid, mesh, borderWithHeight, innerLoops,Thickness,false,true);
+//            addSquareToSTL(i,j,grid, mesh, angleloop, innerLoops,0,false);
+        }
+    }
+    addLoopAtHeight(mesh,borderWithHeight,Thickness,true,true);
+    delete borderWithHeight;
+}
 
 void STLFromSection(STLMesh* mesh,XYGrid<float>* grid, FAHLoopInXYPlane* angled, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoop){
 //    STLMesh* mesh= new STLMesh();
@@ -110,7 +123,7 @@ void STLFromSection(STLMesh* mesh,XYGrid<float>* grid, FAHLoopInXYPlane* angled,
 template <class T>
 void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
                     FAHLoopInXYPlane* OuterLoop,
-                    QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top){
+                    QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top, bool thickness){
 
     /** calculated vOuterLoophe 4 points and determin case
      *  p1--p2 -->i x  thesebounds
@@ -148,10 +161,17 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
 //    if(numInBounds!=2){return;}
 
     if(setz!=-1){// if its the bottom set all Z points to 0
-        p1.z=setz;
-        p2.z=setz;
-        p3.z=setz;
-        p4.z=setz;
+        if(!thickness){
+            p1.z=setz;
+            p2.z=setz;
+            p3.z=setz;
+            p4.z=setz;
+        }else{
+            p1.z=p1.z-setz;
+            p2.z=p2.z-setz;
+            p3.z=p3.z-setz;
+            p4.z=p4.z-setz;
+        }
 
     }
     if(!top){d.z=-1;}
@@ -188,11 +208,11 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
     QVector<FAHVector3> innerpoints;
     for(int l=0; l<innerLoops.size();l++){
         for(int k=0;k<innerLoops[l]->points.size(); k++){
-            if ((OuterLoop->points[k].x > p1.x) &&
-                (OuterLoop->points[k].x < p4.x) &&
-                (OuterLoop->points[k].y > p1.y) &&
-                (OuterLoop->points[k].y < p4.y) ){
-                innerpoints.append(OuterLoop->points[k]);
+            if ((innerLoops[l]->points[k].x > p1.x) &&
+                (innerLoops[l]->points[k].x < p4.x) &&
+                (innerLoops[l]->points[k].y > p1.y) &&
+                (innerLoops[l]->points[k].y < p4.y) ){
+                innerpoints.append(innerLoops[l]->points[k]);
             }
         }
     }
@@ -662,16 +682,21 @@ FAHVector3 addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMe
 }
 
 
-void addLoopAtHeight(STLMesh* mesh, FAHLoopInXYPlane* Loop, float z,bool outside){
+void addLoopAtHeight(STLMesh* mesh, FAHLoopInXYPlane* Loop, float z,bool fixedthickness, bool outside){
     FAHVector3 cent= Loop->center();
     FAHVector3 direction = FAHVector3(0,0,1);
     for(int i=1;i<Loop->points.size()+1;i++){
         FAHVector3 last = Loop->points.at( (i-1)%Loop->points.size() );
         FAHVector3 current = Loop->points.at( i%Loop->points.size() );
+
         FAHVector3 last_bottom = last.copy();
-        last_bottom.z = z;
+        if(!fixedthickness){last_bottom.z = z;}
+        else {last_bottom.z = last_bottom.z-z;}
+
         FAHVector3 current_bottom = current.copy();
-        current_bottom.z = z;
+        if(!fixedthickness){current_bottom.z = z;}
+        else {current_bottom.z = current_bottom.z-z;}
+
         if(outside){direction = current-cent;}
         else{direction = cent-current;}
         addFacetWithDirection(current,last,last_bottom,
@@ -1313,8 +1338,8 @@ bool stlToFile(STLMesh* m, QString file){
 }
 
 
-template void addSquareToSTL(int i, int j, XYGrid<float>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops,float setz, bool top);
-template void addSquareToSTL(int i, int j, XYGrid<int>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top);
+template void addSquareToSTL(int i, int j, XYGrid<float>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops,float setz, bool top, bool thickness);
+template void addSquareToSTL(int i, int j, XYGrid<int>* grid,STLMesh* mesh, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top, bool thickness);
 template STLMesh* makeSTLfromScan(XYGrid<float>* grid );
 template STLMesh* makeSTLfromScan(XYGrid<int>* grid );
 template STLMesh* makeSTLfromScanSection(XYGrid<float>* grid, FAHLoopInXYPlane* OuterLoop, QList<FAHLoopInXYPlane*> innerLoops);

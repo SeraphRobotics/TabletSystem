@@ -171,7 +171,8 @@ void OrthoticController::makeSTLs(){
 
     FAHLoopInXYPlane* bottomloop = bottomLoopFromPoints(orth_->getHealPoints(),orth_->getForePoints());
 //    STLMesh* angleMesh =
-    STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);
+//    STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);
+    FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,5);
     shell->scale(2,1,1);
 
     //Generate Printjob outputs

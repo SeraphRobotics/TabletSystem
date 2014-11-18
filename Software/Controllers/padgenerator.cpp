@@ -84,12 +84,13 @@ float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell
 
             addSquareToSTL(i,j,pad_grid, mesh, outer, inners,floorz,false);
             addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,floorz,true);
-            addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,0,false);
+//            addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,0,false);
+            addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,5,false,true);
         }
     }
     FAHLoopInXYPlane* outer_floor = mapOntoGrid(m->outerloop,shell_grid,true,floorz);
     addBetweenTwoLoopsToSTL(mesh,outer,outer_floor);
-    addLoopAtHeight(shell_mesh,outer,floorz,false);
+    addLoopAtHeight(shell_mesh,outer,floorz,false,false);
     delete outer_floor;
 //    delete outer;
 ;

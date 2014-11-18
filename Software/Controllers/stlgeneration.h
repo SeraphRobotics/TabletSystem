@@ -34,7 +34,7 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid );
  **/
 FAHLoopInXYPlane* angledBase(float theta, float min_threshold, float max_threshold, FAHLoopInXYPlane *loop);
 
-
+void FixedThicknessSTL(STLMesh *mesh, XYGrid<float>* grid, FAHLoopInXYPlane *OuterLoop, QList<FAHLoopInXYPlane *> innerLoops, float Thickness);
 
 void STLFromSection(STLMesh *mesh, XYGrid<float>* grid, FAHLoopInXYPlane *angled,  FAHLoopInXYPlane *OuterLoop, QList<FAHLoopInXYPlane *> innerLoops);
 /// STL Helper functions
@@ -45,7 +45,7 @@ void STLFromSection(STLMesh *mesh, XYGrid<float>* grid, FAHLoopInXYPlane *angled
 template <class T>
 void addSquareToSTL(int i, int j, XYGrid<T>* grid,STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
-                    QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top=true);
+                    QList<FAHLoopInXYPlane*> innerLoops, float setz, bool top=true, bool thickness= false);
 
 
 enum kChannelType{cleft,cright,ctop,cbottom,
@@ -62,7 +62,7 @@ void addChannelToSTL(int i, int j, XYGrid<float>* grid, STLMesh* mesh,
 template <class T>
 void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<T>* grid,STLMesh* mesh,bool inner );
 
-void addLoopAtHeight(STLMesh* mesh, FAHLoopInXYPlane* Loop, float z,bool outside);
+void addLoopAtHeight(STLMesh* mesh, FAHLoopInXYPlane* Loop, float z, bool fixedthickness, bool outside);
 
 void addBetweenTwoLoopsToSTL(STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
