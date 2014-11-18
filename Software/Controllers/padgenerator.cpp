@@ -3,7 +3,7 @@
 #include "processingfunctions.h"
 #include <math.h>
 
-float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell_grid, STLMesh* mesh, STLMesh *shell_mesh, float min_z){
+float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell_grid, STLMesh* mesh, STLMesh *shell_mesh, float thick_z, bool thicken){
 //    STLMesh* mesh= new STLMesh();
 
     float kMinThick = 0.4;
@@ -18,7 +18,7 @@ float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell
     ////// Find maximum distance
     QList<ijd> modpts;
     float max_d = -10000;
-    min_z = 10000;
+    float min_z = 10000;
 
     for(int j=0;j<pad_grid->ny()-1;j++){
         for(int i=0;i<pad_grid->nx()-1;i++){
@@ -85,7 +85,8 @@ float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell
             addSquareToSTL(i,j,pad_grid, mesh, outer, inners,floorz,false);
             addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,floorz,true);
 //            addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,0,false);
-            addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,5,false,true);
+            if (thicken){addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,thick_z,false,true);}
+            else{addSquareToSTL(i,j,pad_grid,shell_mesh, outer, inners,0,false,false);}
         }
     }
     FAHLoopInXYPlane* outer_floor = mapOntoGrid(m->outerloop,shell_grid,true,floorz);

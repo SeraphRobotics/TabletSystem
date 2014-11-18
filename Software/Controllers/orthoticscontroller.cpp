@@ -130,7 +130,7 @@ void OrthoticController::setPosting(Posting p){
 
 void OrthoticController::makeSTLs(){
 
-
+    float thickness = 5.0;
 
     printjobinputs pji;
     QList<View_3D_Item> toEmitList;
@@ -139,16 +139,16 @@ void OrthoticController::makeSTLs(){
     delete orth_->topcoatgrid;
     orth_->shellgrid = new XYGrid<float>(orth_->getScan()->getPostedXYGrid());
     orth_->topcoatgrid = new XYGrid<float>(orth_->getScan()->getPostedXYGrid());
-    blurGrid(orth_->shellgrid,2);
+//    blurGrid(orth_->shellgrid,2);
     STLMesh* shell = new STLMesh();
 
     /// GENERATE PADS
     int i=0;
     QList<FAHLoopInXYPlane*> inners;
     foreach(Manipulation* m, orth_->getManipulations()){
-
+        qDebug()<<"Making Pad";
         STLMesh* m_mesh = new STLMesh();
-        float min_z = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,min_z);
+        float min_z = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,thickness,true);
         inners.append(m->outerloop);
         m_mesh->scale(2,1,1);
         View_3D_Item v3d;
@@ -172,7 +172,8 @@ void OrthoticController::makeSTLs(){
     FAHLoopInXYPlane* bottomloop = bottomLoopFromPoints(orth_->getHealPoints(),orth_->getForePoints());
 //    STLMesh* angleMesh =
 //    STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);
-    FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,5);
+    qDebug()<<"Making Shell";
+    FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);
     shell->scale(2,1,1);
 
     //Generate Printjob outputs
