@@ -319,7 +319,7 @@ void TestOrthoticsRxThroughGCode(){
 //    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
 
-    for(int i=0;i<3;i++){
+    for(int i=0;i<1;i++){
         FAHLoopInXYPlane* c = circle(40.0+i*25,80.0+i*5,15.0);
         Manipulation* m = new Manipulation();
         m->stiffness=25+i*25;

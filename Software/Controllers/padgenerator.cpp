@@ -89,9 +89,10 @@ float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell
     }
     FAHLoopInXYPlane* outer_floor = mapOntoGrid(m->outerloop,shell_grid,true,floorz);
     addBetweenTwoLoopsToSTL(mesh,outer,outer_floor);
-    addBetweenTwoLoopsToSTL(shell_mesh,outer,outer_floor,false);
+    addLoopAtHeight(shell_mesh,outer,floorz,false);
     delete outer_floor;
 //    delete outer;
+;
 
     foreach(FAHLoopInXYPlane* l, inners){
         FAHLoopInXYPlane* l2 = mapOntoGrid(l,shell_grid,true,floorz);

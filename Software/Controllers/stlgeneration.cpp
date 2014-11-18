@@ -662,6 +662,25 @@ FAHVector3 addFacetWithDirection(FAHVector3 p1,FAHVector3 p2,FAHVector3 p3,STLMe
 }
 
 
+void addLoopAtHeight(STLMesh* mesh, FAHLoopInXYPlane* Loop, float z,bool outside){
+    FAHVector3 cent= Loop->center();
+    FAHVector3 direction = FAHVector3(0,0,1);
+    for(int i=1;i<Loop->points.size()+1;i++){
+        FAHVector3 last = Loop->points.at( (i-1)%Loop->points.size() );
+        FAHVector3 current = Loop->points.at( i%Loop->points.size() );
+        FAHVector3 last_bottom = last.copy();
+        last_bottom.z = z;
+        FAHVector3 current_bottom = current.copy();
+        current_bottom.z = z;
+        if(outside){direction = current-cent;}
+        else{direction = cent-current;}
+        addFacetWithDirection(current,last,last_bottom,
+                              mesh,direction);
+        addFacetWithDirection(last_bottom,current_bottom,current,
+                              mesh,direction);
+    }
+}
+
 void addBetweenTwoLoopsToSTL(STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
                     FAHLoopInXYPlane* innerLoop, bool outside)
@@ -672,7 +691,7 @@ void addBetweenTwoLoopsToSTL(STLMesh* mesh,
     for(int i=0;i<OuterLoop->points.size();i++){
         FAHVector3 outpt = OuterLoop->points.at(i);
         if (outpt.isInvalid()){continue;}
-        int index = 0;
+        int index = -1;
         float min_d=10000;
 
         for(int j=0;j<innerLoop->points.size();j++){
@@ -684,7 +703,8 @@ void addBetweenTwoLoopsToSTL(STLMesh* mesh,
                 index = j;
             }
         }
-        indexToOuterloop[index].append(outpt.copy());
+        if(index !=-1){indexToOuterloop[index].append(outpt.copy());}
+        else {qDebug()<<"Error no pt close";}
     }
 
 

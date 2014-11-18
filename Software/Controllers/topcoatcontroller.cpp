@@ -23,8 +23,8 @@ void TopCoatController::generateTopCoat(){
     float scale = s.value("printing/scale","1").toFloat();
 
     XYGrid<float>* grid = orth_->topcoatgrid;
-    float scaley = 1.0* scale*grid->stepSize();
-    float scalex = 2.0* scale;
+    float scaley = 1.0*grid->stepSize();
+    float scalex = 2.0;
     float path_width=1.0;
     float path_height=1.0;
     float z_offset=1.0;
@@ -59,6 +59,7 @@ void TopCoatController::generateTopCoat(){
         speed =  s.value("printing/topcoat/high/ps","10").toFloat();
     }
 
+    path_width= path_width/scale;
 
     QVector<float> xs;
     float x=0;
@@ -131,18 +132,18 @@ void TopCoatController::generateTopCoat(){
         QString relativelift = s.value("Printing/lift","\nG91 \nG1 Z40 F2400 \nG90").toString();
 
         FAHVector3 first = pts.first();
-        QString first_pt_line = "G1 X"+QString::number(first.x)+
-                           " Y"+QString::number(first.y)+
-                           " Z"+QString::number(first.z+layer*path_height)+
+        QString first_pt_line = "G1 X"+QString::number(first.x*scale)+
+                           " Y"+QString::number(first.y*scale)+
+                           " Z"+QString::number(scale*(first.z+layer*path_height))+
                            " F"+QString::number(speed);
 
         gcodes<<relativelift;
         gcodes<<first_pt_line;
         gcodes<<openLine;
         foreach(FAHVector3 pt,pts){
-            QString line = "G1 X"+QString::number(pt.x)+
-                               " Y"+QString::number(pt.y)+
-                               " Z"+QString::number(pt.z+layer*path_height)+
+            QString line = "G1 X"+QString::number(scale*pt.x)+
+                               " Y"+QString::number(scale*pt.y)+
+                               " Z"+QString::number(scale*(pt.z+layer*path_height))+
                                " F"+QString::number(speed);
             gcodes.append(line);
         }

@@ -62,7 +62,7 @@ void addChannelToSTL(int i, int j, XYGrid<float>* grid, STLMesh* mesh,
 template <class T>
 void addLoopToSTL(const FAHLoopInXYPlane& loop,XYGrid<T>* grid,STLMesh* mesh,bool inner );
 
-
+void addLoopAtHeight(STLMesh* mesh, FAHLoopInXYPlane* Loop, float z,bool outside);
 
 void addBetweenTwoLoopsToSTL(STLMesh* mesh,
                     FAHLoopInXYPlane* OuterLoop,
