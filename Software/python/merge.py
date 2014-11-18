@@ -393,7 +393,7 @@ def mergeFromXML(infilename, outfilename, verbose):
     outfile = open(outfilename, 'w')
     for line in output_cmd_list:
         pass
-        #outfile.write(line)
+        outfile.write(line)
     
     
     for layer in topcoat_list:

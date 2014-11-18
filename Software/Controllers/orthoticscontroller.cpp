@@ -82,6 +82,10 @@ void OrthoticController::setTopCoat(Top_Coat tc){
     orth_->setTopCoat(tc);
 }
 
+void OrthoticController::setBottomType(Orthotic::bottom_type type){
+    orth_->setBottomType(type);
+}
+
 void OrthoticController::addManipulation(Manipulation *m){
     orth_->addManipulation(m);
 //    makeSTLs();
@@ -130,7 +134,7 @@ void OrthoticController::setPosting(Posting p){
 
 void OrthoticController::makeSTLs(){
 
-    float thickness = 5.0;
+
 
     printjobinputs pji;
     QList<View_3D_Item> toEmitList;
@@ -142,13 +146,16 @@ void OrthoticController::makeSTLs(){
 //    blurGrid(orth_->shellgrid,2);
     STLMesh* shell = new STLMesh();
 
+    bool make_thickness = (Orthotic::kCurved == orth_->getBottomType());
+    float thickness = 5.0;
+
     /// GENERATE PADS
     int i=0;
     QList<FAHLoopInXYPlane*> inners;
     foreach(Manipulation* m, orth_->getManipulations()){
         qDebug()<<"Making Pad";
         STLMesh* m_mesh = new STLMesh();
-        float min_z = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,thickness,true);
+        float min_z = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,thickness,make_thickness);
         inners.append(m->outerloop);
         m_mesh->scale(2,1,1);
         View_3D_Item v3d;
@@ -171,9 +178,10 @@ void OrthoticController::makeSTLs(){
 
     FAHLoopInXYPlane* bottomloop = bottomLoopFromPoints(orth_->getHealPoints(),orth_->getForePoints());
 //    STLMesh* angleMesh =
-//    STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);
+
     qDebug()<<"Making Shell";
-    FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);
+    if (make_thickness){FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);}
+    else {STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);}
     shell->scale(2,1,1);
 
     //Generate Printjob outputs

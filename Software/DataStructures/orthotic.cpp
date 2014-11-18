@@ -7,10 +7,10 @@ Orthotic::Orthotic(QObject *parent) :
 {
     id_=QUuid::createUuid();
     filename_ = id_.toString()+QString(".ortho");
-    scan_=new Scan();
-    scanid_=scan_->getID();
+    scan_ = new Scan();
+    scanid_ = scan_->getID();
     forfoot_ = Posting();
-    rearfoot_=Posting();
+    rearfoot_ = Posting();
     topcoatgrid = new XYGrid<float>();
     shellgrid = new XYGrid<float>();
 

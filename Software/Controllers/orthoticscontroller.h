@@ -91,6 +91,8 @@ public slots:
 
     void setTopCoat(Top_Coat tc);
 
+    void setBottomType(Orthotic::bottom_type type);
+
     void addManipulation(Manipulation* m);
 
     void setPosting(Posting p);

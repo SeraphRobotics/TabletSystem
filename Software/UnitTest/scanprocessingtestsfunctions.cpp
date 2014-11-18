@@ -260,7 +260,7 @@ void TestOrthoticsRxThroughGCode(){
     s.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r\\Slic3r-console.exe");
     s.setValue("printing/valving-python-script","toValve.py");
     s.setValue("printing/merge-python-script","merge.py");
-    s.setValue("printing/scale","0.75");
+    s.setValue("printing/scale","0.5");
 
     ScanManager* sm = new ScanManager();
     OrthoticManager* om = new OrthoticManager(sm);
@@ -306,9 +306,10 @@ void TestOrthoticsRxThroughGCode(){
     oct->connect(oc,SIGNAL(scanImageGenerated(QImage)),oct,SLOT(scanImageGenerated(QImage)));
     oct->connect(oc,SIGNAL(stlsGenerated(QList<View_3D_Item>)),oct,SLOT(stlsGenerated(QList<View_3D_Item>)));
 
-
     oc->setScan(scanid);
     oc->setBorderPoints(healPts, forePts);
+
+//    oc->setBottomType(Orthotic::kCurved);
 
     oc->setTopCoat(tc);
 
@@ -319,7 +320,7 @@ void TestOrthoticsRxThroughGCode(){
 //    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
 
-    for(int i=0;i<1;i++){
+    for(int i=0;i<0;i++){
         FAHLoopInXYPlane* c = circle(40.0+i*25,80.0+i*5,15.0);
         Manipulation* m = new Manipulation();
         m->stiffness=25+i*25;
