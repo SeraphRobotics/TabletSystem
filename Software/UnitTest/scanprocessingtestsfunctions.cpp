@@ -260,7 +260,7 @@ void TestOrthoticsRxThroughGCode(){
     s.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r\\Slic3r-console.exe");
     s.setValue("printing/valving-python-script","toValve.py");
     s.setValue("printing/merge-python-script","merge.py");
-    s.setValue("printing/scale","0.5");
+    s.setValue("printing/scale","1");
 
     ScanManager* sm = new ScanManager();
     OrthoticManager* om = new OrthoticManager(sm);
@@ -319,6 +319,7 @@ void TestOrthoticsRxThroughGCode(){
 
 //    pjt->connect(oc,SIGNAL(printJobInputs(printjobinputs)),pjt,SLOT(printJobInputs(printjobinputs)));
     oc->setPosting(rearpost);
+    oc->setBottomType(Orthotic::kCurved);
 
     for(int i=0;i<0;i++){
         FAHLoopInXYPlane* c = circle(40.0+i*25,80.0+i*5,15.0);
