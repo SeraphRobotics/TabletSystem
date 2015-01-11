@@ -1,0 +1,48 @@
+﻿<Users>
+
+<user id="{44844aae-619c-47f1-ae93-72ca93b5ab9a}">
+	 <name>
+	  <title>Dr.</title>
+	  <first>Nikola</first>
+	  <last>Tesla</last>
+	 </name>
+	 <password>coil</password>
+	 <icon>qrc:/QmlResources/People-Doctor-Male-icon.png</icon>
+	</user>
+<user id="{48423aae-619c-47f1-ae93-72ca93b5ab9a}">
+	 <name>
+	  <title>Dr.</title>
+	  <first>Albert</first>
+	  <last>Einstein</last>
+	 </name>
+	 <password>e=mc2</password>
+	 <icon>qrc:/QmlResources/People-Doctor-Male-icon.png</icon>
+	</user>
+<user id="{44534aae-619c-47f1-ae93-72ca93b5ab9a}">
+	 <name>
+	  <title>Ms.</title>
+	  <first>Marie</first>
+	  <last>Curie</last>
+	 </name>
+	 <password>radioactive</password>
+	 <icon>qrc:/QmlResources/People-Doctor-Male-icon.png</icon>
+	</user>
+<user id="{54534534-619c-47f1-ae93-72ca93b5ab9a}">
+	 <name>
+	  <title>Mr.</title>
+	  <first>Pierre</first>
+	  <last>Curie</last>
+	 </name>
+	 <password>marie</password>
+	 <icon>qrc:/QmlResources/People-Doctor-Male-icon.png</icon>
+	</user>
+	<user id="{64844aae-619c-47f1-ae93-72ca93b5ab9a}">
+	 <name>
+	  <title>Mr.</title>
+	  <first>Erich Maria</first>
+	  <last>Remarque</last>
+	 </name>
+	 <password>ww</password>
+	 <icon>qrc:/QmlResources/People-Doctor-Male-icon.png</icon>
+	</user>
+</Users>
