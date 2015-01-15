@@ -1,13 +1,20 @@
 #include "processingfunctions.h"
-#include <Eigen/Dense>
 #include <QtAlgorithms>
 #include <algorithm>
 #include <QImage>
 #include <QColor>
 #include "UnitTest/debugfunctions.h"
-#include <Eigen/Eigenvalues>
 #include <iostream>
 #include "scannerfunctions.h"
+
+#ifdef Q_OS_LINUX
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/Eigenvalues>
+#else
+#include <Eigen/Dense>
+#include <Eigen/Eigenvalues>
+#endif
+
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;

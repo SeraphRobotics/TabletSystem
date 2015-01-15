@@ -35,9 +35,9 @@
 #include <QDomNode>
 #include <QMap>
 
-#include "AMFTriangle.h"
-#include "AMFVertex.h"
-#include "EdgeKey.h"
+#include "amftriangle.h"
+#include "amfvertex.h"
+#include "edgekey.h"
 
 class AMFMesh;
 

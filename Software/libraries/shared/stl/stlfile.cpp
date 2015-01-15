@@ -39,7 +39,7 @@
 //#include "shared/amf/amftriangle.h"
 //#include "shared/amf/amfregion.h"
 
-#include "STLFile.h"
+#include "stlfile.h"
 #include "stlfacet.h"
 #include <qtextstream.h>
 #include <qfile.h>

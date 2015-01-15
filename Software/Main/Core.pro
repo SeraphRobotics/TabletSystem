@@ -11,6 +11,6 @@ SUBDIRS = libqdevicewatcher CoreSystem
 
 libqdevicewatcher.file = ../libraries/qdevicewatcher-master/src/libQDeviceWatcher.pro
 
-CoreSystem.file = Coresystem.pro
+CoreSystem.file = CoreSystem.pro
 CoreSystem.depends += libqdevicewatcher
 

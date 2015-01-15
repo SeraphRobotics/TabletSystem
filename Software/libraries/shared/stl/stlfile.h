@@ -36,7 +36,7 @@
 #include <QString>
 #include <QImage>
 #include <qfile.h>
-#include "STLMesh.h"
+#include "stlmesh.h"
 
 class AMFFile;
 

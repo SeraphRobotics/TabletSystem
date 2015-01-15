@@ -2,7 +2,7 @@
 #define GCODECONTROLLER_H
 
 #include <QObject>
-#include "libraries/shared/stl/STLMesh.h"
+#include "libraries/shared/stl/stlmesh.h"
 #include "libraries/shared/stl/stlfile.h"
 #include "DataStructures/printingstructs.h"
 #include <QDir>
