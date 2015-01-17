@@ -4,6 +4,7 @@
 USBMinder::USBMinder(QObject *parent) //:
     //QThread(parent)
 {
+    Q_UNUSED(parent);
     //start();
     //moveToThread(this);
     watcher = new QDeviceWatcher();

@@ -124,7 +124,21 @@ HEADERS += \
     libraries/common/quazip/zip.h \
     libraries/common/confirm.h \
     libraries/common/tinman.h \
-    libraries/common/todo.h
+    libraries/common/todo.h \
+    DataStructures/basicstructures.h \
+    DataStructures/manipulations.h \
+    DataStructures/orthotic.h \
+    DataStructures/orthoticmanager.h \
+    DataStructures/patientdata.h \
+    DataStructures/patientmanager.h \
+    DataStructures/printingstructs.h \
+    DataStructures/scan.h \
+    DataStructures/scanmanager.h \
+    DataStructures/usbmanager.h \
+    DataStructures/usbminder.h \
+    DataStructures/user.h \
+    DataStructures/usermanager.h \
+    DataStructures/xygrid.h
 
 SOURCES += \
     Controllers/gcodecontroller.cpp \
@@ -167,7 +181,22 @@ SOURCES += \
     libraries/common/quazip/zip.c \
     libraries/common/confirm.cpp \
     libraries/common/tinman.cpp \
-    libraries/common/todo.cpp
+    libraries/common/todo.cpp \
+    DataStructures/basicstructures.cpp \
+    DataStructures/main.cpp \
+    DataStructures/manipulations.cpp \
+    DataStructures/orthotic.cpp \
+    DataStructures/orthoticmanager.cpp \
+    DataStructures/patientdata.cpp \
+    DataStructures/patientmanager.cpp \
+    DataStructures/printingstructs.cpp \
+    DataStructures/scan.cpp \
+    DataStructures/scanmanager.cpp \
+    DataStructures/usbmanager.cpp \
+    DataStructures/usbminder.cpp \
+    DataStructures/user.cpp \
+    DataStructures/usermanager.cpp \
+    DataStructures/xygrid.cpp
 
 
 
