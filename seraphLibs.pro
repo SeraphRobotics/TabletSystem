@@ -1,7 +1,7 @@
 # CONFIG += qt warn_off debug
 # QT       += network quick sql xml concurrent
-QT       += core gui xml concurrent
-QT       += widgets   # for QMessageBox
+QT     += core gui xml concurrent
+QT     += widgets   # for QMessageBox
 CONFIG += c++11
 
 ##############################
@@ -49,8 +49,11 @@ unix:LIBS += \
     -lopencv_ts \
     -lopencv_video
 
+unix:LIBS += -lz
+
 win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
 
+# include(libraries/qdevicewatcher/QDeviceWatcher.pro)
 
 # shared libs
 DEFINES += SERAPHLIBS_LIBRARY
@@ -77,6 +80,17 @@ test {
 } else {
     message(shared libs build)
 }
+
+unix:SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_linux.cpp
+win32 {
+    wince*: SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_wince.cpp
+    else:  SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_win32.cpp
+}
+macx {
+    LIBS += -framework DiskArbitration -framework Foundation
+    SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_mac.cpp
+}
+
 
 HEADERS += \
     Controllers/gcodecontroller.h \
@@ -139,7 +153,11 @@ HEADERS += \
     DataStructures/usbminder.h \
     DataStructures/user.h \
     DataStructures/usermanager.h \
-    DataStructures/xygrid.h
+    DataStructures/xygrid.h \
+    libraries/qdevicewatcher/src/qdevicechangeevent.h \
+    libraries/qdevicewatcher/src/qdevicewatcher_global.h \
+    libraries/qdevicewatcher/src/qdevicewatcher_p.h \
+    libraries/qdevicewatcher/src/qdevicewatcher.h
 
 SOURCES += \
     Controllers/gcodecontroller.cpp \
@@ -184,7 +202,6 @@ SOURCES += \
     libraries/common/tinman.cpp \
     libraries/common/todo.cpp \
     DataStructures/basicstructures.cpp \
-    DataStructures/main.cpp \
     DataStructures/manipulations.cpp \
     DataStructures/orthotic.cpp \
     DataStructures/orthoticmanager.cpp \
@@ -197,7 +214,10 @@ SOURCES += \
     DataStructures/usbminder.cpp \
     DataStructures/user.cpp \
     DataStructures/usermanager.cpp \
-    DataStructures/xygrid.cpp
+    DataStructures/xygrid.cpp \
+    libraries/qdevicewatcher/src/qdevicechangeevent.cpp \
+    libraries/qdevicewatcher/src/qdevicewatcher.cpp
+
 
 
 

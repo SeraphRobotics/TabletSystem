@@ -5,8 +5,8 @@
 #include <QThread>
 
 
-#include "../libraries/qdevicewatcher-master/src/qdevicewatcher.h"
-#include "../libraries/qdevicewatcher-master/src/qdevicechangeevent.h"
+#include "libraries/qdevicewatcher/src/qdevicewatcher.h"
+#include "libraries/qdevicewatcher/src/qdevicechangeevent.h"
 
 class USBMinder : public QObject
 {

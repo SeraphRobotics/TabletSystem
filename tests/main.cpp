@@ -2,14 +2,13 @@
 #include <QCoreApplication>
 #include <QtTest/QtTest>
 #include <QEventLoop>
-
-//#include "config.h"
-//#include "utils/logger.h"
+#include <QDebug>
 
 
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
 
+    qDebug() << "running tests";
 
     //EthLinkStatusTest linkTest;
 
