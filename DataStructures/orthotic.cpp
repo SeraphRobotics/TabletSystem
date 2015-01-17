@@ -208,7 +208,7 @@ QString Orthotic::getScanID(){
 }
 
 QString Orthotic::getId(){
-    return id_;
+    return id_.toString();
 }
 
 

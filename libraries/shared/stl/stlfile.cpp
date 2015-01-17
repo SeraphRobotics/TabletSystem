@@ -326,8 +326,8 @@ bool STLFile::ReadBMP(QString path) {
 
   QPixmap map(path);
   QBitmap bmp(path);
-  QPixmapData* data = bmp.pixmapData();
-  Q_UNUSED(data);
+  //QPlatformPixmap* data = bmp.pixmapData();
+  //Q_UNUSED(data);
   QImage im = map.toImage();
   int i = im.pixel(0,0);
   Q_UNUSED(i);

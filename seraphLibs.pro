@@ -1,6 +1,7 @@
 # CONFIG += qt warn_off debug
 # QT       += network quick sql xml concurrent
 QT       += core gui xml concurrent
+QT       += widgets   # for QMessageBox
 CONFIG += c++11
 
 ##############################

@@ -2,7 +2,7 @@
 #include <stdio.h>  // printf
 #include <QDebug>
 #include <QMessageBox>
-#include <QApplication> // for clipboard access
+#include <QCoreApplication> // for clipboard access
 #include <QClipboard>
 
 
