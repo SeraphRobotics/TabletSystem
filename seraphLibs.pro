@@ -18,6 +18,8 @@ VERSION = 0.0.01
 #CONFIG   -= app_bundle
 ##############################
 
+# shared libs
+DEFINES += SERAPHLIBS_LIBRARY
 
 win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
     -lopencv_calib3d245.dll\
@@ -34,7 +36,7 @@ win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
     -lopencv_ts245 \
     -lopencv_video245.dll
 
-unix:LIBS += \ 
+unix:LIBS += \
     -lopencv_calib3d \
     -lopencv_contrib \
     -lopencv_core \
@@ -53,13 +55,9 @@ unix:LIBS += -lz
 
 win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
 
-# include(libraries/qdevicewatcher/QDeviceWatcher.pro)
-
-# shared libs
-DEFINES += SERAPHLIBS_LIBRARY
-
 # run test suit,
 # clone a build in projects and add build additional args of CONFIG+=test to run below block
+# or run 'qmake CONFIG+=test' on source directory, followed by make.
 test {
     message(Test suite build)
     QT += testlib
@@ -69,7 +67,7 @@ test {
     TEMPLATE = app
     CONFIG   += console
 
-    SOURCES -= main.cpp
+    # SOURCES -= main.cpp
 
     SOURCES += \
 	tests/main.cpp 
@@ -80,17 +78,6 @@ test {
 } else {
     message(shared libs build)
 }
-
-unix:SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_linux.cpp
-win32 {
-    wince*: SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_wince.cpp
-    else:  SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_win32.cpp
-}
-macx {
-    LIBS += -framework DiskArbitration -framework Foundation
-    SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_mac.cpp
-}
-
 
 HEADERS += \
     Controllers/gcodecontroller.h \
@@ -106,6 +93,20 @@ HEADERS += \
     Controllers/slicercontroller.h \
     Controllers/stlgeneration.h \
     Controllers/topcoatcontroller.h \
+    DataStructures/usbmanager.h \
+    DataStructures/usbminder.h \
+    DataStructures/user.h \
+    DataStructures/usermanager.h \
+    DataStructures/xygrid.h \
+    DataStructures/basicstructures.h \
+    DataStructures/manipulations.h \
+    DataStructures/orthotic.h \
+    DataStructures/orthoticmanager.h \
+    DataStructures/patientdata.h \
+    DataStructures/patientmanager.h \
+    DataStructures/printingstructs.h \
+    DataStructures/scan.h \
+    DataStructures/scanmanager.h \
     libraries/shared/amf/amffile.h \
     libraries/shared/amf/amfmesh.h \
     libraries/shared/amf/amfobject.h \
@@ -128,7 +129,6 @@ HEADERS += \
     libraries/shared/stl/stlfile.h \
     libraries/shared/stl/stlmesh.h \
     libraries/shared/fah-constants.h \
-    globals.h \
     libraries/common/quazip/crypt.h \
     libraries/common/quazip/ioapi.h \
     libraries/common/quazip/quazip.h \
@@ -140,24 +140,13 @@ HEADERS += \
     libraries/common/confirm.h \
     libraries/common/tinman.h \
     libraries/common/todo.h \
-    DataStructures/basicstructures.h \
-    DataStructures/manipulations.h \
-    DataStructures/orthotic.h \
-    DataStructures/orthoticmanager.h \
-    DataStructures/patientdata.h \
-    DataStructures/patientmanager.h \
-    DataStructures/printingstructs.h \
-    DataStructures/scan.h \
-    DataStructures/scanmanager.h \
-    DataStructures/usbmanager.h \
-    DataStructures/usbminder.h \
-    DataStructures/user.h \
-    DataStructures/usermanager.h \
-    DataStructures/xygrid.h \
-    libraries/qdevicewatcher/src/qdevicechangeevent.h \
-    libraries/qdevicewatcher/src/qdevicewatcher_global.h \
     libraries/qdevicewatcher/src/qdevicewatcher_p.h \
-    libraries/qdevicewatcher/src/qdevicewatcher.h
+    libraries/qdevicewatcher/src/qdevicewatcher.h \
+    libraries/qdevicewatcher/src/qdevicewatcher_global.h \
+    libraries/qdevicewatcher/src/qdevicechangeevent.h \
+    globals.h \
+    runtime/mastercontrolunit.h \
+    View/UI_structs.h
 
 SOURCES += \
     Controllers/gcodecontroller.cpp \
@@ -173,6 +162,20 @@ SOURCES += \
     Controllers/slicercontroller.cpp \
     Controllers/stlgeneration.cpp \
     Controllers/topcoatcontroller.cpp \
+    DataStructures/usbmanager.cpp \
+    DataStructures/usbminder.cpp \
+    DataStructures/user.cpp \
+    DataStructures/usermanager.cpp \
+    DataStructures/xygrid.cpp \
+    DataStructures/basicstructures.cpp \
+    DataStructures/manipulations.cpp \
+    DataStructures/orthotic.cpp \
+    DataStructures/orthoticmanager.cpp \
+    DataStructures/patientdata.cpp \
+    DataStructures/patientmanager.cpp \
+    DataStructures/printingstructs.cpp \
+    DataStructures/scan.cpp \
+    DataStructures/scanmanager.cpp \
     libraries/shared/amf/amffile.cpp \
     libraries/shared/amf/amfmesh.cpp \
     libraries/shared/amf/amfobject.cpp \
@@ -201,27 +204,24 @@ SOURCES += \
     libraries/common/confirm.cpp \
     libraries/common/tinman.cpp \
     libraries/common/todo.cpp \
-    DataStructures/basicstructures.cpp \
-    DataStructures/manipulations.cpp \
-    DataStructures/orthotic.cpp \
-    DataStructures/orthoticmanager.cpp \
-    DataStructures/patientdata.cpp \
-    DataStructures/patientmanager.cpp \
-    DataStructures/printingstructs.cpp \
-    DataStructures/scan.cpp \
-    DataStructures/scanmanager.cpp \
-    DataStructures/usbmanager.cpp \
-    DataStructures/usbminder.cpp \
-    DataStructures/user.cpp \
-    DataStructures/usermanager.cpp \
-    DataStructures/xygrid.cpp \
+    libraries/qdevicewatcher/src/qdevicewatcher.cpp \
     libraries/qdevicewatcher/src/qdevicechangeevent.cpp \
-    libraries/qdevicewatcher/src/qdevicewatcher.cpp
+    runtime/mastercontrolunit.cpp \
+    View/UI_structs.cpp
 
 
 
 
 
+unix:  SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_linux.cpp
+win32 {
+    wince*: SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_wince.cpp
+    else:  SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_win32.cpp
+}
+macx {
+    LIBS += -framework DiskArbitration -framework Foundation
+    SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_mac.cpp
+}
 
 
 

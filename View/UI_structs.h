@@ -5,6 +5,7 @@
 #include <QDateTime>
 #include "libraries/shared/stl/stlmesh.h"
 #include "DataStructures/basicstructures.h"
+#include "opencv2/imgproc/imgproc.hpp"
 #include <QMetaType>
 
 //struct Name{
@@ -65,7 +66,8 @@ typedef QVector < QPointF > Border;
 struct UI_Shell_Modification{
     QString name;
     Border outer_border;  // This is a closed loop where point order matters
-    QList < Border > inner_borders;
+    QList< std::vector <cv::Point> > inner_borders;
+    //QList < Border > inner_borders;
     float height;
     float depth;
     float stiffness;
