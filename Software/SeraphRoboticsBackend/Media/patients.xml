@@ -1,0 +1,230 @@
+<Patients>
+	<patient id="{23-455-56790}">
+		<name>
+			<title>Mr</title>
+			<first>DamiaN</first>
+			<last>Czechowicz</last>
+		</name>
+		<gender>M</gender>
+		<Rxs>
+			<Rx>
+				<doctor id="44844aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>31</day>
+					<month>1</month>
+					<year>2014</year>
+				</date>
+				<note>This dudes feet really stink, He should shower more</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{12-122-221}"/>
+				<scan foot = "left" id="{12-122-222}"/>
+				<orthotic foot = "right" id="{12-122-221}"/>
+				<orthotic foot = "left" id="{12-122-222}"/>
+			</Rx>
+			<Rx>
+				<doctor id="44844aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>1</day>
+					<month>4</month>
+					<year>2012</year>
+				</date>
+				<note>I know this guy form somewhere</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{11-122-221}"/>
+				<scan foot = "left" id="{11-122-222}"/>
+				<orthotic foot = "right" id="{11-122-221}"/>
+				<orthotic foot = "left" id="{11-122-222}"/>
+			</Rx>
+		</Rxs>
+	</patient>
+<patient id="{23-455-5679}">
+		<name>
+			<title>Ing</title>
+			<first>firstUserName</first>
+			<last>secondUserName</last>
+		</name>
+		<gender>M</gender>
+		<Rxs>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>1</day>
+					<month>7</month>
+					<year>2011</year>
+				</date>
+				<note>This dudes feet is really cool, trust me</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{12-122-221}"/>
+				<scan foot = "left" id="{12-122-222}"/>
+				<orthotic foot = "right" id="{12-122-221}"/>
+				<orthotic foot = "left" id="{12-122-222}"/>
+			</Rx>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>16</day>
+					<month>11</month>
+					<year>2010</year>
+				</date>
+				<note>I know this guy form somewhere</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{11-122-221}"/>
+				<scan foot = "left" id="{11-122-222}"/>
+				<orthotic foot = "right" id="{11-122-221}"/>
+				<orthotic foot = "left" id="{11-122-222}"/>
+			</Rx>
+		</Rxs>
+	</patient>
+<patient id="{23-455-5670}">
+		<name>
+			<title>Mr</title>
+			<first>testname</first>
+			<last>testsurname</last>
+		</name>
+		<gender>M</gender>
+		<Rxs>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>19</day>
+					<month>8</month>
+					<year>2008</year>
+				</date>
+				<note>This dudes feet really stink, He should shower more</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{12-122-221}"/>
+				<scan foot = "left" id="{12-122-222}"/>
+				<orthotic foot = "right" id="{12-122-221}"/>
+				<orthotic foot = "left" id="{12-122-222}"/>
+			</Rx>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>12</day>
+					<month>10</month>
+					<year>1013</year>
+				</date>
+				<note>I know this guy form somewhere</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{11-122-221}"/>
+				<scan foot = "left" id="{11-122-222}"/>
+				<orthotic foot = "right" id="{11-122-221}"/>
+				<orthotic foot = "left" id="{11-122-222}"/>
+			</Rx>
+		</Rxs>
+	</patient>
+<patient id="{23-455-5671}">
+		<name>
+			<title>ms</title>
+			<first>womenUsername</first>
+			<last>womenUsersurnamename</last>
+		</name>
+		<gender>M</gender>
+		<Rxs>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>1</day>
+					<month>1</month>
+					<year>2314</year>
+				</date>
+				<note>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi. Cras vel lorem. </note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{12-122-221}"/>
+				<scan foot = "left" id="{12-122-222}"/>
+				<orthotic foot = "right" id="{12-122-221}"/>
+				<orthotic foot = "left" id="{12-122-222}"/>
+			</Rx>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>9</day>
+					<month>10</month>
+					<year>2713</year>
+				</date>
+				<note>I know this guy form somewhere</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{11-122-221}"/>
+				<scan foot = "left" id="{11-122-222}"/>
+				<orthotic foot = "right" id="{11-122-221}"/>
+				<orthotic foot = "left" id="{11-122-222}"/>
+			</Rx>
+		</Rxs>
+	</patient>
+<patient id="{23-455-5672}">
+		<name>
+			<title>Dr</title>
+			<first>illUserName</first>
+			<last>illUsersurname</last>
+		</name>
+		<gender>M</gender>
+		<Rxs>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>1</day>
+					<month>1</month>
+					<year>2014</year>
+				</date>
+				<note>Etiam pellentesque aliquet tellus. Phasellus pharetra nulla ac diam. Quisque semper justo at risus. Donec venenatis, turpis vel hendrerit interdum, dui ligula ultricies purus, sed posuere libero dui id orci. Nam congue, pede vitae dapibus aliquet, elit magn</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{12-122-221}"/>
+				<scan foot = "left" id="{12-122-222}"/>
+				<orthotic foot = "right" id="{12-122-221}"/>
+				<orthotic foot = "left" id="{12-122-222}"/>
+			</Rx>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>16</day>
+					<month>6</month>
+					<year>2013</year>
+				</date>
+				<note>I know this guy form somewhere</note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{11-122-221}"/>
+				<scan foot = "left" id="{11-122-222}"/>
+				<orthotic foot = "right" id="{11-122-221}"/>
+				<orthotic foot = "left" id="{11-122-222}"/>
+			</Rx>
+		</Rxs>
+	</patient>
+<patient id="{23-455-5673}">
+		<name>
+			<title>Mr</title>
+			<first>lastUserName</first>
+			<last>lastUserSurName</last>
+		</name>
+		<gender>M</gender>
+		<Rxs>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>1</day>
+					<month>1</month>
+					<year>2014</year>
+				</date>
+				<note>Etiam pellentesque aliquet tellus. Phasellus pharetra nulla ac diam. Quisque semper justo at risus. Donec venenatis, turpis vel hendrerit interdum, dui ligula ultricies purus, sed posuere libero dui id orci. Nam congue, pede vitae dapibus aliquet, elit magna </note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{12-122-221}"/>
+				<scan foot = "left" id="{12-122-222}"/>
+				<orthotic foot = "right" id="{12-122-221}"/>
+				<orthotic foot = "left" id="{12-122-222}"/>
+			</Rx>
+			<Rx>
+				<doctor id="445345aae-619c-47f1-ae93-72ca93b5ab9a"/>
+				<date>
+					<day>1</day>
+					<month>1</month>
+					<year>2013</year>
+				</date>
+				<note>Phasellus ornare, ante vitae consectetuer consequat, purus sapien ultricies dolor, et mollis pede metus eget nisi. Praesent sodales </note>
+				<shoeSize>9</shoeSize>
+				<scan foot = "right" id="{11-122-221}"/>
+				<scan foot = "left" id="{11-122-222}"/>
+				<orthotic foot = "right" id="{11-122-221}"/>
+				<orthotic foot = "left" id="{11-122-222}"/>
+			</Rx>
+		</Rxs>
+	</patient>
+</Patients>
