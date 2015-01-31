@@ -3,10 +3,8 @@
 #include <QFile>
 #include <QTextStream>
 
-
 // local
 #include "globals.h"
-
 
 void printPoint(FAHVector3 pt){
     printf("\n %.4f\t%.4f\t%.4f",pt.x,pt.y,pt.z);

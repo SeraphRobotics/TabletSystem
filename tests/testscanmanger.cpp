@@ -8,27 +8,24 @@
 #include "DataStructures/scan.h"
 
 const QString ScanId("{f3338f73-e3a0-4f36-9cfb-e00bbdf83e93}");
+//const QString ScanId("{73-e3a0-4f36-9cfb-e00bbdf83e93}");
 
 void TestScanManger::initTestCase()
 {
-    qDebug() << DEBUG_FUNCTION_NAME << "entered";
     sm = new ScanManager();
 }
 
 void TestScanManger::cleanupTestCase()
 {
-    qDebug() << DEBUG_FUNCTION_NAME << "entered";
+    delete sm;
 }
 
 void TestScanManger::init()
 {
-    qDebug() << DEBUG_FUNCTION_NAME << "entered";
 }
-
 
 void TestScanManger::cleanup()
 {
-    qDebug() << DEBUG_FUNCTION_NAME << "entered";
 }
 
 // tests
@@ -39,6 +36,5 @@ void TestScanManger::testIfSampleScanIdFound()
 
 void TestScanManger::testGetScan()
 {
-    Scan *scan = sm->getScan(ScanId);
-    QCOMPARE(scan->getID(), ScanId);
+    QCOMPARE(sm->getScan(ScanId)->getID(), ScanId);
 }

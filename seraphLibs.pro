@@ -76,10 +76,14 @@ test {
 
     SOURCES += \
     tests/main.cpp \
-    tests/testscanmanger.cpp
+    tests/testscanmanger.cpp \
+    tests/testorthoticmanager.cpp
+
 
     HEADERS += \
-    tests/testscanmanger.h
+    tests/testscanmanger.h \
+    tests/testorthoticmanager.h
+
 
 } else {
     message(shared libs build)

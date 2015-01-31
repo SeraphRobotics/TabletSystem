@@ -27,8 +27,8 @@ Orthotic* OrthoticManager::getOrthotic(QString id){
     if(!hasOrthotic(id)){
         return new Orthotic();
     }
-    QString filename = id+QString(".")+extension_;
-    qDebug()<<filename;
+    QString filename = dir_.absolutePath()+"/"+id+QString(".")+extension_;
+    //qDebug()<<filename;
     Orthotic* Orth = new Orthotic(filename);
     QString sid = Orth->getScanID();
     Scan* s = sm_->getScan(sid);

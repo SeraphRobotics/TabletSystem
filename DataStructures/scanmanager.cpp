@@ -15,7 +15,6 @@ ScanManager::ScanManager(QObject *parent) :
 
     dir_.setFilter(QDir::Files|QDir::NoDotAndDotDot);
     dir_.setNameFilters(name_filters);
-    qDebug() << "dir " << dir_;
 
     updateScanList();
 }
