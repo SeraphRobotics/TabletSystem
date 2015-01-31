@@ -15,13 +15,15 @@ ScanManager::ScanManager(QObject *parent) :
 
     dir_.setFilter(QDir::Files|QDir::NoDotAndDotDot);
     dir_.setNameFilters(name_filters);
+    qDebug() << "dir " << dir_;
 
     updateScanList();
 }
 
 Scan* ScanManager::getScan(QString id){
     if(hasScan(id)){
-        QString filename = id+QString(".")+extension_; // not the best form. Should be from QSettings
+        //TODO:: improve this path parsing
+        QString filename = dir_.absolutePath()+"/"+id+QString(".")+extension_; // not the best form. Should be from QSettings
         return new Scan(filename);
     }
     return new Scan();
@@ -43,7 +45,7 @@ void ScanManager::updateScanList(){
     for(int i=0;i<files.size();i++){
         idlist_.append(files[i].split(".")[0]);
     }
-    qDebug()<<idlist_;
+    //qDebug()<<idlist_;
 }
 
 QStringList ScanManager::scanIds(){return idlist_;}

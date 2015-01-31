@@ -13,18 +13,19 @@ private slots:
     void cleanupTestCase();
     void init();
     void cleanup();
-
-
+    // tests
+    void testIfSampleScanIdFound();
+    void testGetScan();
 
 private:
     ScanManager *sm;
-
-
 };
 
-
-
 #endif
+
+
+
+
 
 
 

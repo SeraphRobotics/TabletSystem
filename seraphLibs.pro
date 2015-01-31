@@ -20,6 +20,11 @@ VERSION = 0.0.01
 
 # shared libs
 DEFINES += SERAPHLIBS_LIBRARY
+# DEFINES += SW_VERSION=\\\"\"0.5\"\\\"
+# DEFINES += SW_VERSION=\\\"\"$$PWD\"\\\"
+# DEFINES += SW_VERSION=$$PWD\;
+
+
 
 win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
     -lopencv_calib3d245.dll\
