@@ -5,15 +5,19 @@
 #include <QDebug>
 
 
+#include "testscanmanger.h"
+
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
 
     qDebug() << "running tests";
 
-    //EthLinkStatusTest linkTest;
+    TestScanManger testScanMananger;
 
-    //QTest::qExec(&linkTest,  argc, argv);
 
+
+
+    QTest::qExec(&testScanMananger,  argc, argv);
 
     //return 0;
     return app.exec();

@@ -70,10 +70,11 @@ test {
     # SOURCES -= main.cpp
 
     SOURCES += \
-	tests/main.cpp 
+    tests/main.cpp \
+    tests/testscanmanger.cpp
 
     HEADERS += \
-
+    tests/testscanmanger.h
 
 } else {
     message(shared libs build)
@@ -207,7 +208,8 @@ SOURCES += \
     libraries/qdevicewatcher/src/qdevicewatcher.cpp \
     libraries/qdevicewatcher/src/qdevicechangeevent.cpp \
     runtime/mastercontrolunit.cpp \
-    View/UI_structs.cpp
+    View/UI_structs.cpp \
+    globals.cpp
 
 
 

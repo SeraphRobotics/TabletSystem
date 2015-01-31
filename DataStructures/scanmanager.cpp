@@ -43,7 +43,7 @@ void ScanManager::updateScanList(){
     for(int i=0;i<files.size();i++){
         idlist_.append(files[i].split(".")[0]);
     }
-//    qDebug()<<idlist_;
+    qDebug()<<idlist_;
 }
 
 QStringList ScanManager::scanIds(){return idlist_;}
