@@ -15,15 +15,15 @@ public:
 
 
 public slots:
-    void USBConnected();
+//    void USBConnected();
     void USBItems(QList<UI_USB_Item> f);
 
 public:
     void processScanItem(UI_USB_Item item);
 
 private:
-    USBMinder* um_;
-    USBManager* manager_;
+//    USBMinder* um_;
+//    USBManager* manager_;
     ScanManager* sm_;
 
 };

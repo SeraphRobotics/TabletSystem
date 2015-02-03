@@ -29,6 +29,8 @@ signals:
      * @param s
      */
     void scanProcessed(Scan* s);
+
+    void scannerNotCalibrated();
     
 public slots:
 
@@ -40,11 +42,14 @@ public slots:
      */
     void processScan(QString folder);
 
+    void calibrateWithScan(QString folder);
+
+
 private slots:
 
 
 
-    void processImage(QString file);
+    void processImage(QString file, cv::Mat noise);
 
     /**
      * @brief processedImage uses scanprocessing objects to process them in multi threaded fashion

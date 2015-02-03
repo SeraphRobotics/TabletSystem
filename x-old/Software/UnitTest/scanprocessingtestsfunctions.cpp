@@ -106,6 +106,11 @@ void USBMinderTest(){
 }
 
 void USBToScanProcessingTest(){
+//    QSettings settings;
+//    QString default_path = QFileInfo(settings.fileName()).absolutePath();
+//    QString writelocation = default_path+"//"+"summed.jpeg";
+//    settings.setValue("scanner/noisefile",writelocation);
+//    return;
     ScanSystemTester* st = new ScanSystemTester();
 }
 
