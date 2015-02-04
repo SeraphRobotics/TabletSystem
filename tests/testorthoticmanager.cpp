@@ -1,7 +1,6 @@
 // qt
 #include <QDebug>
 
-
 // local
 #include "testorthoticmanager.h"
 #include "globals.h"
@@ -20,18 +19,14 @@ void TestOrthoticManager::initTestCase()
 
 void TestOrthoticManager::cleanupTestCase()
 {
-
 }
 
 void TestOrthoticManager::init()
 {
-
 }
 
 void TestOrthoticManager::cleanup()
 {
-
-
 }
 
 // tests

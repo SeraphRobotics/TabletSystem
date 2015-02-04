@@ -77,12 +77,13 @@ test {
     SOURCES += \
     tests/main.cpp \
     tests/testscanmanger.cpp \
-    tests/testorthoticmanager.cpp
-
+    tests/testorthoticmanager.cpp \
+    tests/testorthoticcontroller.cpp
 
     HEADERS += \
     tests/testscanmanger.h \
-    tests/testorthoticmanager.h
+    tests/testorthoticmanager.h \
+    tests/testorthoticcontroller.h
 
 
 } else {
