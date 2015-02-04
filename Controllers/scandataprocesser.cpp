@@ -3,12 +3,15 @@
 #include "scanprocessing.h"
 #include <QThread>
 #include <QUuid>
+#include <QSettings>
+#include <QDebug>
 
 ScanDataProcesser::ScanDataProcesser(QObject *parent) :
     QObject(parent),numFilesToProcess(0),numFilesProcessed(0)
 {
     id_=QUuid::createUuid().toString();
     dir_=QDir::current();
+
 }
 
 ScanDataProcesser::~ScanDataProcesser(){
@@ -30,7 +33,53 @@ void ScanDataProcesser::processScan(){
     processScan(dir_.absolutePath());
 }
 
+void ScanDataProcesser::calibrateWithScan(QString folder){
+    QDir d(folder);
+
+    qDebug()<<"Scan calibratation Folder: "<<d.absolutePath();
+    QStringList filters;
+    filters<<"*.jpeg";
+    QStringList files = d.entryList(filters);
+
+    qDebug()<<"Files: \n"<<files;
+    qDebug()<<"Filter:"<<filters;
+    QString first = folder+"//"+files.takeFirst();
+    cv::Mat baseImg = cv::imread( first.toStdString() );
+
+    foreach(QString filename, files){
+        QString file = folder+"//"+filename;
+        cv::Mat nextimg = cv::imread(file.toStdString() );
+        baseImg = baseImg+nextimg;
+    }
+
+
+    QSettings settings;
+    QString default_path = QFileInfo(settings.fileName()).absolutePath();
+    std::vector<int> params;
+    params.push_back(CV_IMWRITE_JPEG_QUALITY);
+    params.push_back(99);
+
+    QString writelocation = default_path+"//"+"summed.jpeg";
+    cv::imwrite(writelocation.toStdString(),baseImg,params);
+    settings.setValue("scanner/noisefile",writelocation);
+
+}
+
+
 void  ScanDataProcesser::processScan(QString folder){
+
+    cv::Mat noisesum;
+    QSettings settings;
+    QString summed_noise_file = settings.value("scanner/noisefile","").toString();
+    if(!summed_noise_file.isEmpty()){
+        noisesum = cv::imread(summed_noise_file.toStdString());
+    }
+    if (!noisesum.data){
+        qDebug()<<"scanner not calibrated, no noise file";
+        emit scannerNotCalibrated();
+//        return;
+    }
+
 
     dir_ = QDir(folder);
     QFileInfoList list = dir_.entryInfoList();
@@ -39,7 +88,7 @@ void  ScanDataProcesser::processScan(QString folder){
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
-        processImage(fileInfo.fileName());
+        processImage(fileInfo.fileName(),noisesum);
 
 
 //        QImage img( fileInfo.fileName());
@@ -51,13 +100,13 @@ void  ScanDataProcesser::processScan(QString folder){
 }
 
 
-void ScanDataProcesser::processImage(QString file){
+void ScanDataProcesser::processImage(QString file, cv::Mat noise){
 
-    float x = QString(file).replace(".JPEG","").toFloat();//file.split(".")[0].toFloat();
+    float x = QString(file).toLower().replace(".jpeg","").toFloat();//file.split(".")[0].toFloat();
+//    qDebug()<<"x: "<<x<<"File: "<<file;
 
 
-
-    ScanProcessing* worker = new ScanProcessing(x,dir_.absoluteFilePath(file));
+    ScanProcessing* worker = new ScanProcessing(x,dir_.absoluteFilePath(file),noise);
 //    QThread* thread = new QThread;
 //    worker->moveToThread(thread);
 

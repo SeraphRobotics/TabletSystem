@@ -4,16 +4,16 @@
 #include <math.h>
 #include <qalgorithms.h>
 
-ScanProcessing::ScanProcessing(float x, QString imagelocation, QObject *parent) :
+ScanProcessing::ScanProcessing(float x, QString imagelocation, cv::Mat noisefile, QObject *parent) :
     QObject(parent),  imagelocation_( imagelocation),x_(x)
 {
-
+    noise = noisefile;
 }
 
 
 
 void ScanProcessing::process(){
-    cv::Mat dest;
+//    cv::Mat dest;
 //    dest = cv::imread(imagelocation_.toStdString());
 //    QPixmap m = QPixmap::fromImage(QImage((unsigned char*) dest.data, dest.cols, dest.rows, dest.step, QImage::Format_RGB888));
 
@@ -22,6 +22,9 @@ void ScanProcessing::process(){
     if(!img.data){
         qDebug()<<"faled to read "<<imagelocation_;
         return;
+    }
+    if(noise.data){
+        img = img-noise;
     }
     bool metOne = false;
 
@@ -162,6 +165,7 @@ void ScanProcessing::process(){
             }
             metOne = false;
         }
+//        qDebug()<<x_<<": "<<row;
         emit processed(x_,row);
 //        image_.save(QString::number(x_)+QString(".JPEG"));
         emit finished();
