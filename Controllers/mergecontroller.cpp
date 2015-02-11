@@ -14,9 +14,11 @@ MergeController::MergeController(file_z_pair shell, QList< file_z_pair>  pads, f
 void MergeController::mergeFiles(){
     qDebug()<<"merging";
 
-
+    QSettings settings;
+    QString dir_ = settings.value("printing/directory").toString();
     /////////////// Make XML file
-    QString xmlfile = "merge.xml";
+    //QString xmlfile = "merge.xml";
+    QString xmlfile = dir_ + "/ " + "merge.xml";
     QDomDocument d("MergeFile");
     QDomElement node = d.createElement("merge");
 
@@ -44,7 +46,7 @@ void MergeController::mergeFiles(){
     qDebug()<<"wrote xml";
 
     // Merge files using XML
-    QSettings settings;
+    //QSettings settings;
     QString mergecommand = "python";
     QProcess* merger = new QProcess(this);
     QStringList merge_args;
@@ -53,11 +55,13 @@ void MergeController::mergeFiles(){
 
     merge_args<<xmlfile;
 
-    QString outputname = settings.value("printing/output-name","merged.gcode").toString(); //dir_.absolutePath()+"/"+
+    //QString outputname = settings.value("printing/output-name","merged.gcode").toString(); //dir_.absolutePath()+"/"+
+    //QString outputname = settings.value("printing/directory","/merged.gcode").toString(); //dir_.absolutePath()+"/"+
+    QString outputname = dir_ + "/" + "merged.gcode"; //).toString(); //dir_.absolutePath()+"/"+
     merge_args<<outputname;
 
 
-    qDebug()<<"\n"<<merge_args;
+    qDebug()<<"merge args: \n"<<merge_args;
     merger->start(mergecommand,merge_args);
     if (!merger->waitForStarted(-1)){
         qDebug()<<"failed to start "<<mergecommand<<" with "<<merge_args;

@@ -7,7 +7,8 @@ GcodeController::GcodeController(QObject *parent) :
     QObject(parent)
 {
     QSettings settings;
-    QString appdir= settings.value("printing/dir",".").toString();
+    //QString appdir= settings.value("printing/dir",".").toString();
+    QString appdir= settings.value("printing/directory",".").toString();
     dir_ = QDir(appdir);
 }
 

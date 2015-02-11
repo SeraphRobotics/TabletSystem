@@ -359,7 +359,9 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
             points[i].z=getHeightAt(points[i].x,points[i].y,p1,p2,p3,p4);
         }
         sorted_points = sortByIndex(points,0,false);
-        anchor = sorted_points.first();
+        //NOTE:: blt bounds check, is zero data here ok?
+        if(sorted_points.size() > 0)
+            anchor = sorted_points.first();
         for(int m=1 ; m<sorted_points.size()-1; m++){
             addFacetWithDirection(anchor,sorted_points[m],sorted_points[m+1],mesh,d);
         }

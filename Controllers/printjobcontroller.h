@@ -29,7 +29,7 @@ private slots:
 
     void repairSucessful();
     void slicingSucessful();
-
+    void slicingFailure(QString error);
     void topcoatMade(QString file);
     void startMerge();
     void mergeSucessful(QString gcode);

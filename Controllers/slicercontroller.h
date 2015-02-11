@@ -2,6 +2,8 @@
 #define SLICERCONTROLLER_H
 
 #include <QObject>
+#include <QProcess>
+
 
 class SlicerController : public QObject
 {
@@ -15,6 +17,7 @@ signals:
 
 public slots:
     void slice();
+    void slicerError(QProcess::ProcessError error);
 
 private:
     QString objfile_;

@@ -152,7 +152,7 @@ void TopCoatController::generateTopCoat(){
         }
         gcodes<<closeLine;
     }
-    QString filename = "topcoat.gcode";
+    QString filename = dir_ + "/" + "topcoat.gcode";
     QFile f(filename);
     if(!f.open(QFile::WriteOnly | QFile::Text)){
         return;

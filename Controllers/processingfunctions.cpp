@@ -358,7 +358,7 @@ FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
     for(int i=0; i<numpts;i++){
         float t = 1.0/numpts*i;
         testp = p+t*v;
-        //NOTE:: check git conflict
+        //NOTE:: btl check git conflict
         /* <<<<<<< HEAD:Controllers/processingfunctions.cpp
         int ix = floor(testp.x);
         int j = floor(testp.y);
@@ -576,6 +576,13 @@ void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times
         QVector<FAHVector3> newpts;
         int size = pts.size();//mapped->points.size();
         for(int i=0; i<size; i++){
+            //TODO:: btl proper fix for out of bounds errors
+            if(i%size < 0 || i%size > size )
+                qDebug() << "out of bounds i%size"; continue;
+            if((i+1)%size < 0 || (i+1)%size > size)
+                qDebug() << "out of bounds (i+1)%size"; continue;
+            if((i-1)%size < 0 || (i-1)%size > size)
+                qDebug() << "out of bounds (i-1)%size: " << (i-1)%size; continue;
             float z1 = pts.at( i%size ).z;
             float z2 = pts.at( (i+1)%size ).z;
             float z3 = pts.at( (i-1)%size ).z;

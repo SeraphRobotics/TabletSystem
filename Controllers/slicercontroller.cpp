@@ -5,7 +5,6 @@
 #include <QFile>
 
 
-
 SlicerController::SlicerController(QString stlfile, QString inifile, float x, float y, bool isValved, QObject *parent) :
     QObject(parent),objfile_(stlfile),inifile_(inifile),isvalved_(isValved),x_(x),y_(y)
 {
@@ -16,17 +15,20 @@ void SlicerController::slice(){
     QString slicer = settings.value("printing/slicer","slic3r").toString();
     //for each pair, generate a gcode file using the command  slicer+" \""+p.stlfilename+"\""+"--load \""+p.inifilename+"\""+" --output \""+gcodename+"\"";
 
+    QString dir_ = settings.value("printing/directory").toString();
     QString output = QString(objfile_).remove(".stl").remove(".obj")+".gcode";
 
     QStringList args;
     QString cent = QString::number(x_/2.0)+","+QString::number(y_/2.0);
 
-    args <<objfile_ << "--load" <<inifile_ << "--output" << output
+    args << dir_ + "/" + objfile_ << "--load" <<inifile_ << "--output" << dir_ + "/" + output
          <<"--print-center"<<cent;
     QProcess* slicing = new QProcess(this);
-    qDebug()<< slicer;
-    qDebug()<< args.join(" ");
+    connect(slicing, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slicerError(QProcess::ProcessError)));
+    qDebug()<< "slicer binary: " << slicer;
+    qDebug()<< "slicer args: " << args.join(" ");
     qDebug()<<"Starting slicer";
+
     slicing->start(slicer,args);
 
     if (!slicing->waitForStarted(-1)){
@@ -40,7 +42,11 @@ void SlicerController::slice(){
         return;
     }
     qDebug()<<"Done slicing";
-//    qDebug()<<slicing->readAll();
+    if(slicing->exitCode() != 0)
+        emit Failed("bad exitCode " + slicer);
+
+    qDebug() << "slicer exit code : " << slicing->exitCode();
+    //    qDebug()<<slicing->readAll();
 
 //    QFile f(objfile_.append(".txt"));
 //    if(f.open(QIODevice::WriteOnly)){
@@ -75,4 +81,28 @@ void SlicerController::slice(){
         qDebug()<<"Done valving";
     }
     emit Success();
+}
+
+void SlicerController::slicerError(QProcess::ProcessError error)
+{
+    switch(error) {
+    case QProcess::FailedToStart:
+        qDebug() << "slicer failed to start";
+        break;
+    case QProcess::Crashed:
+        qDebug() << "slicer crashed";
+        break;
+    case QProcess::Timedout:
+        qDebug() << "slicer timed out";
+        break;
+    case QProcess::WriteError:
+        qDebug() << "slicer write error";
+        break;
+    case QProcess::ReadError:
+        qDebug() << "slicer read error";
+        break;
+    case QProcess::UnknownError:
+        qDebug() << "slicer unknow error";
+        break;
+    }
 }

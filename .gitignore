@@ -36,6 +36,8 @@ Icon
 *.pro.user.*
 
 
+# output data
+SampleData/
 
 
 # Files that might appear on external disk

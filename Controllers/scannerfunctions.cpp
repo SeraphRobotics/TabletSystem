@@ -490,7 +490,9 @@ void sortLoop(FAHLoopInXYPlane* loop)
 
     //Add to loop by polar angle
     loop->points.clear();
-    for(int i=0; i<numpts;i++){
+    //TODO:: btl check with Jeff on out or range issue
+    //for(int i=0; i<numpts;i++){
+    for(int i=0; i<thetamap.size();i++){
         FAHVector3 pt = FAHVector3(thetamap[indecies.at(i)]) ;
         if(!pt.isInvalid()){loop->points.append( pt) ;}
     }

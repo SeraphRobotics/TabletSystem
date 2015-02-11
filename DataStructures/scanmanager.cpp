@@ -21,7 +21,7 @@ ScanManager::ScanManager(QObject *parent) :
 
 Scan* ScanManager::getScan(QString id){
     if(hasScan(id)){
-        //TODO:: improve this path parsing
+        //TODO:: btl improve this path parsing
         QString filename = dir_.absolutePath()+"/"+id+QString(".")+extension_; // not the best form. Should be from QSettings
         return new Scan(filename);
     }

@@ -8,6 +8,7 @@
 #include "repaircontroller.h"
 #include "mergecontroller.h"
 #include <QThread>
+#include "globals.h"
 
 
 PrintJobController::PrintJobController(Orthotic *orth, QObject *parent) :
@@ -35,7 +36,7 @@ PrintJobController::~PrintJobController(){
 void PrintJobController::RunPrintJob(){
 
 
-    QString shellfilename = "shell.stl";
+    QString shellfilename = dir_ + "/shell.stl";
 
 
 
@@ -70,7 +71,8 @@ void PrintJobController::RunPrintJob(){
 
 
     ///Start topcoat
-    TopCoatController* tcc = new TopCoatController(orth_,"");
+    //TopCoatController* tcc = new TopCoatController(orth_,"");
+    TopCoatController* tcc = new TopCoatController(orth_, dir_);
     tcc->moveToThread(workthread);
     connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
     connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
@@ -129,11 +131,11 @@ void PrintJobController::repairSucessful(){
         //Start Slicing
         QSettings s;
         QString plasticIni = s.value("printing/plastic_ini","p.ini").toString();
-
         SlicerController* sc = new SlicerController("shell_fixed.obj",plasticIni,shell_.x_center,shell_.y_center,false);
         numSTLToSlice++;
         sc->moveToThread(workthread);
         connect(sc,SIGNAL(Success()),this,SLOT(slicingSucessful()));
+        connect(sc,SIGNAL(Failed(QString)),this,SLOT(slicingFailure(QString)));
         connect(workthread,SIGNAL(finished()),sc,SLOT(deleteLater()));
         workthread->start();
         sc->slice();
@@ -147,7 +149,7 @@ void PrintJobController::repairSucessful(){
             QString stlfilename = orth_->printjob.manipulationpairs.at(i).id;
             stlfilename.append("_fixed.obj");
 //            qDebug()<<"\n\n\n\n"<<i;
-//            qDebug()<<"filename: "<<stlfilename;
+            qDebug()<<"filename: "<<stlfilename;
 //            qDebug()<<"stiffness: "<<mp.stiffness;
             makeIniFiles(stlfilename,mp);
 
@@ -163,10 +165,16 @@ void PrintJobController::repairSucessful(){
     }
 }
 void PrintJobController::slicingSucessful(){
+    qDebug() << DEBUG_FUNCTION_NAME << "entered";
     numSTLsSliced++;
     if(numSTLsSliced>=numSTLToSlice && topcoatdone){
         startMerge();
     }
+}
+
+void PrintJobController::slicingFailure(QString error)
+{
+    qDebug() << DEBUG_FUNCTION_NAME << error;
 }
 
 void PrintJobController::topcoatMade(QString file){

@@ -1,15 +1,27 @@
 // qt
 #include <QDebug>
-
+#include <QSettings>
 
 // local
 #include "testorthoticcontroller.h"
 #include "DataStructures/scanmanager.h"
 #include "DataStructures/orthoticmanager.h"
-#include "Controllers/orthoticscontroller.h"
 #include "Controllers/printjobcontroller.h"
 #include "DataStructures/orthotic.h"
 #include "globals.h"
+
+#define TEST_PRIVATE_METHODS
+
+#ifdef TEST_PRIVATE_METHODS
+// ugly hack to TDD private methods, use carefully, avoid if possible
+  #define private public
+  #include "Controllers/orthoticscontroller.h"
+  #undef private
+#else
+  #include "Controllers/orthoticscontroller.h"
+#endif
+
+
 
 const QString OrthoticId("{6ae3fe2d-9d96-4d7d-a58c-8d9ebe015c88}");
 
@@ -17,19 +29,23 @@ const QString OrthoticId("{6ae3fe2d-9d96-4d7d-a58c-8d9ebe015c88}");
 void TestOrthoticController::boundaryLoopUpdated(FAHLoopInXYPlane *loop)
 {
     qDebug() << DEBUG_FUNCTION_NAME << "entered";
-    writeLoopToXDFL(loop,"Loop.xdfl");
+    //img.save("img.jpeg");
+    QSettings settings;
+    writeLoopToXDFL(loop, settings.value("printing/directory").toString() + "/Loop.xdfl");
 }
 
 void TestOrthoticController::scanImageGenerated(QImage img)
 {
     qDebug() << DEBUG_FUNCTION_NAME << "entered";
-    img.save("img.jpeg");
+    //img.save("img.jpeg");
+    QSettings settings;
+    img.save(settings.value("printing/directory").toString() + "/img.jpeg");
 }
 
 void TestOrthoticController::stlsGenerated(QList<View_3D_Item> items)
 {
     qDebug() << DEBUG_FUNCTION_NAME << "entered";
-
+    Q_UNUSED(items);
 }
 
 // test suite setup
@@ -82,6 +98,8 @@ void TestOrthoticController::initTestCase()
     oc->setPosting(rearpost);
     oc->setBottomType(Orthotic::kCurved);
 
+    qDebug() << "post setBottom";
+
     for(int i=0;i<0;i++){
         FAHLoopInXYPlane* c = circle(40.0+i*25,80.0+i*5,15.0);
         Manipulation* m = new Manipulation();
@@ -96,7 +114,11 @@ void TestOrthoticController::initTestCase()
     }
 //    oc->save();
     qDebug()<<"generated manipulations";
+    qDebug() << "pre make stls";
+
     oc->makeSTLs();
+
+    qDebug() << "post make stls";
     PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
 //    PrintJobTester* pjt = new PrintJobTester(pjc);
     pjc->RunPrintJob();
