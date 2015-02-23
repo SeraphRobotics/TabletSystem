@@ -97,15 +97,28 @@ void MergeController::mergeFiles(){
 QDomElement nodeFromPair(QString name, file_z_pair pair){
     QDomDocument d;
     QDomElement node = d.createElement(name);
+
     QDomElement fileEl = d.createElement("file");
     fileEl.appendChild(d.createTextNode( pair.gcode_file ));
-    QDomElement offsetEl = d.createElement("zoffset");
+
+    QDomElement zoffsetEl = d.createElement("zoffset");
     offsetEl.appendChild(d.createTextNode( QString::number(pair.z_offset,'f',5) ));
-    QDomElement translateEl = d.createElement("ztranslate");
+
+    QDomElement ztranslateEl = d.createElement("ztranslate");
     translateEl.appendChild(d.createTextNode( QString::number(pair.z_translate,'f',5) ));
+
+    QDomElement xEl = d.createElement("xcenter");
+    offsetEl.appendChild(d.createTextNode( QString::number(pair.x_center,'f',5) ));
+
+    QDomElement yEl = d.createElement("ycenter");
+    offsetEl.appendChild(d.createTextNode( QString::number(pair.y_center,'f',5) ));
+
     node.appendChild(fileEl);
-    node.appendChild(offsetEl);
-    node.appendChild(translateEl);
+    node.appendChild(zoffsetEl);
+    node.appendChild(ztranslateEl);
+    node.appendChild(xEl);
+
+    node.appendChild(yEl);
 //    qDebug()<<"Node: "<<name<<" file:"<<pair.file;
     return node;
 }
