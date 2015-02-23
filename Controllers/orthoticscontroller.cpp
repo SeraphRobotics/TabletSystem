@@ -190,7 +190,7 @@ void OrthoticController::makeSTLs(){
     pair.z_height=0;
     pair.stiffness=0;
     FAHVector3 cent = orth_->getLoop()->center();
-    pair.x_center = 2*cent.x;
+    pair.x_center = cent.x;
     pair.y_center = cent.y;
     pji.shellpair = pair;
     orth_->printjob=pji;

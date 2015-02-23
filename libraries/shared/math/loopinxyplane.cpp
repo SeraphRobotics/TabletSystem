@@ -383,12 +383,26 @@ void LoopInXYPlane::simplify() {
 
 Vector3 LoopInXYPlane::center(){
     Vector3 cent(0,0,0);
-    foreach(Vector3 pt, points){
-        cent.x=cent.x+pt.x;
-        cent.y=cent.y+pt.y;
+    // src: http://www.seas.upenn.edu/~sys502/extra_materials/Polygon%20Area%20and%20Centroid.pdf
+
+//    foreach(Vector3 pt, points){
+//        cent.x=cent.x+pt.x;
+//        cent.y=cent.y+pt.y;
+//    }
+//    cent.x=cent.x/points.size();
+//    cent.y=cent.y/points.size();
+    float A=0;
+    for(int i=0;i<points.size();i++){
+        Vector3 pt = points.at(i);
+        Vector3 pt_p = points.at(i+1);
+        A=A+(pt.x*pt_p.y-pt_p.x*pt.y);
+        cent.x = cent.x+(pt.x+pt_p.x)*(pt.x*pt_p.y-pt_p.x*pt.y);
+        cent.y = cent.y+(pt.y+pt_p.y)*(pt.x*pt_p.y-pt_p.x*pt.y);
     }
-    cent.x=cent.x/points.size();
-    cent.y=cent.y/points.size();
+    A = A/2.0;
+    cent.x = cent.x/(6*A);
+    cent.y = cent.y/(6*A);
+
     return cent;
 }
 
