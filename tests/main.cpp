@@ -7,8 +7,14 @@
 #include "testorthoticmanager.h"
 #include "testorthoticcontroller.h"
 
+
+#ifdef Q_OS_WIN
+const QString SampleDataLocation(QString(QDir::currentPath()+ "/SampleData/" ));
+const QString SampleDataOutputLocation(QString(QDir::currentPath() + "/output/" ));
+#else
 const QString SampleDataLocation(QString(QDir::currentPath() + "/../seraphLibs/SampleData/"));
 const QString SampleDataOutputLocation(QString(QDir::currentPath() + "/../seraphLibs/SampleData/output"));
+#endif //Q_OS_WIN
 
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
@@ -29,7 +35,7 @@ int main(int argc, char** argv) {
     settings.setValue("printing/directory", SampleDataOutputLocation);
 
 #ifdef Q_OS_WIN
-    settings.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r");
+    settings.setValue("printing/slicer","C://'Program Files'//Repetier-Host//Slic3r/slic3r-console.exe");
 #else
     settings.setValue("printing/slicer","/usr/bin/slic3r");
 #endif //Q_OS_WIN

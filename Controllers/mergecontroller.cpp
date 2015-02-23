@@ -18,7 +18,7 @@ void MergeController::mergeFiles(){
     QString dir_ = settings.value("printing/directory").toString();
     /////////////// Make XML file
     //QString xmlfile = "merge.xml";
-    QString xmlfile = dir_ + "/ " + "merge.xml";
+    QString xmlfile = dir_ + "/" + "merge.xml";
     QDomDocument d("MergeFile");
     QDomElement node = d.createElement("merge");
 

@@ -3,6 +3,7 @@
 QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
 CONFIG += c++11
+CONFIG+=test
 
 ##############################
 # static libs
@@ -25,7 +26,7 @@ DEFINES += SERAPHLIBS_LIBRARY
 # DEFINES += SW_VERSION=$$PWD\;
 
 
-
+win32:INCLUDEPATH += C:\\Qt\\4.8.5\\src\\3rdparty\\zlib
 win32:INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
 win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
     -lopencv_calib3d245.dll\
