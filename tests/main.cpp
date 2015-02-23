@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     settings.setValue("printing/directory", SampleDataOutputLocation);
 
 #ifdef Q_OS_WIN
-    settings.setValue("printing/slicer","C://'Program Files'//Repetier-Host//Slic3r/slic3r-console.exe");
+    settings.setValue("printing/slicer","\"C://Program Files//Repetier-Host//Slic3r//slic3r-console.exe\"");
 #else
     settings.setValue("printing/slicer","/usr/bin/slic3r");
 #endif //Q_OS_WIN
