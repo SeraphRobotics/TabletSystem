@@ -26,6 +26,7 @@ DEFINES += SERAPHLIBS_LIBRARY
 
 
 
+win32:INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
 win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
     -lopencv_calib3d245.dll\
     -lopencv_contrib245.dll\

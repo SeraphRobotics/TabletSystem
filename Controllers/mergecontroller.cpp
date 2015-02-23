@@ -102,16 +102,16 @@ QDomElement nodeFromPair(QString name, file_z_pair pair){
     fileEl.appendChild(d.createTextNode( pair.gcode_file ));
 
     QDomElement zoffsetEl = d.createElement("zoffset");
-    offsetEl.appendChild(d.createTextNode( QString::number(pair.z_offset,'f',5) ));
+    zoffsetEl.appendChild(d.createTextNode( QString::number(pair.z_offset,'f',5) ));
 
     QDomElement ztranslateEl = d.createElement("ztranslate");
-    translateEl.appendChild(d.createTextNode( QString::number(pair.z_translate,'f',5) ));
+    ztranslateEl.appendChild(d.createTextNode( QString::number(pair.z_translate,'f',5) ));
 
     QDomElement xEl = d.createElement("xcenter");
-    offsetEl.appendChild(d.createTextNode( QString::number(pair.x_center,'f',5) ));
+    xEl.appendChild(d.createTextNode( QString::number(pair.x_center,'f',5) ));
 
     QDomElement yEl = d.createElement("ycenter");
-    offsetEl.appendChild(d.createTextNode( QString::number(pair.y_center,'f',5) ));
+    yEl.appendChild(d.createTextNode( QString::number(pair.y_center,'f',5) ));
 
     node.appendChild(fileEl);
     node.appendChild(zoffsetEl);

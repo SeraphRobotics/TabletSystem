@@ -28,7 +28,12 @@ int main(int argc, char** argv) {
     //settings.setValue("data-output-directory", SampleDataOutputLocation);
     settings.setValue("printing/directory", SampleDataOutputLocation);
 
+#ifdef Q_OS_WIN
+    settings.setValue("printing/slicer","C:\\Program Files\\Repetier-Host\\Slic3r");
+#else
     settings.setValue("printing/slicer","/usr/bin/slic3r");
+#endif //Q_OS_WIN
+
     settings.setValue("printing/plastic_ini", QString(SampleDataLocation) + "p.ini");
 
     settings.setValue("printing/valving-python-script",QString(SampleDataLocation + "toValve.py"));
