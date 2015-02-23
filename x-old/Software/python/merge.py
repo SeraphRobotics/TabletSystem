@@ -8,6 +8,11 @@ from xml.etree.ElementTree import ElementTree, Element
 import xml.etree.ElementTree as etree
 
 
+BUILDTRAY_OFFSET = [0,20,10]#[0,0,0]#[20,50,5]
+TOOLHEAD_OFFSET  = [63,10,-4.5]#[0,0,0]#[-21,56,-4.5]
+lowercmds="G4 P2\nM340 P1 S1000\n"
+raisecmds="G4 P2\nM340 P1 S5000\n"
+
 class Layer:
     displacement = 1
     valve = 2
@@ -307,7 +312,9 @@ def mergeFromXML(infilename, outfilename, verbose):
         file = node.find("file").text
         zoffset = float(node.find("zoffset").text)
         ztranslate = float(node.find("ztranslate").text)
-        return [file,zoffset,ztranslate]
+        xcenter= float(node.find("xcenter").text)
+		ycenter = float(node.find("ycenter").text)
+		return [file,zoffset,ztranslate,xcenter,ycenter]
     
     ## Process file 
     root = fabTree.getroot()
@@ -315,13 +322,12 @@ def mergeFromXML(infilename, outfilename, verbose):
     padnodes = root.findall("pad")
     topcoatnode = root.find("topcoat")
     
-    BUILDTRAY_OFFSET = [0,20,10]#[0,0,0]#[20,50,5]
-    TOOLHEAD_OFFSET  = [21,56,-4.5]#[0,0,0]#[-21,56,-4.5]
+
     
     ## make shell layer list
-    [shellfile,zshell_offset,zshell] = nodeToFileOffset(shellnode)
+    [shellfile,zshell_offset,zshell,xshell,yshell] = nodeToFileOffset(shellnode)
     shell_list = processFileIntoLayers(shellfile,True,verbose)
-    translate(shell_list,[0,0,zshell],verbose)
+    translate(shell_list,[xshell-100,yshell-100,zshell],verbose)
     parity(shell_list,verbose)
     translate(shell_list,BUILDTRAY_OFFSET,verbose)
     mergelist = [shell_list]
@@ -329,21 +335,21 @@ def mergeFromXML(infilename, outfilename, verbose):
     ## make Pad layer lists
     
     for padnode in padnodes:
-        [padfile,padz,locationz] = nodeToFileOffset(padnode)
+        [padfile,padz,locationz,pad_x,pad_y] = nodeToFileOffset(padnode)
         pad_list = processFileIntoLayers(padfile,False,verbose)
-        translate(pad_list,[0,0,locationz],verbose,True)
+        translate(pad_list,[pad_x-100,pad_y-100,locationz],verbose,True)
         translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
         parity(pad_list,verbose)
         translate(pad_list,BUILDTRAY_OFFSET,verbose)
         mergelist.append(pad_list)
     
     ## make TopCoat layer lists
-    [topcoat_file,z_topcoat,z_offset] = nodeToFileOffset(topcoatnode)
+    [topcoat_file,z_topcoat,z_offset,x_offset,y_offset] = nodeToFileOffset(topcoatnode)
     topcoat_list = processFileIntoLayers(topcoat_file,True,verbose)
-    translate(topcoat_list,[0,0,z_topcoat],verbose, True)
+    translate(topcoat_list,[x_offset,y_offset,z_topcoat],verbose, True)
     translate(topcoat_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+z_offset],verbose)
     parity(topcoat_list,verbose)
-    translate(topcoat_list,[BUILDTRAY_OFFSET[0]+1,BUILDTRAY_OFFSET[1]-44,BUILDTRAY_OFFSET[2]-7.5+48],verbose)
+    translate(topcoat_list,[BUILDTRAY_OFFSET[0],BUILDTRAY_OFFSET[1],BUILDTRAY_OFFSET[2]],verbose)
     #setTopcoatSpeed(topcoat_list,1200,verbose)
 
     
@@ -367,8 +373,6 @@ def mergeFromXML(infilename, outfilename, verbose):
     
     
     previous_layer_type = 0
-    lowercmds="G4 P2\nM340 P1 S1000\n"
-    raisecmds="G4 P2\nM340 P1 S5000\n"
     
     for cmd_layer in newlist:
         if (previous_layer_type != cmd_layer.type):
