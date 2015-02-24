@@ -118,7 +118,8 @@ void PrintJobController::makeIniFiles(QString stlfilename, manipulationpair pair
     QString dir = s.value("printing/inis",QDir::currentPath()).toString();
 
     p.inifile=dir+"/"+p.inifile;
-    p.stlfile=dir+"/"+p.stlfile;
+    p.stlfile=dir_+"/"+p.stlfile;
+    p.gcode_file = dir_+"/"+p.gcode_file;
     qDebug()<<"added "<<p.stlfile;
     pad_files_.append(p);
 }
