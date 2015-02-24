@@ -16,7 +16,7 @@ void SlicerController::slice(){
     //for each pair, generate a gcode file using the command  slicer+" \""+p.stlfilename+"\""+"--load \""+p.inifilename+"\""+" --output \""+gcodename+"\"";
 
     QString dir_ = settings.value("printing/directory").toString();
-    QString output = QString(objfile_).remove(".stl").remove(".obj")+".gcode";
+    QString output = dir_+"/"+QString(objfile_).remove(".stl").remove(".obj")+".gcode";
 
     QStringList args;
 //    QString cent = QString::number(x_/2.0)+","+QString::number(y_/2.0);
@@ -66,6 +66,7 @@ void SlicerController::slice(){
         valve_args << output;
 
         qDebug()<<"Starting valving";
+        qDebug()<<valve_args;
 
         makevalved->start(to_valve_gcode,valve_args);
         if (!makevalved->waitForStarted(-1)){

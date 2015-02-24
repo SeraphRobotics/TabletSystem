@@ -3,6 +3,7 @@
 #include "stlgeneration.h"
 //#include "UnitTest/debugfunctions.h"
 #include "padgenerator.h"
+#include "globals.h"
 
 OrthoticController::OrthoticController(OrthoticManager* om, QObject *parent) :
     QObject(parent),om_(om)
@@ -167,8 +168,10 @@ void OrthoticController::makeSTLs(){
         pair.stiffness = m->stiffness;
         pair.z_height = min_z;
         FAHVector3 cent = m->outerloop->center();
-        pair.x_center = 2*cent.x;
+        writeLoopToXDFL(m->outerloop,"PAD.XDFL");
+        pair.x_center = cent.x;
         pair.y_center = cent.y;
+        qDebug()<<"CENTER: "<<cent.x<<","<<cent.y;
         pair.id=QString::number(i);
         i++;
         pji.manipulationpairs.append(pair);

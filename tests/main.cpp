@@ -41,6 +41,7 @@ int main(int argc, char** argv) {
 #endif //Q_OS_WIN
 
     settings.setValue("printing/plastic_ini", QString(SampleDataLocation) + "p.ini");
+    settings.setValue("printing/inis",QString(SampleDataLocation) );
 
     settings.setValue("printing/valving-python-script",QString(SampleDataLocation + "toValve.py"));
     settings.setValue("printing/merge-python-script",QString(SampleDataLocation +"merge.py"));

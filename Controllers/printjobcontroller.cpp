@@ -58,7 +58,7 @@ void PrintJobController::RunPrintJob(){
     shell_.y_center = orth_->printjob.shellpair.y_center;
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
-        QString fn = orth_->printjob.manipulationpairs.at(i).id;
+        QString fn = dir_ + "/"+ orth_->printjob.manipulationpairs.at(i).id;
         fn.append(".stl");
         RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,fn);
         connect(r,SIGNAL(Success()),this,SLOT(repairSucessful()));
@@ -114,6 +114,11 @@ void PrintJobController::makeIniFiles(QString stlfilename, manipulationpair pair
         p.inifile="p.ini";
 
     }
+    QSettings s;
+    QString dir = s.value("printing/inis",QDir::currentPath()).toString();
+
+    p.inifile=dir+"/"+p.inifile;
+    p.stlfile=dir+"/"+p.stlfile;
     qDebug()<<"added "<<p.stlfile;
     pad_files_.append(p);
 }

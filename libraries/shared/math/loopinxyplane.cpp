@@ -403,6 +403,19 @@ Vector3 LoopInXYPlane::center(){
     cent.x = cent.x/(6*A);
     cent.y = cent.y/(6*A);
 
+    if (A<0){
+        cent.x = 0;
+        cent.y = 0;
+        foreach(Vector3 pt, points){
+            cent.x=cent.x+pt.x;
+            cent.y=cent.y+pt.y;
+        }
+        cent.x=cent.x/points.size();
+        cent.y=cent.y/points.size();
+    }
+
+
+    qDebug()<<"CENTER - ORIGINAL "<<cent.x<<","<<cent.y<<" A:"<<A;
     return cent;
 }
 
