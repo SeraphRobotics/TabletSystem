@@ -380,9 +380,8 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
             print "pads"
             print findMinMax(pad_list)
         translate(pad_list,[pad_y-pad_min[0],pad_x*2-pad_min[1],locationz],verbose,True)
-        #translate(pad_list,[pad_y/2-pad_min[0],pad_x-pad_min[1],locationz],verbose,True)
-        #translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
-        #translate(pad_list,BUILDTRAY_OFFSET,verbose)
+        translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
+        translate(pad_list,BUILDTRAY_OFFSET,verbose)
         mergelist.append(pad_list)
     
     ## make TopCoat layer lists
@@ -443,11 +442,12 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         outfile.write(line)
     
     
-#    for layer in topcoat_list:
-#        for cmd in layer.cmds:
-#            outfile.write(cmd)
+    for layer in topcoat_list:
+        for cmd in layer.cmds:
+            outfile.write(cmd)
     
-    print "done"
+    if debug:
+        print "done"
     
     
 
