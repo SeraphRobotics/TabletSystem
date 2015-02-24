@@ -22,7 +22,7 @@ void SlicerController::slice(){
 //    QString cent = QString::number(x_/2.0)+","+QString::number(y_/2.0);
     QString cent = " 100,100";
 
-    args << dir_ + "/" + objfile_ << "--load" <<inifile_ << "--output" << dir_ + "/" + output
+    args << dir_ + "/" + objfile_ << "--load" <<inifile_ << "--output" << output
          <<"--print-center"<<cent;
     QProcess* slicing = new QProcess(this);
     connect(slicing, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slicerError(QProcess::ProcessError)));

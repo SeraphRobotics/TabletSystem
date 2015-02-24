@@ -27,6 +27,7 @@ void MergeController::mergeFiles(){
     node.appendChild(shellEl);
 
     foreach(file_z_pair p,pad_files_){
+        p.gcode_file = dir_+"/"+p.gcode_file;
         QDomElement padEl = nodeFromPair("pad",p);
         node.appendChild(padEl);
     }

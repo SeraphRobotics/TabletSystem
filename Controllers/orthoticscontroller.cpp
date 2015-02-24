@@ -167,11 +167,13 @@ void OrthoticController::makeSTLs(){
         pair.mesh = m_mesh;
         pair.stiffness = m->stiffness;
         pair.z_height = min_z;
-        FAHVector3 cent = m->outerloop->center();
-        writeLoopToXDFL(m->outerloop,"PAD.XDFL");
+        FAHVector3 cent = m->outerloop->min()-orth_->getLoop()->min();
+//        printPoint( m->outerloop->min());
+//         printPoint( orth_->getLoop()->min());
+//        writeLoopToXDFL(m->outerloop,"PAD.XDFL");
         pair.x_center = cent.x;
         pair.y_center = cent.y;
-        qDebug()<<"CENTER: "<<cent.x<<","<<cent.y;
+//        qDebug()<<"CENTER: "<<cent.x<<","<<cent.y;
         pair.id=QString::number(i);
         i++;
         pji.manipulationpairs.append(pair);

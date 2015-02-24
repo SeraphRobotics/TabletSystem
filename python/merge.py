@@ -170,7 +170,6 @@ def parity(layerlist, verbose=False):
                 out_line_list.append(line)
         layer.cmds = out_line_list
     
-
 def setTopcoatSpeed(layerlist,xyspeed, verbose=False):
      for layer in layerlist :
         out_line_list=[]
@@ -218,8 +217,7 @@ def setTopcoatSpeed(layerlist,xyspeed, verbose=False):
                 out_line_list.append(line)
                 
         layer.cmds = out_line_list
-
-                             
+                            
 def translate(layerlist, delta, verbose=False, shiftlayer=False):
     for layer in layerlist :
         out_line_list=[]
@@ -363,9 +361,13 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
     shell_list = processFileIntoLayers(shellfile,True,verbose)
     parity(shell_list,verbose)
     (shell_min,shell_max) = findMinMax(shell_list)
+    if debug:
+        print "shell"
+        print findMinMax(shell_list)
     translate(shell_list,[-shell_min[0],-shell_min[1],zshell],verbose)
     translate(shell_list,BUILDTRAY_OFFSET,verbose)
-    mergelist = [shell_list]
+    mergelist = []
+    mergelist.append(shell_list)
     
     ## make Pad layer lists
     
@@ -373,9 +375,14 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         [padfile,padz,locationz,pad_x,pad_y] = nodeToFileOffset(padnode)
         pad_list = processFileIntoLayers(padfile,False,verbose)
         parity(pad_list,verbose)
-        translate(pad_list,[pad_x-100,pad_y-100,locationz],verbose,True)
-        translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
-        translate(pad_list,BUILDTRAY_OFFSET,verbose)
+        (pad_min,pad_max) = findMinMax(pad_list)
+        if debug:
+            print "pads"
+            print findMinMax(pad_list)
+        translate(pad_list,[pad_y-pad_min[0],pad_x*2-pad_min[1],locationz],verbose,True)
+        #translate(pad_list,[pad_y/2-pad_min[0],pad_x-pad_min[1],locationz],verbose,True)
+        #translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
+        #translate(pad_list,BUILDTRAY_OFFSET,verbose)
         mergelist.append(pad_list)
     
     ## make TopCoat layer lists
@@ -436,9 +443,9 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         outfile.write(line)
     
     
-    for layer in topcoat_list:
-        for cmd in layer.cmds:
-            outfile.write(cmd)
+#    for layer in topcoat_list:
+#        for cmd in layer.cmds:
+#            outfile.write(cmd)
     
     print "done"
     

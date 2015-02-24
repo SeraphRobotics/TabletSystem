@@ -71,8 +71,8 @@ void LoopInXYPlane::reverse() {
 Vector3 LoopInXYPlane::min() const {
   Vector3 v=points[0].copy();
 //  qDebug()<<"x:"<<v.x<<" y:"<<v.y<<" z:"<<v.z;
-  if( !(points.size() >= 1) ) {
-
+  if( (points.size() >= 1) ) {
+    qDebug()<<"Min running";
     for (int i = 1; i < points.size(); ++i) {
       Vector3 pt = points[i];
       if(pt.x<v.x){v.x= pt.x;}
@@ -415,7 +415,7 @@ Vector3 LoopInXYPlane::center(){
     }
 
 
-    qDebug()<<"CENTER - ORIGINAL "<<cent.x<<","<<cent.y<<" A:"<<A;
+//    qDebug()<<"CENTER - ORIGINAL "<<cent.x<<","<<cent.y<<" A:"<<A;
     return cent;
 }
 
