@@ -329,8 +329,8 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
     fabTree = ElementTree(file = infilename)
     for el in fabTree.iter(): el.tag = el.tag.lower()
     
-    BUILDTRAY_OFFSET = [24,32,20]
-    TOOLHEAD_OFFSET  = [63,10,-4.5]
+    BUILDTRAY_OFFSET = [20,32,20]
+    TOOLHEAD_OFFSET  = [-10,63,-4.5]
     
     if debug:
         BUILDTRAY_OFFSET = [0,0,0]
