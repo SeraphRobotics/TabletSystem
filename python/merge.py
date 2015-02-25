@@ -311,6 +311,7 @@ def translate(layerlist, delta, verbose=False, shiftlayer=False):
 
                 z1[0]= z1[0] + delta[2]
                 layer.actualz = z1[0]
+                if(z1[1]>600): z1[1]=600
                 newline = "G1 Z%f F%f\n"%(z1[0],z1[1])
                 out_line_list.append(newline)
                 
@@ -336,8 +337,8 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         BUILDTRAY_OFFSET = [0,0,0]
         TOOLHEAD_OFFSET  = [0,0,0]
     
-    lowercmds="G4 P2\nM340 P1 S600\nG4 P1000\nM340 P1 S0"
-    raisecmds="G4 P2\nM340 P1 S1200\nG4 P1000\nM340 P1 S0"
+    lowercmds="G4 P2\nM340 P1 S600\nG4 P1000\nM340 P1 S0\n"
+    raisecmds="G4 P2\nM340 P1 S1200\nG4 P1000\nM340 P1 S0\n"
     
     
     def nodeToFileOffset(node):
@@ -364,8 +365,8 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
     if debug:
         print "shell"
         print findMinMax(shell_list)
-		
-		
+        
+        
 
     translate(shell_list,[-shell_min[0]+BUILDTRAY_OFFSET[0],-shell_min[1]+BUILDTRAY_OFFSET[1],zshell+BUILDTRAY_OFFSET[2]],verbose)
     #translate(shell_list,BUILDTRAY_OFFSET,verbose)
@@ -383,9 +384,9 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
             print "pads"
             print findMinMax(pad_list)
         translate(pad_list,[pad_y-pad_min[0]+TOOLHEAD_OFFSET[0]+BUILDTRAY_OFFSET[0],
-		                    pad_x*2-pad_min[1]+TOOLHEAD_OFFSET[1]+BUILDTRAY_OFFSET[1],
-							locationz+TOOLHEAD_OFFSET[2]+padz+BUILDTRAY_OFFSET[1]],
-							verbose,True)
+                            pad_x*2-pad_min[1]+TOOLHEAD_OFFSET[1]+BUILDTRAY_OFFSET[1],
+                            locationz+TOOLHEAD_OFFSET[2]+padz+BUILDTRAY_OFFSET[1]],
+                            verbose,True)
         #translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
         #translate(pad_list,BUILDTRAY_OFFSET,verbose)
         mergelist.append(pad_list)
@@ -396,9 +397,9 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
     parity(topcoat_list,verbose)
     (topcoat_min,topcoat_max) = findMinMax(topcoat_list)
     translate(topcoat_list,[-topcoat_min[0]+TOOLHEAD_OFFSET[0]+x_offset+BUILDTRAY_OFFSET[0],
-	                        -topcoat_min[1]+TOOLHEAD_OFFSET[1]+y_offset,
-							z_topcoat+z_offset+TOOLHEAD_OFFSET[2]+BUILDTRAY_OFFSET[2]],
-							verbose, True)
+                            -topcoat_min[1]+TOOLHEAD_OFFSET[1]+y_offset,
+                            z_topcoat+z_offset+TOOLHEAD_OFFSET[2]+BUILDTRAY_OFFSET[2]],
+                            verbose, True)
     #translate(topcoat_list,[TOOLHEAD_OFFSET[0]+x_offset,TOOLHEAD_OFFSET[1]+y_offset,TOOLHEAD_OFFSET[2]+z_offset],verbose)
     #translate(topcoat_list,[BUILDTRAY_OFFSET[0],BUILDTRAY_OFFSET[1],BUILDTRAY_OFFSET[2]],verbose)
     #setTopcoatSpeed(topcoat_list,1200,verbose)
