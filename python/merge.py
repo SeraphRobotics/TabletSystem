@@ -442,9 +442,9 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         outfile.write(line)
     
     
-#    for layer in topcoat_list:
-#        for cmd in layer.cmds:
-#            outfile.write(cmd)
+    for layer in topcoat_list:
+        for cmd in layer.cmds:
+            outfile.write(cmd)
     
     print "done"
     
