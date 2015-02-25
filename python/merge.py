@@ -364,8 +364,11 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
     if debug:
         print "shell"
         print findMinMax(shell_list)
-    translate(shell_list,[-shell_min[0],-shell_min[1],zshell],verbose)
-    translate(shell_list,BUILDTRAY_OFFSET,verbose)
+		
+		
+
+    translate(shell_list,[-shell_min[0]+BUILDTRAY_OFFSET[0],-shell_min[1]+BUILDTRAY_OFFSET[1],zshell+BUILDTRAY_OFFSET[2]],verbose)
+    #translate(shell_list,BUILDTRAY_OFFSET,verbose)
     mergelist = []
     mergelist.append(shell_list)
     
@@ -379,9 +382,12 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         if debug:
             print "pads"
             print findMinMax(pad_list)
-        translate(pad_list,[pad_y-pad_min[0],pad_x*2-pad_min[1],locationz],verbose,True)
-        translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
-        translate(pad_list,BUILDTRAY_OFFSET,verbose)
+        translate(pad_list,[pad_y-pad_min[0]+TOOLHEAD_OFFSET[0]+BUILDTRAY_OFFSET[0],
+		                    pad_x*2-pad_min[1]+TOOLHEAD_OFFSET[1]+BUILDTRAY_OFFSET[1],
+							locationz+TOOLHEAD_OFFSET[2]+padz+BUILDTRAY_OFFSET[1]],
+							verbose,True)
+        #translate(pad_list,[TOOLHEAD_OFFSET[0],TOOLHEAD_OFFSET[1],TOOLHEAD_OFFSET[2]+padz],verbose)
+        #translate(pad_list,BUILDTRAY_OFFSET,verbose)
         mergelist.append(pad_list)
     
     ## make TopCoat layer lists
@@ -389,9 +395,12 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
     topcoat_list = processFileIntoLayers(topcoat_file,True,verbose)
     parity(topcoat_list,verbose)
     (topcoat_min,topcoat_max) = findMinMax(topcoat_list)
-    translate(topcoat_list,[-topcoat_min[0],-topcoat_min[1],z_topcoat],verbose, True)
-    translate(topcoat_list,[TOOLHEAD_OFFSET[0]+x_offset,TOOLHEAD_OFFSET[1]+y_offset,TOOLHEAD_OFFSET[2]+z_offset],verbose)
-    translate(topcoat_list,[BUILDTRAY_OFFSET[0],BUILDTRAY_OFFSET[1],BUILDTRAY_OFFSET[2]],verbose)
+    translate(topcoat_list,[-topcoat_min[0]+TOOLHEAD_OFFSET[0]+x_offset+BUILDTRAY_OFFSET[0],
+	                        -topcoat_min[1]+TOOLHEAD_OFFSET[1]+y_offset,
+							z_topcoat+z_offset+TOOLHEAD_OFFSET[2]+BUILDTRAY_OFFSET[2]],
+							verbose, True)
+    #translate(topcoat_list,[TOOLHEAD_OFFSET[0]+x_offset,TOOLHEAD_OFFSET[1]+y_offset,TOOLHEAD_OFFSET[2]+z_offset],verbose)
+    #translate(topcoat_list,[BUILDTRAY_OFFSET[0],BUILDTRAY_OFFSET[1],BUILDTRAY_OFFSET[2]],verbose)
     #setTopcoatSpeed(topcoat_list,1200,verbose)
 
     
