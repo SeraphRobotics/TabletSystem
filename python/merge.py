@@ -329,15 +329,15 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
     fabTree = ElementTree(file = infilename)
     for el in fabTree.iter(): el.tag = el.tag.lower()
     
-    BUILDTRAY_OFFSET = [0,20,10]
+    BUILDTRAY_OFFSET = [24,32,20]
     TOOLHEAD_OFFSET  = [63,10,-4.5]
     
     if debug:
         BUILDTRAY_OFFSET = [0,0,0]
         TOOLHEAD_OFFSET  = [0,0,0]
     
-    lowercmds="G4 P2\nM340 P1 S1000\n"
-    raisecmds="G4 P2\nM340 P1 S5000\n"
+    lowercmds="G4 P2\nM340 P1 S600\nG4 P1000\nM340 P1 S0"
+    raisecmds="G4 P2\nM340 P1 S1200\nG4 P1000\nM340 P1 S0"
     
     
     def nodeToFileOffset(node):
@@ -442,12 +442,11 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         outfile.write(line)
     
     
-    for layer in topcoat_list:
-        for cmd in layer.cmds:
-            outfile.write(cmd)
+#    for layer in topcoat_list:
+#        for cmd in layer.cmds:
+#            outfile.write(cmd)
     
-    if debug:
-        print "done"
+    print "done"
     
     
 
