@@ -18,7 +18,7 @@ const QString SampleDataOutputLocation(QString(QDir::currentPath() + "/../seraph
 
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
-
+    qDebug()<<"SAMPLE DATA LOCATION: "<<SampleDataLocation;
     QCoreApplication::setOrganizationName("Seraph");
     QCoreApplication::setOrganizationDomain("seraphrobotics.com");
     QCoreApplication::setApplicationName("SeraphData");

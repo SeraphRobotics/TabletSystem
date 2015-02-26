@@ -3,7 +3,9 @@
 QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
 CONFIG += c++11
-CONFIG+=test
+CONFIG += test
+CONFIG += opencv243
+CONFIG += qt486
 
 ##############################
 # static libs
@@ -26,23 +28,49 @@ DEFINES += SERAPHLIBS_LIBRARY
 # DEFINES += SW_VERSION=$$PWD\;
 
 
-win32:INCLUDEPATH += C:\\Qt\\4.8.5\\src\\3rdparty\\zlib
-win32:INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
-win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
-    -lopencv_calib3d245.dll\
-    -lopencv_contrib245.dll\
-    -lopencv_core245.dll \
-    -lopencv_features2d245.dll \
-    -lopencv_flann245.dll \
-    -lopencv_gpu245.dll \
-    -lopencv_highgui245.dll \
-    -lopencv_imgproc245.dll \
-    -lopencv_legacy245.dll \
-    -lopencv_ml245.dll\
-    -lopencv_objdetect245.dll \
-    -lopencv_ts245 \
-    -lopencv_video245.dll
+qt485{
+ win32:INCLUDEPATH += C:\\Qt\\4.8.5\\src\\3rdparty\\zlib
+}
 
+qt486{
+ win32:INCLUDEPATH += C:\\Qt\\4.8.6\\src\\3rdparty\\zlib
+}
+
+opencv245{
+    win32:INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
+    win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
+        -lopencv_calib3d245.dll\
+        -lopencv_contrib245.dll\
+        -lopencv_core245.dll \
+        -lopencv_features2d245.dll \
+        -lopencv_flann245.dll \
+        -lopencv_gpu245.dll \
+        -lopencv_highgui245.dll \
+        -lopencv_imgproc245.dll \
+        -lopencv_legacy245.dll \
+        -lopencv_ml245.dll\
+        -lopencv_objdetect245.dll \
+        -lopencv_ts245 \
+        -lopencv_video245.dll
+}
+
+opencv243{
+    win32:INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
+    win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
+        -lopencv_calib3d243.dll\
+        -lopencv_contrib243.dll\
+        -lopencv_core243.dll \
+        -lopencv_features2d243.dll \
+        -lopencv_flann243.dll \
+        -lopencv_gpu243.dll \
+        -lopencv_highgui243.dll \
+        -lopencv_imgproc243.dll \
+        -lopencv_legacy243.dll \
+        -lopencv_ml243.dll\
+        -lopencv_objdetect243.dll \
+        -lopencv_ts243 \
+        -lopencv_video243.dll
+}
 unix:LIBS += \
     -lopencv_calib3d \
     -lopencv_contrib \
@@ -60,7 +88,8 @@ unix:LIBS += \
 
 unix:LIBS += -lz
 
-win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
+#win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
+win32:INCLUDEPATH +="C:\\Eigen\\eigen3"
 
 # run test suit,
 # clone a build in projects and add build additional args of CONFIG+=test to run below block
