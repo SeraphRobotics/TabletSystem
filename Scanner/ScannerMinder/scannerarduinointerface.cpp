@@ -38,6 +38,9 @@ bool ScannerArduinoInterface::isReady(){
 void ScannerArduinoInterface::startScan(){
     _write("s");
 }
+void ScannerArduinoInterface::scanStep(){
+    _write("i");
+}
 void ScannerArduinoInterface::laserOn(){
     _write("l");
 }

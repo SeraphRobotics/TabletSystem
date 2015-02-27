@@ -59,8 +59,9 @@ void ScannerController::setupCamera(){
 void ScannerController::buttonPress(){
     if (!timer_->isActive() ){
         sai_->startScan();
-        timer_->start();
+//        timer_->start();
         dist=0;
+        ScanStep();
         setupCamera();
     }
 }
@@ -71,23 +72,36 @@ void ScannerController::scanComplete(){
 
 void ScannerController::ScanStep(){
     if(!capwebcam.isOpened()){return;}
-    capwebcam.read(matOriginal);
+    int n=0;
+    QImage m;
+    while (m.isNull() && n<10){
+        n++;
+        capwebcam.read(matOriginal);
+
+        dist += stepsize_;
+
+        if(matOriginal.empty()==true){
+            qDebug()<<QString("Error reading camera at position:")<<QString::number(dist);
+        }
+
+        cv::Mat dest;
+        cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
+
+        m = QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
 
 
-    dist += stepsize_;
-
-    if(matOriginal.empty()==true){
-        qDebug()<<QString("Error reading camera at position:")<<QString::number(dist);
+    }
+    if (!m.isNull()){
+        sai_->scanStep();
+        m.save(QString::number(dist)+".jpeg","JPEG");
     }
 
-    cv::Mat dest;
-    cv::cvtColor(matOriginal, dest,CV_BGR2RGB);
 
-    QImage m = QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
-    m.save(QString::number(dist)+".jpeg","JPEG");
     if (dist>scandistance_){
-        timer_->stop();
+//        timer_->stop();
         capwebcam.release();
+    }else{
+        QTimer::singleShot(100,this,SLOT(ScanStep());
     }
 
 }

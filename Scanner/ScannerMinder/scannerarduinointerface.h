@@ -20,6 +20,7 @@ public slots:
     bool connectPort(QString port, BaudRateType baudrate);
     bool isReady();
     void startScan();
+    void scanStep();
     void laserOn();
     void laserOff();
     void ledOn();
