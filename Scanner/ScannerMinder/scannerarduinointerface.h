@@ -14,6 +14,7 @@ public:
 signals:
     void buttonPressed();
     void scanMovementCompleted();
+    void scanIncremented();
     void errored();
 
 public slots:
@@ -21,6 +22,7 @@ public slots:
     bool isReady();
     void startScan();
     void scanStep();
+    void endScan();
     void laserOn();
     void laserOff();
     void ledOn();
