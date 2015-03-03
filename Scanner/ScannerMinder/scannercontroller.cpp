@@ -4,7 +4,7 @@
 #include <QSettings>
 
 ScannerController::ScannerController(QObject *parent) :
-    QObject(parent),camNumber_(1),scandistance_(330),stepsize_(2),framerate_(5),width_(1920),height_(1080),dist(0)
+    QObject(parent),camNumber_(1),scandistance_(338),stepsize_(2),framerate_(5),width_(1920),height_(1080),dist(0)
 {
     QSettings s;
     camNumber_ = s.value("camNumber",1).toInt();
@@ -108,7 +108,7 @@ void ScannerController::ScanStep(){
     if (dist>=scandistance_){
 //        timer_->stop();
         capwebcam.release();
-        QTimer::singleShot(1000.0,sai_,SLOT(endScan()));
+        QTimer::singleShot(100.0,sai_,SLOT(endScan()));
         qDebug()<<"ending";
     }else{
         qDebug()<<"STEP";
