@@ -148,7 +148,7 @@ void OrthoticController::makeSTLs(){
     STLMesh* shell = new STLMesh();
 
     bool make_thickness = (Orthotic::kCurved == orth_->getBottomType());
-    float thickness = 5.0;
+    float thickness = 10.0;
 
     /// GENERATE PADS
     int i=0;
