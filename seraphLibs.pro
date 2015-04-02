@@ -4,21 +4,24 @@ QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
 CONFIG += c++11
 CONFIG += test
-CONFIG += opencv243
-CONFIG += qt486
+CONFIG += opencv245
+CONFIG += qt485
+CONFIG += eie
+
 
 ##############################
 # static libs
 #CONFIG += staticlib
 # ***
-TARGET = seraphLibs
-TEMPLATE = lib
-VERSION = 0.0.01
+#TARGET = seraphLibs
+#TEMPLATE = lib
+#VERSION = 0.0.01
 
 # stand alone
 #TEMPLATE = app
 #CONFIG   += console
 #CONFIG   -= app_bundle
+
 ##############################
 
 # shared libs
@@ -88,8 +91,8 @@ unix:LIBS += \
 
 unix:LIBS += -lz
 
-#win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
-win32:INCLUDEPATH +="C:\\Eigen\\eigen3"
+win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
+#win32:INCLUDEPATH +="C:\\Eigen\\eigen3"
 
 # run test suit,
 # clone a build in projects and add build additional args of CONFIG+=test to run below block

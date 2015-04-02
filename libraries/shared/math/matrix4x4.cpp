@@ -224,6 +224,25 @@ Matrix4x4& Matrix4x4::rotationAxisAngle(const Vector3& axis, Float angle) {
 //  return *this;
 }
 
+Matrix4x4& Matrix4x4::rotationPointAxisAngle(const Vector3& point, const Vector3& axis, Float angle){
+    const Float ca = cos(angle);
+    const Float sa = sin(angle);
+    const Float u = axis.x;
+    const Float v = axis.y;
+    const Float w = axis.z;
+    const Float a = point.x;
+    const Float b = point.y;
+    const Float c = point.z;
+
+    _11 = u*u+(v*v+w*w)*ca;     _12 = u*v*(1-ca)-w*sa;   _13 = u*w*(1-ca)+v*sa;   _14 = (a*(v*v+w*w) - u*(b*v+c*w))*(1-ca) + (b*w-c*v)*sa;
+    _21 = u*v*(1-ca)+w*sa;      _22 = v*v+(u*u+w*w)*ca;  _23 = v*w*(1-ca)-u*sa;   _24 = (b*(u*u+w*w) - v*(a*u+c*w))*(1-ca) + (c*u-a*w)*sa;
+    _31 = u*w*(1-ca)-v*sa;      _32 = v*w*(1-ca)+u*sa;   _33 = w*w+(u*u+v*v)*ca;  _34 = (c*(u*u+v*v) - w*(a*u+b*v))*(1-ca) + (a*v-b*u)*sa;
+    _41 = 0;                    _42 = 0;                 _43 = 0;                 _44 = 1;
+    return *this;
+}
+
+
+
 Matrix4x4& Matrix4x4::rotationQuaternion(const Quaternion& q) {
   if (!(q.isNormalized())) {
     return q.isInvalid() ? zero() : rotationQuaternion(q.copy().normalize());

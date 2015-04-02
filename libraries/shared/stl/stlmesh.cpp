@@ -78,4 +78,16 @@ void STLMesh::scale(float px,float py,float pz){
     }
 }
 
+void STLMesh::transform(FAHMatrix4x4 m){
 
+    for(int i=0;i<facets_.size();i++){
+        STLFacet* f= facets_[i];
+        for(int j=0;j<3;j++){
+            FAHVector3 nv(f->triangle.v[j]);
+            m.transformInPlace(&nv);
+            f->triangle.v[j].x=nv.x;
+            f->triangle.v[j].y=nv.y;
+            f->triangle.v[j].z=nv.z;
+        }
+    }
+}

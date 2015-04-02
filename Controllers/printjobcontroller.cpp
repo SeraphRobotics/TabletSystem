@@ -42,6 +42,23 @@ void PrintJobController::RunPrintJob(){
 
     numSTLsToRepair = 1+orth_->printjob.manipulationpairs.size();
 
+    FAHVector3 p1, p2, d;
+    if(orth_->getFootType()==Orthotic::kRight){
+        p1 = orth_->getForePoints().first().copy();
+        p2 = orth_->getHealPoints().first().copy();
+    }else{
+        p1 = orth_->getForePoints().last().copy();
+        p2 = orth_->getHealPoints().last().copy();
+    }
+
+    d= p2-p1;
+    d.normalize();
+    FAHMatrix4x4 m;
+    //m.identity();
+    m.rotationPointAxisAngle(p1,d,Math::kPi/4.0); //(Math::kPi)
+
+
+    orth_->printjob.shellpair.mesh->transform(m);
     RepairController* rs = new RepairController(orth_->printjob.shellpair.mesh,shellfilename);
     connect(rs,SIGNAL(Success()),this,SLOT(repairSucessful()));
     connect(workthread,SIGNAL(finished()),rs,SLOT(deleteLater()));
@@ -60,6 +77,7 @@ void PrintJobController::RunPrintJob(){
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
         QString fn = dir_ + "/"+ orth_->printjob.manipulationpairs.at(i).id;
         fn.append(".stl");
+        orth_->printjob.manipulationpairs[i].mesh->transform(m);
         RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,fn);
         connect(r,SIGNAL(Success()),this,SLOT(repairSucessful()));
         connect(workthread,SIGNAL(finished()),r,SLOT(deleteLater()));
