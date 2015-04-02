@@ -129,7 +129,7 @@ void Matrix4x4::transformInPlace(Vector3* v) const {
   // normalized such that it would have a component of 1.0.
   Float w = _41 * v->x + _42 * v->y + _43 * v->z + _44;
   v->set(
-    (_11 * v->x + _11 * v->y + _13 * v->z + _14) / w,
+    (_11 * v->x + _12 * v->y + _13 * v->z + _14) / w,
     (_21 * v->x + _22 * v->y + _23 * v->z + _24) / w,
     (_31 * v->x + _32 * v->y + _33 * v->z + _34) / w
   );
