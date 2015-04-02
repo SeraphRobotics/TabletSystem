@@ -100,7 +100,7 @@ void TestOrthoticController::initTestCase()
 
     qDebug() << "post setBottom";
 
-    for(int i=0;i<0;i++){
+    for(int i=0;i<1;i++){
         FAHLoopInXYPlane* c = circle(40.0+i*25,80.0+i*5,15.0);
         Manipulation* m = new Manipulation();
         m->stiffness=25+i*25;
