@@ -126,11 +126,11 @@ void Matrix4x4::transformInPlace(Vector3* v) const {
   // This is the 4th component of the resulting transformation.  The input vector's
   // 4th component is assumed to be 1.0 coming in, and the resulting vector is
   // normalized such that it would have a component of 1.0.
-  Float w = _14 * v->x + _24 * v->y + _34 * v->z + _44;
+  Float w = _41 * v->x + _42 * v->y + _43 * v->z + _44;
   v->set(
-    (_11 * v->x + _21 * v->y + _31 * v->z + _41) / w,
-    (_12 * v->x + _22 * v->y + _32 * v->z + _42) / w,
-    (_13 * v->x + _23 * v->y + _33 * v->z + _43) / w
+    (_11 * v->x + _11 * v->y + _13 * v->z + _14) / w,
+    (_21 * v->x + _22 * v->y + _23 * v->z + _24) / w,
+    (_31 * v->x + _32 * v->y + _33 * v->z + _34) / w
   );
 }
 
