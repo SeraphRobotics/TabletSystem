@@ -3,6 +3,7 @@
 #include <math.h>     // for sin/cos/tan
 #include "libraries/common/confirm.h"
 #include "quaternion.h"
+#include <QDebug>
 
 
 namespace Math {

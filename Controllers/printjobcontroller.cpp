@@ -55,7 +55,7 @@ void PrintJobController::RunPrintJob(){
     d.normalize();
     FAHMatrix4x4 m;
     //m.identity();
-    m.rotationPointAxisAngle(p1,d,Math::kPi/4.0); //(Math::kPi)
+    m.rotationPointAxisAngle(p1,d,Math::kPi/2.0); //(Math::kPi)
 
 
     orth_->printjob.shellpair.mesh->transform(m);
