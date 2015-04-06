@@ -46,16 +46,30 @@ void PrintJobController::RunPrintJob(){
     if(orth_->getFootType()==Orthotic::kRight){
         p1 = orth_->getForePoints().first().copy();
         p2 = orth_->getHealPoints().first().copy();
+        p1.x=p1.x*2;
+        p1.y = p1.y+1.1;
+        p1.z=0;
+        p2.x=p2.x*2;
+        p2.z=0;
     }else{
         p1 = orth_->getForePoints().last().copy();
         p2 = orth_->getHealPoints().last().copy();
+        p1.x=p1.x*2;
+        p1.y = p1.y-1.1;
+        p1.z=0;
+        p2.x=p2.x*2;
+        p2.z=0;
+
     }
 
     d= p2-p1;
     d.normalize();
     FAHMatrix4x4 m;
-    //m.identity();
-    m.rotationPointAxisAngle(p1,d,Math::kPi/2.0); //(Math::kPi)
+    FAHMatrix4x4 n;
+    n.rotationZ(Math::kPi/2.0);
+//    m.identity();
+    m.rotationPointAxisAngle(p2,d,-Math::kPi/2.0); //(Math::kPi)
+    m = n.mul(m);
 
 
     orth_->printjob.shellpair.mesh->transform(m);
