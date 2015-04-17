@@ -9,7 +9,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 
-
 struct UI_User{
     QString id;
     Name name;

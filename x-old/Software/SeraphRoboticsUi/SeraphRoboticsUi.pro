@@ -7,6 +7,7 @@ DEPLOYMENTFOLDERS = folder_01
 QML_IMPORT_PATH =
 
 QT += xml 3dquick core
+CONFIG += opencv245
 
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -133,20 +134,37 @@ RESOURCES += \
 #}
 
 win32:RC_FILE = SeraphRoboticsUi.rc
-win32:CONFIG(release, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_core249
-else:win32:CONFIG(debug, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_core249d
+opencv249{
+    win32:CONFIG(release, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_core249
+    else:win32:CONFIG(debug, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_core249d
 
-INCLUDEPATH += $$PWD/../../../../opencv/build/include
-DEPENDPATH += $$PWD/../../../../opencv/build/include
+    win32:CONFIG(release, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_imgproc249
+    else:win32:CONFIG(debug, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_imgproc249d
 
-win32:CONFIG(release, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_imgproc249
-else:win32:CONFIG(debug, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_imgproc249d
+    win32:CONFIG(release, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_highgui249
+    else:win32:CONFIG(debug, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_highgui249d
 
-INCLUDEPATH += $$PWD/../../../../opencv/build/include
-DEPENDPATH += $$PWD/../../../../opencv/build/include
+    INCLUDEPATH += $$PWD/../../../../opencv/build/include
+    DEPENDPATH += $$PWD/../../../../opencv/build/include
 
-win32:CONFIG(release, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_highgui249
-else:win32:CONFIG(debug, debug|release): LIBS +=-L$$PWD/../../../../opencv/build/x86/vc12/lib/ -lopencv_highgui249d
+}
 
-INCLUDEPATH += $$PWD/../../../../opencv/build/include
-DEPENDPATH += $$PWD/../../../../opencv/build/include
+opencv245{
+    win32:INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
+    win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
+        -lopencv_calib3d245.dll\
+        -lopencv_contrib245.dll\
+        -lopencv_core245.dll \
+        -lopencv_features2d245.dll \
+        -lopencv_flann245.dll \
+        -lopencv_gpu245.dll \
+        -lopencv_highgui245.dll \
+        -lopencv_imgproc245.dll \
+        -lopencv_legacy245.dll \
+        -lopencv_ml245.dll\
+        -lopencv_objdetect245.dll \
+        -lopencv_ts245 \
+        -lopencv_video245.dll
+}
+
+
