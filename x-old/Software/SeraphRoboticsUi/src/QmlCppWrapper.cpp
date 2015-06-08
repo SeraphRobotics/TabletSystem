@@ -196,7 +196,7 @@ void QmlCppWrapper::_createImagesDirectoryIfNotExist() const
 
 QString QmlCppWrapper::resolveUrl(const QString &fileName)
 {
-    QString &name = QUrl::fromLocalFile(fileName).toString();
+    QString name = QUrl::fromLocalFile(fileName).toString();
     qDebug()<<__FUNCTION__<<"Got "<<name;
     return name;
 }

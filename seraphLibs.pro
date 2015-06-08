@@ -4,8 +4,8 @@ QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
 CONFIG += c++11
 CONFIG += test
-CONFIG += opencv245
-CONFIG += qt485
+CONFIG += opencv243
+#CONFIG += qt485
 CONFIG += eie
 
 
@@ -91,8 +91,9 @@ unix:LIBS += \
 
 unix:LIBS += -lz
 
-win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
-#win32:INCLUDEPATH +="C:\\Eigen\\eigen3"
+#win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
+
+win32:INCLUDEPATH +="C:\\Eigen\\eigen3"
 
 # run test suit,
 # clone a build in projects and add build additional args of CONFIG+=test to run below block
