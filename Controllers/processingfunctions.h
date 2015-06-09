@@ -26,7 +26,7 @@ FAHLoopInXYPlane* bottomLoopFromPoints(QVector< FAHVector3 > healpts, QVector< F
  * @param heal_pts
  * @return vector of points
  */
-QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes=1000);
+QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVector3 > forepts, int nTimes=1000);
 
 
 /**

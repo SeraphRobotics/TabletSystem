@@ -64,7 +64,7 @@ FAHLoopInXYPlane* bottomLoopFromPoints(QVector< FAHVector3 > healpts, QVector< F
     }
 
 
-    curve += secondOrder(healpts2, 50);
+    curve += secondOrder(healpts2,forepts, 50);
     curve += bezier_curve(forepts,50);
     FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
     loop->points=curve;
@@ -74,7 +74,7 @@ FAHLoopInXYPlane* bottomLoopFromPoints(QVector< FAHVector3 > healpts, QVector< F
 }
 
 FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts){
-    QVector< FAHVector3 > curve = secondOrder(healpts, 50);
+    QVector< FAHVector3 > curve = secondOrder(healpts,forepts, 50);
     curve += bezier_curve(forepts,50);
 
     int numpts = curve.size();
@@ -112,45 +112,57 @@ FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVect
     return loop;
 }
 
-QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
-    // This is a 6th order curve fittings system
-    // y = ax6+bx5+cx4 ... e*x+f
-    // dy = 6ax5+5bx4 ... e
-    // M is the matrix of k*x^n, c is a vector of a,b,c,d,e,f
-    // Y is a vector of y and dy
+QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVector3 > forepts, int nTimes){
+    /**
+     * This is a 5th order curve fit with 6 variables
+     * in general Y = f+ex+dx^2+cx^3+b*x^4+a*x^5
+     *           dY/dx = 0*f +e+2x*d+3x^2*c+4x^3*b+5x^4*a
+     * M is the matrix of know values, c is a vector of f,e,d,c,b,a
+     * A is a vector of y and dy at given x so A=M*C or (X = M*Y)
+     * C = M^-1 *A
+     * in out system y is the independant variable and x is the dependant variable
+     * so its a system of know X at given Y
+     **/
     QVector< FAHVector3 > returnpts;
 
     if(heal_pts.size()!=3){return returnpts;}
     int soln_order = 6;
     MatrixXf m(soln_order,soln_order);
     m = MatrixXf::Zero(soln_order,soln_order);
-    VectorXf y(soln_order);
-    y=VectorXf::Zero(soln_order);
+    MatrixXf mi(soln_order,soln_order);
+    mi = MatrixXf::Zero(soln_order,soln_order);
+    VectorXf A(soln_order);
+    A=VectorXf::Zero(soln_order);
     VectorXf c(soln_order);
     c=VectorXf::Zero(soln_order);
 
+    // column, row
     for(int i=0;i<heal_pts.size();i++){
         for(int j=0; j<soln_order;j++){
             m(i,j) = pow(heal_pts.at(i).y,float(j));
         }
-        y(i) = heal_pts.at(i).x/2.0;
+        A(i) = heal_pts.at(i).x;
     }
 
-    y[3] = -100.0;
+    // dx/dy since x is dependant
+    A[3] = -1.0/twoPtSlope(heal_pts.first(),forepts.first());
     // EXTRA_SCALE y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
-    y[4] = twoPtSlope(heal_pts[0],heal_pts.last());
-    y[5] = 100.0;
+    A[4] = -1.0/twoPtSlope(heal_pts.last(),heal_pts.first()); //
+    A[5] = 1.0/twoPtSlope(heal_pts.last(),forepts.last());
 
 
 
-
-    for(int k=0;k<soln_order;k++){
-        m(3,k)+= k*pow(heal_pts.at(0).y,float(k));
-        m(4,k)+= k*pow(heal_pts.at(1).y,float(k));
-        m(5,k)+= k*pow(heal_pts.at(2).y,float(k));
+    // column, row
+    for(int k=1;k<soln_order;k++){
+        m(3,k) = k*pow(heal_pts.at(0).y,float(k-1));
+        m(4,k) = k*pow(heal_pts.at(1).y,float(k-1));
+        m(5,k) = k*pow(heal_pts.at(2).y,float(k-1));
     }
 
-    c = m.inverse()*y;
+
+
+    mi = m.inverse();
+    c = m.inverse()*A;
 
     VectorXf xval(nTimes);
     VectorXf yval(nTimes);
