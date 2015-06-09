@@ -113,6 +113,27 @@ FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVect
 }
 
 QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVector3 > forepts, int nTimes){
+    QVector< FAHVector3 > returnpts;
+
+    if(heal_pts.size()!=3){return returnpts;}
+    // dx/dy since x is dependant
+    float firstslope= -1.0/twoPtSlope(heal_pts.first(),forepts.first());
+    // EXTRA_SCALE y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
+    float middleslope = -1.0/twoPtSlope(heal_pts.last(),heal_pts.first()); //
+    float endslope = 1.0/twoPtSlope(heal_pts.last(),forepts.last());
+
+    returnpts+=fourthOrder(heal_pts.first(),firstslope,
+                                 heal_pts.at(1),middleslope,nTimes/2);
+
+    QVector< FAHVector3 > secondset = fourthOrder(heal_pts.at(1),middleslope,
+                                                  heal_pts.last(),endslope,nTimes/2);
+    secondset.pop_front();
+    returnpts+=secondset;
+    return returnpts;
+
+}
+QVector< FAHVector3 > fourthOrder(FAHVector3 Start,float startslope, FAHVector3 End,float endslope, int nTimes){
+
     /**
      * This is a 5th order curve fit with 6 variables
      * in general Y = f+ex+dx^2+cx^3+b*x^4+a*x^5
@@ -123,10 +144,12 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVec
      * in out system y is the independant variable and x is the dependant variable
      * so its a system of know X at given Y
      **/
-    QVector< FAHVector3 > returnpts;
 
-    if(heal_pts.size()!=3){return returnpts;}
-    int soln_order = 6;
+    QVector< FAHVector3 > ends;
+    ends.append(Start);
+    ends.append(End);
+
+    int soln_order = 4;
     MatrixXf m(soln_order,soln_order);
     m = MatrixXf::Zero(soln_order,soln_order);
     MatrixXf mi(soln_order,soln_order);
@@ -137,28 +160,22 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVec
     c=VectorXf::Zero(soln_order);
 
     // column, row
-    for(int i=0;i<heal_pts.size();i++){
+    for(int i=0;i<ends.size();i++){
         for(int j=0; j<soln_order;j++){
-            m(i,j) = pow(heal_pts.at(i).y,float(j));
+            m(i,j) = pow(ends.at(i).y,float(j));
         }
-        A(i) = heal_pts.at(i).x;
+        A(i) = ends.at(i).x;
     }
-
-    // dx/dy since x is dependant
-    A[3] = -1.0/twoPtSlope(heal_pts.first(),forepts.first());
-    // EXTRA_SCALE y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
-    A[4] = -1.0/twoPtSlope(heal_pts.last(),heal_pts.first()); //
-    A[5] = 1.0/twoPtSlope(heal_pts.last(),forepts.last());
+    A[2] = startslope;
+    A[3] = endslope;
 
 
 
     // column, row
     for(int k=1;k<soln_order;k++){
-        m(3,k) = k*pow(heal_pts.at(0).y,float(k-1));
-        m(4,k) = k*pow(heal_pts.at(1).y,float(k-1));
-        m(5,k) = k*pow(heal_pts.at(2).y,float(k-1));
+        m(2,k) = k*pow(ends.at(0).y,float(k-1));
+        m(3,k) = k*pow(ends.at(1).y,float(k-1));
     }
-
 
 
     mi = m.inverse();
@@ -168,9 +185,9 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVec
     VectorXf yval(nTimes);
     yval = VectorXf::Zero(nTimes);
 
-    float stepsize = (heal_pts.at(2).y-heal_pts.at(0).y)/nTimes;
+    float stepsize = (ends.last().y-ends.first().y)/nTimes;
     for(int i=0; i<nTimes; i++){
-        xval(i) = heal_pts.at(0).y+stepsize*i;
+        xval(i) = ends.first().y+stepsize*i;
     }
     for(int i=0; i<nTimes;i++){
         for(int j=0; j<soln_order; j++){

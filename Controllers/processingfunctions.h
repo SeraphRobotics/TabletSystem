@@ -28,6 +28,12 @@ FAHLoopInXYPlane* bottomLoopFromPoints(QVector< FAHVector3 > healpts, QVector< F
  */
 QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVector3 > forepts, int nTimes=1000);
 
+/**
+ * @brief fourthOrder makes a list of points on a curve between to points with given slopes
+ * @return vector of points
+ */
+QVector< FAHVector3 > fourthOrder(FAHVector3 Start,float startslope, FAHVector3 End,float endslope, int nTimes=1000);
+
 
 /**
  * @brief bezier_curve used for front curve in loopFromPoints
