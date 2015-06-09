@@ -61,16 +61,17 @@ void TestOrthoticController::initTestCase()
 
     // LOAD WHAT HTE USER WOULD SET
     float offset = 3.0;
+    float scalex =2.0;
     QVector< FAHVector3 > forePts;
-    forePts.append(FAHVector3(105.0+offset,60.0,0));
-    forePts.append(FAHVector3(120.0+offset,90.0,0));
-    forePts.append(FAHVector3(115.0+offset,125.0,0));
-    forePts.append(FAHVector3(85.0+offset,130.0,0));
+    forePts.append(FAHVector3(scalex*(105.0+offset),60.0,0));
+    forePts.append(FAHVector3(scalex*(120.0+offset),90.0,0));
+    forePts.append(FAHVector3(scalex*(115.0+offset),125.0,0));
+    forePts.append(FAHVector3(scalex*(85.0+offset),130.0,0));
 
     QVector< FAHVector3 > healPts;
-    healPts.append(FAHVector3(35.0+offset,50.0,0));
-    healPts.append(FAHVector3(19.0+offset,70.0,0));
-    healPts.append(FAHVector3(26.0+offset,103.0,0));
+    healPts.append(FAHVector3(scalex*(35.0+offset),50.0,0));
+    healPts.append(FAHVector3(scalex*(19.0+offset),70.0,0));
+    healPts.append(FAHVector3(scalex*(26.0+offset),103.0,0));
 
     Posting forpost;
     forpost.angle=0*M_PI/180.0;
@@ -101,7 +102,7 @@ void TestOrthoticController::initTestCase()
     qDebug() << "post setBottom";
 
     for(int i=0;i<1;i++){
-        FAHLoopInXYPlane* c = circle(40.0+i*25,80.0+i*5,15.0);
+        FAHLoopInXYPlane* c = circle(2*(40.0+i*25),80.0+i*5,15.0);
         Manipulation* m = new Manipulation();
         m->stiffness=25+i*25;
         m->depth=0;

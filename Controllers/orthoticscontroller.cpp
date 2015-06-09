@@ -158,7 +158,7 @@ void OrthoticController::makeSTLs(){
         STLMesh* m_mesh = new STLMesh();
         float min_z = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,thickness,make_thickness);
         inners.append(m->outerloop);
-        m_mesh->scale(2,1,1);
+        //// EXTRA_SCALE m_mesh->scale(2,1,1);
         View_3D_Item v3d;
         v3d.mesh =  m_mesh;
         v3d.color = QColor(Qt::black);
@@ -187,7 +187,7 @@ void OrthoticController::makeSTLs(){
     qDebug()<<"Making Shell";
     if (make_thickness){FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);}
     else {STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);}
-    shell->scale(2,1,1);
+    //// EXTRA_SCALE shell->scale(2,1,1);
 
     //Generate Printjob outputs
     manipulationpair pair;

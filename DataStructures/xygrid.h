@@ -12,13 +12,13 @@ public:
     //Copy constructor
     XYGrid(int x, int y);
     //Creates a grid of size x,y of zeros
-    XYGrid(int x, int y, float stepsize) ;
+    XYGrid(int x, int y, float stepsizex, float stepsizey) ;
     //Creates a grid of size x,y of zeros and sets stepsize
-    XYGrid(float Lx, float Ly, float stepsize);
+    XYGrid(float Lx, float Ly, float stepsizex, float stepsizey);
     //Creats a grid with the ceiling of Lx/stepsize, Ly/stepsize and sets stepsize
-    XYGrid(FAHVector3 min, FAHVector3 Max,float stepsize) ;
+    XYGrid(FAHVector3 min, FAHVector3 Max ,float stepsizex, float stepsizey) ;
     //Creates a grid of delta of the points in the X and Y dimensions
-    XYGrid(FAHVector3 Delta,float stepsize) ;
+    XYGrid(FAHVector3 Delta,float stepsizex, float stepsizey) ;
     //Creates a grid of delta of the points in the X and Y dimensions
     XYGrid(QVector<T> v, int rowSize);
     //Creates a grid from a Qvector and sets the rowSize
@@ -38,9 +38,11 @@ public:
     /// Data Set and return
     void setDim(int x, int y) ;
     //Resets the dimensions of the array
-    void setStepSize(float a) ;
+    void setStepSizes(float x, float y) ;
     //Sets the stepzie
-    float stepSize() ;
+    float stepSizeX() ;
+    //Sets the stepzie
+    float stepSizeY() ;
     //Returns stepsize
     bool isNull() ;
     //Returns true if Data is empty
@@ -73,13 +75,14 @@ public:
 
 private:
     QVector<T> data_;
-    float stepsize_ ;
+    float stepsize_x_ ;
+    float stepsize_y_ ;
     int nx_; //  (number of X)
     int ny_; // (number of Y)
 };
 
 
-FAHVector3 vectorFromIJ(int i, int j, float val, float stepsize);
+FAHVector3 vectorFromIJ(int i, int j, float val, float stepsize_x, float stepsize_y);
 
 FAHVector3 vectorFromIJScales(int i, int j, float val, float stepsize, float scaleX, float scaleY);
 

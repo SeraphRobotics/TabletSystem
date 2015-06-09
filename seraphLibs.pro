@@ -5,7 +5,7 @@ QT     += widgets   # for QMessageBox
 CONFIG += c++11
 CONFIG += test
 CONFIG += opencv243
-#CONFIG += qt485
+CONFIG += qt54
 CONFIG += eie
 
 
@@ -30,6 +30,9 @@ DEFINES += SERAPHLIBS_LIBRARY
 # DEFINES += SW_VERSION=\\\"\"$$PWD\"\\\"
 # DEFINES += SW_VERSION=$$PWD\;
 
+qt54{
+ win32:INCLUDEPATH +=C:\\Qt5\\5.4\\Src\\qtbase\\src\\3rdparty\\zlib
+}
 
 qt485{
  win32:INCLUDEPATH += C:\\Qt\\4.8.5\\src\\3rdparty\\zlib

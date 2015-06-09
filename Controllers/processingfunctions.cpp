@@ -133,7 +133,8 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
     }
 
     y[3] = -100.0;
-    y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
+    // EXTRA_SCALE y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
+    y[4] = twoPtSlope(heal_pts[0],heal_pts.last());
     y[5] = 100.0;
 
 
@@ -392,7 +393,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
     float min = 10000;
     for(int i=0; i<grid->nx();i++){
         for(int j=0; j<grid->ny();j++){
-            FAHVector3 pt=vectorFromIJ(i,j,0,1);
+            FAHVector3 pt=vectorFromIJ(i,j,0,1,1);
             if (loop->pointInside(pt)){
                 if (min>grid->at(i,j)){
                     min = grid->at(i,j);
@@ -418,7 +419,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
 void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     QList<FAHLoopInXYPlane*> innerLoops;
     for(int n=0;n<times;n++){
-        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSize());
+        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSizeX());
 
         for(int j=1;j<grid->ny()-1;j++){
             for(int i=1;i<grid->nx()-1;i++){
@@ -429,10 +430,10 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
 
                 QVector<FAHVector3> pts;
 
-                pcent = vectorFromIJ(i,j,copy.at(i,j),copy.stepSize());
+                pcent = vectorFromIJ(i,j,copy.at(i,j),copy.stepSizeX(),copy.stepSizeY());
                 bp = loopsContain(pcent,borderloop,innerLoops);
 
-                p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSize());
+                p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSizeX(),copy.stepSizeY());
                 b1=loopsContain(p1,borderloop,innerLoops);
                 if(b1){pts.append(p1);
                 }else{
@@ -440,7 +441,7 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
                     pts.append(p1);
                 }
 
-                p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSize());
+                p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSizeX(),copy.stepSizeY());
                 b2=loopsContain(p2,borderloop,innerLoops);
                 if(b2){pts.append(p2);}else{
                     p2.z=pcent.z;
@@ -449,14 +450,14 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
 
 
 
-                p3=vectorFromIJ(i,j+1,copy.at(i,j-1),copy.stepSize());
+                p3=vectorFromIJ(i,j+1,copy.at(i,j-1),copy.stepSizeX(),copy.stepSizeY());
                 b3=loopsContain(p3,borderloop,innerLoops);
                 if(b3){pts.append(p3);}else{
                     p3.z=pcent.z;
                     pts.append(p3);
                 }
 
-                p4=vectorFromIJ(i+1,j+1,copy.at(i,j+1),copy.stepSize());
+                p4=vectorFromIJ(i+1,j+1,copy.at(i,j+1),copy.stepSizeX(),copy.stepSizeY());
                 b4=loopsContain(p4,borderloop,innerLoops);
                 if(b4){pts.append(p4);}else{
                     p4.z=pcent.z;
@@ -509,7 +510,7 @@ void blurByBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     int size =  pts.size();
     int bordersize = 2;
     for(int n=0; n<times;n++){
-        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSize());
+        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSizeX());
         for(int k=0; k<size-1; k++){
             FAHVector3 pt =  pts.at(k) ;
 
@@ -526,22 +527,22 @@ void blurByBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
 
                     QVector<FAHVector3> pts;
 
-                    p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSize());
+                    p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSizeX(),copy.stepSizeY());
                     b1=loopsContain(p1,borderloop,innerLoops);
                     if(b1){pts.append(p1);}
 
-                    p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSize());
+                    p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSizeX(),copy.stepSizeY());
                     b2=loopsContain(p2,borderloop,innerLoops);
                     if(b2){pts.append(p2);}
 
-                    pcent = vectorFromIJ(i,j,copy.at(i,j),copy.stepSize());
+                    pcent = vectorFromIJ(i,j,copy.at(i,j),copy.stepSizeX(),copy.stepSizeY());
                     bp = loopsContain(pcent,borderloop,innerLoops);
 
-                    p3=vectorFromIJ(i,j+1,copy.at(i,j-1),copy.stepSize());
+                    p3=vectorFromIJ(i,j+1,copy.at(i,j-1),copy.stepSizeX(),copy.stepSizeY());
                     b3=loopsContain(p3,borderloop,innerLoops);
                     if(b3){pts.append(p3);}
 
-                    p4=vectorFromIJ(i+1,j+1,copy.at(i,j+1),copy.stepSize());
+                    p4=vectorFromIJ(i+1,j+1,copy.at(i,j+1),copy.stepSizeX(),copy.stepSizeY());
                     b4=loopsContain(p4,borderloop,innerLoops);
                     if(b4){pts.append(p4);}
 

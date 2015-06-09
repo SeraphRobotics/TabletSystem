@@ -46,18 +46,18 @@ void PrintJobController::RunPrintJob(){
     if(orth_->getFootType()==Orthotic::kRight){
         p1 = orth_->getForePoints().first().copy();
         p2 = orth_->getHealPoints().first().copy();
-        p1.x=p1.x*2;
+        //// EXTRA_SCALE p1.x=p1.x*2;
         p1.y = p1.y+1.1;
         p1.z=0;
-        p2.x=p2.x*2;
+       //// EXTRA_SCALE  p2.x=p2.x*2;
         p2.z=0;
     }else{
         p1 = orth_->getForePoints().last().copy();
         p2 = orth_->getHealPoints().last().copy();
-        p1.x=p1.x*2;
+        //// EXTRA_SCALE p1.x=p1.x*2;
         p1.y = p1.y-1.1;
         p1.z=0;
-        p2.x=p2.x*2;
+        //// EXTRA_SCALE p2.x=p2.x*2;
         p2.z=0;
 
     }

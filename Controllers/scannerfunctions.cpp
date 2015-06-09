@@ -127,14 +127,14 @@ QVector<FAHVector3> intersection_points(QList<FAHLine> lines, const FAHLoopInXYP
 }
 
 
-bool getPointsInGrid(int i, int j, float stepsize, FAHLoopInXYPlane *outerloop , QList<FAHLoopInXYPlane *> innerLoops, QVector<FAHVector3>* pointsInGrid){
+bool getPointsInGrid(int i, int j, float stepsize_x, float stepsize_y, FAHLoopInXYPlane *outerloop , QList<FAHLoopInXYPlane *> innerLoops, QVector<FAHVector3>* pointsInGrid){
     bool pointsFromOuterLoop=false;
 
     FAHVector3 p1,p2,p3,p4;
-    p1=vectorFromIJ(i,j,0,stepsize);
-    p2=vectorFromIJ(i,j+1,0,stepsize);
-    p3=vectorFromIJ(i+1,j,0,stepsize);
-    p4=vectorFromIJ(i+1,j+1,0,stepsize);
+    p1=vectorFromIJ(i,j,0,stepsize_x,stepsize_y);
+    p2=vectorFromIJ(i,j+1,0,stepsize_x,stepsize_y);
+    p3=vectorFromIJ(i+1,j,0,stepsize_x,stepsize_y);
+    p4=vectorFromIJ(i+1,j+1,0,stepsize_x,stepsize_y);
 
     FAHLine l12(p1,p2);
     FAHLine l13(p1,p3);
@@ -241,8 +241,8 @@ bool getPointsInGrid(int i, int j, float stepsize, FAHLoopInXYPlane *outerloop ,
 
 template <class T>
 float getHeightAt(float x, float y,XYGrid<T>* grid){
-    int i=(int) (x/grid->stepSize());
-    int j=(int) (y/grid->stepSize());
+    int i=(int) (x/grid->stepSizeX());
+    int j=(int) (y/grid->stepSizeX());
 
     int ip = i+1;
     int jp = j+1;
@@ -251,10 +251,10 @@ float getHeightAt(float x, float y,XYGrid<T>* grid){
         return grid->at(i-1,j-1);
     }
 
-    FAHVector3 p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSize());
-    FAHVector3 p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSize());
-    FAHVector3 p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSize());
-    FAHVector3 p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSize());
+    FAHVector3 p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSizeX(),grid->stepSizeY());
+    FAHVector3 p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSizeX(),grid->stepSizeY());
+    FAHVector3 p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
+    FAHVector3 p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSizeX(),grid->stepSizeY());
 
     return getHeightAt(x,y,p1,p2,p3,p4);
 
@@ -343,10 +343,10 @@ FAHLoopInXYPlane boundaryLoopFromGrid(XYGrid<float>* grid, int offsetFromBorder,
             }
             if (leftTrigger){
 //                printf()
-                float backslope = (grid->at(i,j) - grid->at(i-1,j))/grid->stepSize();
-                float forslope = (grid->at(i+1,j) - grid->at(i,j))/grid->stepSize();
-                float frontslope = (grid->at(i,j+1) - grid->at(i,j))/grid->stepSize();
-                float rearslope = (grid->at(i,j) - grid->at(i,j-1))/grid->stepSize();
+                float backslope = (grid->at(i,j) - grid->at(i-1,j))/grid->stepSizeX();
+                float forslope = (grid->at(i+1,j) - grid->at(i,j))/grid->stepSizeX();
+                float frontslope = (grid->at(i,j+1) - grid->at(i,j))/grid->stepSizeX();
+                float rearslope = (grid->at(i,j) - grid->at(i,j-1))/grid->stepSizeX();
                 float xcurve = (fabs(fabs(forslope)-fabs(backslope)));
                 float ycurve = (fabs(fabs(frontslope)-fabs(rearslope)));
                 Q_UNUSED(xcurve);
@@ -356,7 +356,7 @@ FAHLoopInXYPlane boundaryLoopFromGrid(XYGrid<float>* grid, int offsetFromBorder,
                 //    && (ycurve<slopetrigger) && fabs(frontslope)<sensitivity && fabs(rearslope)<sensitivity)
                 if (grid->at(i,j)>60)
                 {
-                    left.append(vectorFromIJ(i,j,0,grid->stepSize()));
+                    left.append(vectorFromIJ(i,j,0,grid->stepSizeX(),grid->stepSizeY()));
                     i=grid->nx();
                 }
             }
@@ -372,10 +372,10 @@ FAHLoopInXYPlane boundaryLoopFromGrid(XYGrid<float>* grid, int offsetFromBorder,
                 rightTrigger= true;
             }
             if (rightTrigger){
-                float backslope = (grid->at(i,j) - grid->at(i-1,j))/grid->stepSize();
-                float forslope = (grid->at(i+1,j) - grid->at(i,j))/grid->stepSize();
-                float frontslope = (grid->at(i,j+1) - grid->at(i,j))/grid->stepSize();
-                float rearslope = (grid->at(i,j) - grid->at(i,j-1))/grid->stepSize();
+                float backslope = (grid->at(i,j) - grid->at(i-1,j))/grid->stepSizeX();
+                float forslope = (grid->at(i+1,j) - grid->at(i,j))/grid->stepSizeX();
+                float frontslope = (grid->at(i,j+1) - grid->at(i,j))/grid->stepSizeX();
+                float rearslope = (grid->at(i,j) - grid->at(i,j-1))/grid->stepSizeX();
                 float xcurve = (fabs(fabs(forslope)-fabs(backslope)));
                 float ycurve = (fabs(fabs(frontslope)-fabs(rearslope)));
                 Q_UNUSED(xcurve);
@@ -385,7 +385,7 @@ FAHLoopInXYPlane boundaryLoopFromGrid(XYGrid<float>* grid, int offsetFromBorder,
                 //    && (ycurve<slopetrigger) && fabs(frontslope)<sensitivity && fabs(rearslope)<sensitivity)
                 if (grid->at(i,j)>60)
                 {
-                    right.append(vectorFromIJ(i,j,0,grid->stepSize()));
+                    right.append(vectorFromIJ(i,j,0,grid->stepSizeX(),grid->stepSizeY()));
                     i=0;
                 }
             }
@@ -393,9 +393,9 @@ FAHLoopInXYPlane boundaryLoopFromGrid(XYGrid<float>* grid, int offsetFromBorder,
         addedRight = (right.size()==rightsize);
 
         if (addedRight && ! addedLeft){
-            left.append(vectorFromIJ(1+offsetFromBorder,j,0,grid->stepSize()));
+            left.append(vectorFromIJ(1+offsetFromBorder,j,0,grid->stepSizeX(),grid->stepSizeY()));
         }else if(addedLeft && !addedRight){
-            right.append((vectorFromIJ((grid->nx()-2-offsetFromBorder),j,0,grid->stepSize())));
+            right.append((vectorFromIJ((grid->nx()-2-offsetFromBorder),j,0,grid->stepSizeX(),grid->stepSizeY())));
         }
 
     }
