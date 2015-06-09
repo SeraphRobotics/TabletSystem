@@ -80,7 +80,6 @@ void PrintJobController::RunPrintJob(){
     rs->moveToThread(workthread);
     workthread->start();
     rs->repairMesh();
-
     shell_.stlfile = shellfilename ;
     shell_.gcode_file = shellfilename.replace(".stl","_fixed.gcode");
     shell_.z_offset = 0;

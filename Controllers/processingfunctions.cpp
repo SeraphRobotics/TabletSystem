@@ -101,7 +101,11 @@ FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVect
     //Add to loop by polar angle
     FAHLoopInXYPlane* loop = new FAHLoopInXYPlane();
     for(int i=0; i<numpts;i++){
-          loop->add( FAHVector3(thetamap[indecies.at(i)]) );
+          FAHVector3 temp = FAHVector3(thetamap[indecies.at(i)]);
+          //// FIX FOR SCALE
+          ////temp.x = temp.x*2.0;
+          loop->add( temp );
+
 //        printPoint(curve[indecies.at(i)]);
     }
 
@@ -129,7 +133,7 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, int nTimes){
         for(int j=0; j<soln_order;j++){
             m(i,j) = pow(heal_pts.at(i).y,float(j));
         }
-        y(i) = heal_pts.at(i).x;
+        y(i) = heal_pts.at(i).x/2.0;
     }
 
     y[3] = -100.0;
@@ -419,7 +423,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
 void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     QList<FAHLoopInXYPlane*> innerLoops;
     for(int n=0;n<times;n++){
-        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSizeX());
+        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
 
         for(int j=1;j<grid->ny()-1;j++){
             for(int i=1;i<grid->nx()-1;i++){
@@ -510,7 +514,7 @@ void blurByBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     int size =  pts.size();
     int bordersize = 2;
     for(int n=0; n<times;n++){
-        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSizeX());
+        XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
         for(int k=0; k<size-1; k++){
             FAHVector3 pt =  pts.at(k) ;
 

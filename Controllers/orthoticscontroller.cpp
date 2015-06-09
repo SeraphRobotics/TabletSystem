@@ -103,6 +103,7 @@ void OrthoticController::setPosting(Posting p){
                                                           orth_->getForePoints().last(),
                                                           orth_->getForFootPosting());
 
+
     QVector<FAHVector3> planeAndCent = makePostingPlane(heals[0],heals[1],fors[0],fors[1]);
 
 
@@ -113,10 +114,8 @@ void OrthoticController::setPosting(Posting p){
 
     anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
     normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),75);
-//    blurByBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),10);
-//    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),15);
+
     blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),10);
-//    blurGrid(orth_->getScan()->getPostedXYGrid(),1);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
 
     float slope = 63.5/101;
@@ -185,6 +184,7 @@ void OrthoticController::makeSTLs(){
 //    STLMesh* angleMesh =
 
     qDebug()<<"Making Shell";
+//    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
     if (make_thickness){FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);}
     else {STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);}
     //// EXTRA_SCALE shell->scale(2,1,1);

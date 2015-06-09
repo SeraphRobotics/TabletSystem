@@ -18,7 +18,7 @@
 
 
 template <class T>
-XYGrid<T>::XYGrid():stepsize_x_(1.0),nx_(0),ny_(0)
+XYGrid<T>::XYGrid():stepsize_x_(1.0),stepsize_y_(1.0),nx_(0),ny_(0)
 {
 }
 
@@ -100,15 +100,17 @@ XYGrid<T>::XYGrid(QVector<T> v, int rowSize){
         nx_ = v.size()/rowSize;
         data_ = v;
         stepsize_x_=1.0;
+        stepsize_y_=1.0;
     }
 }
 //Creates a grid from a Qvector and sets the rowSize
 template <class T>
-XYGrid<T>::XYGrid(QVector<T> v, int rowSize, float stepsize){
+XYGrid<T>::XYGrid(QVector<T> v, int rowSize, float stepsize_x, float stepsize_y){
     data_=v;
     ny_=rowSize;
     nx_ = v.size()/ny_;
-    stepsize_x_=stepsize;
+    stepsize_x_ = stepsize_x;
+    stepsize_y_ = stepsize_y;
 
 }
 //Overloaded constructor
@@ -140,7 +142,10 @@ XYGrid<T>::XYGrid(QString csv):stepsize_x_(1.0),stepsize_y_(1.0),nx_(0),ny_(0) {
              stepsize_y_=vals[1].toFloat();
          }else{
              stepsize_y_=stepsize_x_;
+
          }
+         qDebug()<<"set step x to "<<stepsize_x_;
+         qDebug()<<"set step y to "<<stepsize_y_;
          nx_ = lines.size();
          ny_ = lines[1].split(",").size();
          data_ = QVector<T>(nx_*ny_);
@@ -175,7 +180,7 @@ template <class T>
 QString XYGrid<T>::toCSV(){
     QString csv;
     QTextStream ss(&csv);
-    ss<<stepsize_x_;
+    ss<<stepsize_x_<<","<<stepsize_y_;
     for(int row=0; row<nx_;row++){
         ss<<"\n";
         for(int col=0;col<ny_-1;col++){
@@ -282,7 +287,7 @@ XYGrid<T> XYGrid<T>::getValueGrid( T v){
     for(int i=0;i<data_.size();i++){
         if(newdata.at(i)!=v){newdata[i]=T();}
     }
-    return XYGrid(newdata,ny_,stepsize_x_);
+    return XYGrid(newdata,ny_,stepsize_x_,stepsize_y_);
 }
 //Retruns a grid with only the points at the value. Null grid if value not in grid
 
@@ -329,7 +334,7 @@ void blurGrid(XYGrid<T>* grid,int ntimes){
      **/
     // make a copy
     for(int blurs=0;blurs<ntimes;blurs++){
-        XYGrid<T> copy(grid->asVector(),grid->ny(),grid->stepSizeX());
+        XYGrid<T> copy(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
         double p0,p1,p2,p3,p4;
         for(int i=1;i<grid->nx()-1;i++){
             for(int j=1;j<grid->ny()-1;j++){

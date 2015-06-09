@@ -242,7 +242,7 @@ bool getPointsInGrid(int i, int j, float stepsize_x, float stepsize_y, FAHLoopIn
 template <class T>
 float getHeightAt(float x, float y,XYGrid<T>* grid){
     int i=(int) (x/grid->stepSizeX());
-    int j=(int) (y/grid->stepSizeX());
+    int j=(int) (y/grid->stepSizeY());
 
     int ip = i+1;
     int jp = j+1;

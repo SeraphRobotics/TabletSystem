@@ -4,7 +4,7 @@ QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
 CONFIG += c++11
 CONFIG += test
-CONFIG += opencv243
+CONFIG += opencv2411
 CONFIG += qt54
 CONFIG += eie
 
@@ -40,6 +40,24 @@ qt485{
 
 qt486{
  win32:INCLUDEPATH += C:\\Qt\\4.8.6\\src\\3rdparty\\zlib
+}
+
+opencv2411{
+    win32:INCLUDEPATH += C:\\opencv\\build_with_Qt5\\release\\include
+    win32:LIBS += -LC:\\opencv\\build_with_Qt5\\release\\x64\\mingw\\lib \
+        -lopencv_calib3d2411.dll\
+        -lopencv_contrib2411.dll\
+        -lopencv_core2411.dll \
+        -lopencv_features2d2411.dll \
+        -lopencv_flann2411.dll \
+        -lopencv_gpu2411.dll \
+        -lopencv_highgui2411.dll \
+        -lopencv_imgproc2411.dll \
+        -lopencv_legacy2411.dll \
+        -lopencv_ml2411.dll\
+        -lopencv_objdetect2411.dll \
+        -lopencv_ts2411 \
+        -lopencv_video2411.dll
 }
 
 opencv245{

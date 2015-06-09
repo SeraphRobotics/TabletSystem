@@ -69,6 +69,7 @@ void TestOrthoticController::initTestCase()
     forePts.append(FAHVector3(scalex*(85.0+offset),130.0,0));
 
     QVector< FAHVector3 > healPts;
+    //scalex=1.0;
     healPts.append(FAHVector3(scalex*(35.0+offset),50.0,0));
     healPts.append(FAHVector3(scalex*(19.0+offset),70.0,0));
     healPts.append(FAHVector3(scalex*(26.0+offset),103.0,0));
@@ -92,17 +93,21 @@ void TestOrthoticController::initTestCase()
 
     oc->setScan(sm->scanIds()[0]);
     oc->setBorderPoints(healPts, forePts);
+    qDebug() << "border made";
     oc->setTopCoat(tc);
+    qDebug() << "topcoat set";
     oc->processBoundary();
+    qDebug() << "boundary processed";
     oc->setPosting(forpost);
+    qDebug() << "forpost";
 
     oc->setPosting(rearpost);
+    qDebug() << "rearpost";
     oc->setBottomType(Orthotic::kCurved);
+    qDebug() << "setBottom";
 
-    qDebug() << "post setBottom";
-
-    for(int i=0;i<1;i++){
-        FAHLoopInXYPlane* c = circle(2*(40.0+i*25),80.0+i*5,15.0);
+    for(int i=0;i<0;i++){
+        FAHLoopInXYPlane* c = circle( (40.0+i*25), (80.0+i*5) ,15.0);
         Manipulation* m = new Manipulation();
         m->stiffness=25+i*25;
         m->depth=0;

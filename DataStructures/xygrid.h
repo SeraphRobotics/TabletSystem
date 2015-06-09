@@ -22,7 +22,7 @@ public:
     //Creates a grid of delta of the points in the X and Y dimensions
     XYGrid(QVector<T> v, int rowSize);
     //Creates a grid from a Qvector and sets the rowSize
-    XYGrid(QVector<T> v, int rowSize, float alpha) ;
+    XYGrid(QVector<T> v, int rowSize, float stepsize_x, float stepsize_y) ;
     //Overloaded constructor
 //    XYGrid(QByteArray barray,int rowSize,float stepsize) ;
     //Loads form QByteArray
