@@ -184,8 +184,8 @@ void OrthoticController::makeSTLs(){
 //    STLMesh* angleMesh =
 
     qDebug()<<"Making Shell";
-    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
-//    if (make_thickness){FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);}
+//    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
+    if (make_thickness){FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);}
     else {STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);}
     //// EXTRA_SCALE shell->scale(2,1,1);
 

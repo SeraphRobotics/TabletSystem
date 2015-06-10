@@ -60,19 +60,26 @@ void TestOrthoticController::initTestCase()
     connect(oc,SIGNAL(stlsGenerated(QList<View_3D_Item>)), this, SLOT(stlsGenerated(QList<View_3D_Item>)));
 
     // LOAD WHAT HTE USER WOULD SET
-    float offset = 3.0;
+    float offset1 = 3.0;
+    float offset2 = 1.0;
+    float shift_y = 5;
     float scalex =2.0;
+
+    // y
+    // |
+    // |
+    // o------>x
     QVector< FAHVector3 > forePts;
-    forePts.append(FAHVector3(scalex*(105.0+offset),60.0,0));
-    forePts.append(FAHVector3(scalex*(120.0+offset),90.0,0));
-    forePts.append(FAHVector3(scalex*(115.0+offset),125.0,0));
-    forePts.append(FAHVector3(scalex*(85.0+offset),130.0,0));
+    forePts.append(FAHVector3(scalex*(105.0+offset1),60.0,0));
+    forePts.append(FAHVector3(scalex*(120.0+offset1),90.0,0));
+    forePts.append(FAHVector3(scalex*(115.0+offset1),125.0,0));
+    forePts.append(FAHVector3(scalex*(85.0+offset1),135.0,0));
 
     QVector< FAHVector3 > healPts;
     //scalex=1.0;
-    healPts.append(FAHVector3(scalex*(35.0+offset),50.0,0));
-    healPts.append(FAHVector3(scalex*(19.0+offset),70.0,0));
-    healPts.append(FAHVector3(scalex*(26.0+offset),103.0,0));
+    healPts.append(FAHVector3(scalex*(35.0+offset2),50.0-shift_y+2.5,0)); //bottom
+    healPts.append(FAHVector3(scalex*(19.0+offset2-2),70.0-shift_y,0));
+    healPts.append(FAHVector3(scalex*(26.0+offset2),103.0-shift_y,0));//top
 
     Posting forpost;
     forpost.angle=0*M_PI/180.0;
