@@ -74,7 +74,8 @@ FAHLoopInXYPlane* bottomLoopFromPoints(QVector< FAHVector3 > healpts, QVector< F
 }
 
 FAHLoopInXYPlane* loopFromPoints(QVector< FAHVector3 > healpts, QVector< FAHVector3 > forepts){
-    QVector< FAHVector3 > curve = secondOrder(healpts,forepts, 50);
+
+    QVector< FAHVector3 > curve =  secondOrder(healpts,forepts, 50);
     curve += bezier_curve(forepts,50);
 
     int numpts = curve.size();
@@ -116,16 +117,39 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVec
     QVector< FAHVector3 > returnpts;
 
     if(heal_pts.size()!=3){return returnpts;}
+
+    QVector< FAHVector3 > b_curve;
+    b_curve.append(heal_pts.first());
+    FAHVector3 p1, p2;
+    float m,n,b,c,d,e;
+    m = -1.0/twoPtSlope(heal_pts.last(),heal_pts.first());
+    n = -1.0/m;
+    c = heal_pts.at(1).x-m*heal_pts.at(1).y;
+    d = heal_pts.at(0).x-n*heal_pts.at(0).y;
+    e = heal_pts.at(2).x-n*heal_pts.at(2).y;
+    p1.y = (c-d)/(n-m);
+    p1.x = m*p1.y+c;
+    p1.z = 0;
+    p2.y = (c-e)/(n-m);
+    p2.x = m*p1.y+c;
+    p2.z = 0;
+    b_curve.append(p1);
+    b_curve.append(p2);
+    b_curve.append(heal_pts.last());
+    return bezier_curve(b_curve,50);
+
+
     // dx/dy since x is dependant
     float firstslope= -1.0/twoPtSlope(heal_pts.first(),forepts.first());
     // EXTRA_SCALE y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
     float middleslope = -1.0/twoPtSlope(heal_pts.last(),heal_pts.first()); //
     float endslope = 1.0/twoPtSlope(heal_pts.last(),forepts.last());
 
-    returnpts+=fourthOrder(heal_pts.first(),firstslope,
+    endslope=0.5*(endslope);
+    returnpts+=fourthOrder(heal_pts.first(),-10000,
                                  heal_pts.at(1),middleslope,nTimes/2);
 
-    QVector< FAHVector3 > secondset = fourthOrder(heal_pts.at(1),middleslope,
+    QVector< FAHVector3 > secondset = fourthOrder(heal_pts.at(1),-10000,
                                                   heal_pts.last(),endslope,nTimes/2);
     secondset.pop_front();
     returnpts+=secondset;
@@ -149,7 +173,7 @@ QVector< FAHVector3 > fourthOrder(FAHVector3 Start,float startslope, FAHVector3 
     ends.append(Start);
     ends.append(End);
 
-    int soln_order = 4;
+    int soln_order = 3;
     MatrixXf m(soln_order,soln_order);
     m = MatrixXf::Zero(soln_order,soln_order);
     MatrixXf mi(soln_order,soln_order);
@@ -166,15 +190,26 @@ QVector< FAHVector3 > fourthOrder(FAHVector3 Start,float startslope, FAHVector3 
         }
         A(i) = ends.at(i).x;
     }
-    A[2] = startslope;
-    A[3] = endslope;
+
+    float slope_y=0;
+    if(startslope>endslope){
+        A[2] = startslope;
+        slope_y = ends.at(0).y;
+    }else{
+        A[2] = endslope;
+        slope_y = ends.at(1).y;
+    }
+
+//    A[2] = startslope;
+//    A[3] = endslope;
 
 
 
     // column, row
     for(int k=1;k<soln_order;k++){
-        m(2,k) = k*pow(ends.at(0).y,float(k-1));
-        m(3,k) = k*pow(ends.at(1).y,float(k-1));
+         m(2,k) = k*pow(slope_y,float(k-1));
+//        m(2,k) = k*pow(ends.at(0).y,float(k-1));
+//        m(3,k) = k*pow(ends.at(1).y,float(k-1));
     }
 
 
