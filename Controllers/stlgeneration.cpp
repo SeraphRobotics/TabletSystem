@@ -513,23 +513,27 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid ){
             FAHVector3 p1,p2,p3,p4;
             FAHVector3 p1prime,p2prime,p3prime,p4prime;
 
-
+            //float offset = 150;
             p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSizeX(),grid->stepSizeY());
+            //p1.z=p1.z+offset;
             p1prime = FAHVector3(&p1);
             p1prime[2]=0;
 
 
             p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSizeX(),grid->stepSizeY());
+            //p2.z=p2.z+offset;
             p2prime = FAHVector3(&p2);
             p2prime[2]=0;
 
 
             p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
+            //p3.z=p3.z+offset;
             p3prime = FAHVector3(&p3);
             p3prime[2]=0;
 
 
             p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSizeX(),grid->stepSizeY());
+            //p4.z=p4.z+offset;
             p4prime = FAHVector3(&p4);
             p4prime[2]=0;
 
@@ -552,64 +556,65 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid ){
             addFacetToSTL(p2,p4,p1,mesh);
 
             /// Make Triangles p4'-p1'-p3' and p4'-p2'-p1' with Zs=0 to form bottom
-            addFacetToSTL(p4prime,p1prime,p3prime,mesh);
-            addFacetToSTL(p4prime,p2prime,p1prime,mesh);
+            //addFacetToSTL(p4prime,p1prime,p3prime,mesh);
+            //addFacetToSTL(p4prime,p2prime,p1prime,mesh);
 
             /// BOUNDARIES
-            /// NEED CASSES FOR i=0,j=0,i=nx-1,j=ny-1 to make walls
-            if ( (0==j) ){ // FRONT section
-                /**
-                 * p1--p2
-                 *  | \ |
-                 * p1'--p2'
-                 *
-                 * need facets p1-p1'-p2' ,   p2-p1-p2'
-                **/
-                addFacetToSTL(p1,p1prime,p2prime,mesh);
-                addFacetToSTL(p2,p1,p2prime,mesh);
-            }
-            if ( ((grid->ny()-2)==j) ){//BACK
-                /**
-                 * p3--p4
-                 *  | \ |
-                 * p3'--p4'
-                 *
-                 * need facets p3-p3'-p4' ,   p4-p3-p4'
-                **/
-                addFacetToSTL(p3,p3prime,p4prime,mesh);
-                addFacetToSTL(p4,p3,p4prime,mesh);
-            }
+//            /// NEED CASSES FOR i=0,j=0,i=nx-1,j=ny-1 to make walls
+//            if ( (0==j) ){ // FRONT section
+//                /**
+//                 * p1--p2
+//                 *  | \ |
+//                 * p1'--p2'
+//                 *
+//                 * need facets p1-p1'-p2' ,   p2-p1-p2'
+//                **/
+//                addFacetToSTL(p1,p1prime,p2prime,mesh);
+//                addFacetToSTL(p2,p1,p2prime,mesh);
+//            }
+//            if ( ((grid->ny()-2)==j) ){//BACK
+//                /**
+//                 * p3--p4
+//                 *  | \ |
+//                 * p3'--p4'
+//                 *
+//                 * need facets p3-p3'-p4' ,   p4-p3-p4'
+//                **/
+//                addFacetToSTL(p3,p3prime,p4prime,mesh);
+//                addFacetToSTL(p4,p3,p4prime,mesh);
+//            }
 
 
 
 
-            if (0==i){//LEFT
-                /**
-                 * p1--pb
-                 *  | \ |
-                 * p1'--pb'
-                 *
-                 * need facets p1-p1'-pb' ,   pb-p1'-pb'
-                **/
-                FAHVector3 pb, pbprime;
-                pb=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
-                pbprime = FAHVector3(&pb);
-                pbprime[2]=0;
+//            if (0==i){//LEFT
+//                /**
+//                 * p1--pb
+//                 *  | \ |
+//                 * p1'--pb'
+//                 *
+//                 * need facets p1-p1'-pb' ,   pb-p1'-pb'
+//                **/
+//                FAHVector3 pb, pbprime;
+//                pb=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
+//                pbprime = FAHVector3(&pb);
+//                pbprime[2]=0;
 
-                addFacetToSTL(p1,p1prime,pbprime,mesh);
-                addFacetToSTL(pb,p1,pbprime,mesh);
-            }
-            if (grid->nx()-2==i){//RIGHT
-                /**
-                 * p2--p4
-                 *  | \ |
-                 * p2'--p4'
-                 *
-                 * need facets p1-p1'-pb' ,   pb-p1-pb'
-                **/
-                addFacetToSTL(p4prime,p4,p2,mesh);
-                addFacetToSTL(p2,p2prime,p4prime,mesh);
-            }
+//                addFacetToSTL(p1,p1prime,pbprime,mesh);
+//                addFacetToSTL(pb,p1,pbprime,mesh);
+//            }
+//            if (grid->nx()-2==i){//RIGHT
+//                /**
+//                 * p2--p4
+//                 *  | \ |
+//                 * p2'--p4'
+//                 *
+//                 * need facets p1-p1'-pb' ,   pb-p1-pb'
+//                **/
+//                addFacetToSTL(p4prime,p4,p2,mesh);
+//                addFacetToSTL(p2,p2prime,p4prime,mesh);
+//            }
+
         }
     }
     return mesh;

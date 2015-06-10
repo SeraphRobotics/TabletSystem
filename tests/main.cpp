@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 
     settings.setValue("Generating/border",2);
     settings.setValue("Generating/slope",63.5/101);
-    settings.setValue("Generating/offset",0.5);
+    settings.setValue("Generating/offset",1.5);
     settings.setValue("Generating/blurtimes",10);
 
     //settings.setValue("data-output-directory", SampleDataOutputLocation);

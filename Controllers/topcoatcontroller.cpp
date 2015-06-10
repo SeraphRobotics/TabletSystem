@@ -25,8 +25,8 @@ void TopCoatController::generateTopCoat(){
     float scale = s.value("printing/scale","1").toFloat();
 
     XYGrid<float>* grid = orth_->topcoatgrid;
-    float scaley = 1.0*grid->stepSizeY();
-    float scalex = 1.0*grid->stepSizeX();
+    float scaley = grid->stepSizeY();
+    float scalex = grid->stepSizeX();
     // EXTRA_SCALE float scalex = 2.0;
     float path_width=1.0;
     float path_height=1.0;
