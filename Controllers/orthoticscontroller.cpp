@@ -133,7 +133,7 @@ void OrthoticController::setPosting(Posting p){
 //    fs<<orth_->getScan()->getPostedXYGrid()->toCSV();
 //    f.close();
 //    makeSTLs();
-    qDebug()<<"STLs made";
+    qDebug()<<"Posting made";
 
 }
 

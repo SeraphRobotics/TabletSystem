@@ -520,8 +520,8 @@ FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid, bool 
     FAHVector3 dim = grid->getDimensions();
     //// FIND INTERSECTIONS WITH X lines
     for(int i=0;i<grid->nx()-1;i++){
-        FAHVector3 p1(i,0,0);
-        FAHVector3 p2(i,dim[1],0);
+        FAHVector3 p1(i*grid->stepSizeX(),0*grid->stepSizeY(),0);
+        FAHVector3 p2(i*grid->stepSizeX(),dim[1]*grid->stepSizeY(),0);
 
         FAHLine l12(p1,p2);
         QList<FAHLine> lines;
@@ -542,8 +542,8 @@ FAHLoopInXYPlane* mapOntoGrid(FAHLoopInXYPlane* loop, XYGrid<float>* grid, bool 
     }
      //// FIND INTERSECTIONS WITH Y lines
     for(int i=0;i<grid->ny()-1;i++){
-        FAHVector3 p1(0,i,0);
-        FAHVector3 p2(dim[0],i,0);
+        FAHVector3 p1(0*grid->stepSizeX(),i*grid->stepSizeY(),0);
+        FAHVector3 p2(dim[0]*grid->stepSizeX(),i*grid->stepSizeY(),0);
 
         FAHLine l12(p1,p2);
         QList<FAHLine> lines;
