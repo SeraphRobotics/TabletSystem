@@ -77,7 +77,7 @@ void TestOrthoticController::initTestCase()
 
     QVector< FAHVector3 > healPts;
     //scalex=1.0;
-    healPts.append(FAHVector3(scalex*(35.0+offset2),50.0-shift_y+2.5,0)); //bottom
+    healPts.append(FAHVector3(scalex*(35.0+offset2),50.0-shift_y+4,0)); //bottom
     healPts.append(FAHVector3(scalex*(19.0+offset2-2),70.0-shift_y,0));
     healPts.append(FAHVector3(scalex*(26.0+offset2),103.0-shift_y,0));//top
 
