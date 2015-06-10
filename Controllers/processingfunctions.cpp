@@ -6,6 +6,7 @@
 //#include "UnitTest/debugfunctions.h"
 #include <iostream>
 #include "scannerfunctions.h"
+#include <QSettings>
 
 #ifdef Q_OS_LINUX
 #include <eigen3/Eigen/Dense>
@@ -651,11 +652,14 @@ void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times
     QVector<FAHVector3> pts;
 
     foreach(FAHVector3 pt,mapped->points){
-        if(!pt.isInvalid()){pts.append(pt);}
+        if(!pt.isInvalid()){pts.append(pt.copy());}
     }
 
     for(int n=0; n<times;n++){
         QVector<FAHVector3> newpts;
+        foreach(FAHVector3 pt,pts){
+            newpts.append(pt.copy());
+        }
         int size = pts.size();//mapped->points.size();
         for(int i=0; i<size; i++){
             //TODO:: btl proper fix for out of bounds errors
@@ -672,26 +676,18 @@ void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times
                 z3=pts.last().z;
             }
 
-//            if(i==size-1){
-//                z1=0;//pts.last().z;
-//                z2=0;//pts.first().z;
-//                z3=0;//pts.at( (size-2) ).z;
-//            }
-
             float z = (z1+z2+z3)/3.0;
-//            if (z1==0 || z2==0 ||z3==0 || (i==size-1 ) ){//|| z>1.1*z3 || z>1.1*z1
-//                qDebug()<<i<<": "<<z1<<","<<z2<<","<<z3;
-//            }
-            FAHVector3 pt =  pts[(i%size)] ;
-            pt.z=z;
-            newpts.append(pt);
+            newpts[i%size].z= z;
         }
         pts.clear();
-        pts=newpts;
+        foreach(FAHVector3 pt,newpts){
+            pts.append(pt.copy());
+        }
     }
 
     int size =  pts.size();
-    int bordersize = 2;
+    QSettings settings;
+    int bordersize = settings.value("Generating/border",2).toInt();//2;
     for(int k=0; k<size-1; k++){
         FAHVector3 pt =  pts.at(k) ;
         int i = int(pt.x/grid->stepSizeX());
@@ -699,6 +695,7 @@ void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times
         for(int p=-bordersize;p<bordersize;p++){
             grid->operator ()(i+p,j)=pt.z;
             grid->operator ()(i,j+p)=pt.z;
+//            qDebug()<<"("<<i<<","<<j<<")= "<<pt.z;
 //            grid->operator ()(i+p,j+p)=pt.z;
         }
 //        grid->operator ()(i+1,j)=pt.z;
