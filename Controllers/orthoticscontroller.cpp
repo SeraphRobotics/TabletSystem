@@ -58,7 +58,7 @@ void OrthoticController::processBoundary(){
     FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
     FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
     FAHVector3 minpt3 = orth_->getForePoints().first();
-    minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(int(minpt3.x),int(minpt3.y));
+    minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(minpt3.x, minpt3.y );
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
 
     FAHVector3 cent = orth_->getForePoints().first();
@@ -184,8 +184,8 @@ void OrthoticController::makeSTLs(){
 //    STLMesh* angleMesh =
 
     qDebug()<<"Making Shell";
-//    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
-    if (make_thickness){FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);}
+    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
+//    if (make_thickness){FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);}
     else {STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);}
     //// EXTRA_SCALE shell->scale(2,1,1);
 

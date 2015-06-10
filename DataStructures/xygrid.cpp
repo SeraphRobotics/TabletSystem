@@ -260,15 +260,40 @@ QVector<T> XYGrid<T>::asVector(){
 //Returns a copy of the data vector
 template <class T>
 const T XYGrid<T>::at(int I, int j){
+    if (I>nx_){
+        qDebug()<<" i>nx";
+        return T(10000);
+    }else if(j>ny_){
+        qDebug()<<" j>ny";
+        return T(10000);
+    }
     return T(data_[(ny_*I+j)]);
 }
 //Returns an integer of the value at I,j
 
 template <class T>
+const T XYGrid<T>::at(Math::Float x, Math::Float y){
+    return at(int(x/stepsize_x_),int(y/stepsize_y_));
+}
+
+
+template <class T>
 T& XYGrid<T>::operator()(int I,int j){
+    if (I>nx_){
+        qDebug()<<" i>nx";
+        return data_.last();
+    }else if(j>ny_){
+        qDebug()<<" j>ny";
+        return data_.last();
+    }
     return data_[(ny_*I+j)];
 }
 //Returns the interger at I,j
+
+template <class T>
+T& XYGrid<T>::operator()(Math::Float x, Math::Float y){
+    return operator()(int(x/stepsize_x_),int(y/stepsize_y_));
+}
 
 
 template <class T>

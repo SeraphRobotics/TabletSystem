@@ -61,11 +61,14 @@ public:
     /// Data Access
     QVector<T> asVector();
     //Returns a copy of the data vector
+
     const T at(int I, int j);
+    const T at(Math::Float x, Math::Float y);
     //Returns an integer of the value at I,j
     T& operator()(int I,int j);
     //Returns the interger at I,j
 
+    T& operator()(Math::Float x,Math::Float y);
 
     QList<T> getValueRange();
     //Returns a list of the values in the slice

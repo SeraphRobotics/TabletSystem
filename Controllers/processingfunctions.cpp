@@ -155,7 +155,7 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVec
     b_curve.append(heal_pts.last());
     return bezier_curve(b_curve,50);
 
-
+/**
     // dx/dy since x is dependant
     float firstslope= -1.0/twoPtSlope(heal_pts.first(),forepts.first());
     // EXTRA_SCALE y[4] = 2*twoPtSlope(heal_pts[0],heal_pts.last());
@@ -171,7 +171,7 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVec
     secondset.pop_front();
     returnpts+=secondset;
     return returnpts;
-
+    **/
 }
 QVector< FAHVector3 > fourthOrder(FAHVector3 Start,float startslope, FAHVector3 End,float endslope, int nTimes){
 
@@ -190,7 +190,7 @@ QVector< FAHVector3 > fourthOrder(FAHVector3 Start,float startslope, FAHVector3 
     ends.append(Start);
     ends.append(End);
 
-    int soln_order = 3;
+    int soln_order = 4;
     MatrixXf m(soln_order,soln_order);
     m = MatrixXf::Zero(soln_order,soln_order);
     MatrixXf mi(soln_order,soln_order);
@@ -208,25 +208,25 @@ QVector< FAHVector3 > fourthOrder(FAHVector3 Start,float startslope, FAHVector3 
         A(i) = ends.at(i).x;
     }
 
-    float slope_y=0;
-    if(startslope>endslope){
-        A[2] = startslope;
-        slope_y = ends.at(0).y;
-    }else{
-        A[2] = endslope;
-        slope_y = ends.at(1).y;
-    }
+//    float slope_y=0;
+//    if(startslope>endslope){
+//        A[2] = startslope;
+//        slope_y = ends.at(0).y;
+//    }else{
+//        A[2] = endslope;
+//        slope_y = ends.at(1).y;
+//    }
 
-//    A[2] = startslope;
-//    A[3] = endslope;
+    A[2] = startslope;
+    A[3] = endslope;
 
 
 
     // column, row
     for(int k=1;k<soln_order;k++){
-         m(2,k) = k*pow(slope_y,float(k-1));
-//        m(2,k) = k*pow(ends.at(0).y,float(k-1));
-//        m(3,k) = k*pow(ends.at(1).y,float(k-1));
+//         m(2,k) = k*pow(slope_y,float(k-1));
+        m(2,k) = k*pow(ends.at(0).y,float(k-1));
+        m(3,k) = k*pow(ends.at(1).y,float(k-1));
     }
 
 
@@ -353,8 +353,8 @@ void projectGridOntoPlane(FAHVector3 n, FAHVector3 cent, XYGrid< float >* grid){
     float D=0;
     for(int i=0;i<grid->nx();i++){
         for(int j=0; j<grid->ny(); j++){
-            r[0]=i;
-            r[1]=j;
+            r[0]=i*grid->stepSizeX();
+            r[1]=j*grid->stepSizeY();
             r[2]=0;
             r=r-centv;
             D= signN*r.dot(norm);
@@ -444,22 +444,18 @@ FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
     for(int i=0; i<numpts;i++){
         float t = 1.0/numpts*i;
         testp = p+t*v;
-        //NOTE:: btl check git conflict
-        /* <<<<<<< HEAD:Controllers/processingfunctions.cpp
-        int ix = floor(testp.x);
-        int j = floor(testp.y);
-        testp.z=grid->operator ()(ix,j);
-        ======= */
-        int xi = floor(testp.x);
-        int j = floor(testp.y);
-        testp.z=grid->operator ()(xi,j);
-        //>>>>>>> origin/pluggedInScanner:Software/Controllers/processingfunctions.cpp
+//        int xi = floor(testp.x/grid->stepSizeX());
+//        int j = floor(testp.y/grid->stepSizeY());
+        testp.z=grid->operator ()(testp.x,testp.y);
         if (lastz!=testp.z){
-//            printPoint(testp);
             lastz = testp.z;
         }
         if (testp.z < minpt.z){
             minpt = testp;
+        }
+        if(testp.z >9000){
+            qDebug()<<"outside grid";
+            i=numpts;
         }
     }
     return minpt;
@@ -478,7 +474,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
     float min = 10000;
     for(int i=0; i<grid->nx();i++){
         for(int j=0; j<grid->ny();j++){
-            FAHVector3 pt=vectorFromIJ(i,j,0,1,1);
+            FAHVector3 pt=vectorFromIJ(i,j,0,grid->stepSizeX(),grid->stepSizeY());
             if (loop->pointInside(pt)){
                 if (min>grid->at(i,j)){
                     min = grid->at(i,j);
@@ -567,15 +563,15 @@ void anchorFront(XYGrid<float>* grid,QVector<FAHVector3>forepts){
     QVector<FAHVector3> pts = bezier_curve(forepts,500);
     float minz = 1000;
     foreach(FAHVector3 pt,pts){
-        int i = int(pt.x);
-        int j = int(pt.y);
+        int i = int(pt.x/grid->stepSizeX());
+        int j = int(pt.y/grid->stepSizeY());
         minz = std::min(grid->at(i,j),minz);
     }
 
     int bordersize=3;
     foreach(FAHVector3 pt,pts){
-        int i = int(pt.x);
-        int j = int(pt.y);
+        int i = int(pt.x/grid->stepSizeX());
+        int j = int(pt.y/grid->stepSizeY());
         for(int p=-bordersize;p<bordersize;p++){
             grid->operator ()(i+p,j)=minz;
             grid->operator ()(i,j+p)=minz;
@@ -602,8 +598,8 @@ void blurByBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
             for(int p=-bordersize;p<bordersize;p++){
                 for(int n=-bordersize;n<bordersize;n++)
                 {
-                    int i = int(pt.x)+p;
-                    int j = int(pt.y)+n;
+                    int i = int(pt.x/grid->stepSizeX())+p;
+                    int j = int(pt.y/grid->stepSizeX())+n;
 
 
                     FAHVector3 p1,p2,p3,p4,pcent;
@@ -698,8 +694,8 @@ void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times
     int bordersize = 2;
     for(int k=0; k<size-1; k++){
         FAHVector3 pt =  pts.at(k) ;
-        int i = int(pt.x);
-        int j = int(pt.y);
+        int i = int(pt.x/grid->stepSizeX());
+        int j = int(pt.y/grid->stepSizeY());
         for(int p=-bordersize;p<bordersize;p++){
             grid->operator ()(i+p,j)=pt.z;
             grid->operator ()(i,j+p)=pt.z;
