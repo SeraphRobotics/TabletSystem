@@ -31,6 +31,15 @@ Icon
 # Thumbnails
 ._*
 
+# Qt creator
+*.pro.user*
+*.pro.user.*
+
+
+# output data
+SampleData/
+
+
 # Files that might appear on external disk
 .Spotlight-V100
 .Trashes
