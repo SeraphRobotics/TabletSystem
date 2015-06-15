@@ -2,7 +2,10 @@
 #define SCANNERARDUINOINTERFACE_H
 
 #include <QObject>
-#include "qextserialport.h"
+
+//#include "qextserialport.h"
+#include <QtSerialPort>
+typedef  QSerialPort::BaudRate BaudRateType;
 
 class ScannerArduinoInterface : public QObject
 {
@@ -35,7 +38,7 @@ private slots:
     void onDataAvailable();
 
 private:
-    QextSerialPort* port_;
+    QSerialPort* port_;
 //    bool Pressed
 };
 

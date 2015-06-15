@@ -5,17 +5,17 @@
 
 ScannerArduinoInterface::ScannerArduinoInterface()
 {
-    port_ = new QextSerialPort();
+    port_ = new QSerialPort();
     connect(port_, SIGNAL(readyRead()), this, SLOT(onDataAvailable()));
 }
 
 ScannerArduinoInterface::ScannerArduinoInterface(QString port, BaudRateType baudrate, QObject *parent) :
     QObject(parent)
 {
-    port_ = new QextSerialPort(port);//,QextSerialPort::Polling
+    port_ = new QSerialPort(port);//,QextSerialPort::Polling
     port_->setBaudRate( baudrate);
-    port_->setFlowControl(FLOW_OFF);
-    port_->setParity(PAR_NONE);
+    port_->setFlowControl(QSerialPort::NoFlowControl);
+    port_->setParity(QSerialPort::NoParity);
     port_->open(QIODevice::ReadWrite);
     //    port_->set
     connect(port_, SIGNAL(readyRead()), this, SLOT(onDataAvailable()));
@@ -25,10 +25,10 @@ ScannerArduinoInterface::ScannerArduinoInterface(QString port, BaudRateType baud
 bool ScannerArduinoInterface::connectPort(QString port, BaudRateType baudrate){
     if (port_->isOpen()){port_->close();}
     delete port_;
-    port_ = new QextSerialPort(port);
+    port_ = new QSerialPort(port);
     port_->setBaudRate(baudrate);
-    port_->setFlowControl(FLOW_OFF);
-    port_->setParity(PAR_NONE);
+    port_->setFlowControl(QSerialPort::NoFlowControl);
+    port_->setParity(QSerialPort::NoParity);
     return port_->isOpen();
 }
 

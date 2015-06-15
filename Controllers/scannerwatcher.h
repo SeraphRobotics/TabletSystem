@@ -3,7 +3,8 @@
 
 #include <QObject>
 
-#include "qextserialenumerator.h"
+//#include "qextserialenumerator.h"
+#include <QSerialPortInfo>
 #include <QTimer>
 
 
@@ -26,9 +27,9 @@ private slots:
 
 private:
     QTimer* timer_;
-    QextSerialEnumerator* enumer;
+    //QextSerialEnumerator* enumer;
     QString portName_;
-    QList<QextPortInfo> ports_;
+    QList<QSerialPortInfo> ports_;
 };
 
 #endif // SCANNERWATCHER_H

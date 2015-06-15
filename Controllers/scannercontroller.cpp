@@ -29,7 +29,7 @@ void ScannerController::disconnected(){
 void ScannerController::portSelected(QString port){
 //    sai_->disconnect();
     delete sai_;
-    sai_=  new ScannerArduinoInterface(port,BAUD9600);
+    sai_=  new ScannerArduinoInterface(port,QSerialPort::Baud9600);
     connect(sai_,SIGNAL(buttonPressed()),this,SLOT(buttonPress()));
     connect(sai_,SIGNAL(errored()),this,SLOT(scannerError()));
     connect(sai_,SIGNAL(scanMovementCompleted()),this,SLOT(scanComplete()));
@@ -95,7 +95,7 @@ void ScannerController::ScanStep(){
             m = QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
             if (!m.isNull()){
                 qDebug()<<"saving";
-                qDebug()<<m.numBytes();
+                qDebug()<<m.byteCount();
                 m.save(QString::number(dist)+".jpeg","JPEG");
                 sai_->scanStep();
                 dist += stepsize_;

@@ -2,6 +2,7 @@
 # QT       += network quick sql xml concurrent
 QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
+QT     += serialport
 CONFIG += c++11
 CONFIG += test
 CONFIG += opencv2411
@@ -160,6 +161,8 @@ HEADERS += \
     Controllers/slicercontroller.h \
     Controllers/stlgeneration.h \
     Controllers/topcoatcontroller.h \
+    Controllers/scannercontroller.h\
+    Controllers/scannerwatcher.h\
     DataStructures/usbmanager.h \
     DataStructures/usbminder.h \
     DataStructures/user.h \
@@ -174,6 +177,8 @@ HEADERS += \
     DataStructures/printingstructs.h \
     DataStructures/scan.h \
     DataStructures/scanmanager.h \
+    DataStructures/recordkeeper.h\
+    DataStructures/scannerarduinointerface.h\
     libraries/shared/amf/amffile.h \
     libraries/shared/amf/amfmesh.h \
     libraries/shared/amf/amfobject.h \
@@ -229,6 +234,8 @@ SOURCES += \
     Controllers/slicercontroller.cpp \
     Controllers/stlgeneration.cpp \
     Controllers/topcoatcontroller.cpp \
+    Controllers/scannercontroller.cpp\
+    Controllers/scannerwatcher.cpp\
     DataStructures/usbmanager.cpp \
     DataStructures/usbminder.cpp \
     DataStructures/user.cpp \
@@ -243,6 +250,8 @@ SOURCES += \
     DataStructures/printingstructs.cpp \
     DataStructures/scan.cpp \
     DataStructures/scanmanager.cpp \
+    DataStructures/recordkeeper.cpp\
+    DataStructures/scannerarduinointerface.cpp\
     libraries/shared/amf/amffile.cpp \
     libraries/shared/amf/amfmesh.cpp \
     libraries/shared/amf/amfobject.cpp \
