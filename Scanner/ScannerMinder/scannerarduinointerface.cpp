@@ -38,6 +38,13 @@ bool ScannerArduinoInterface::isReady(){
 void ScannerArduinoInterface::startScan(){
     _write("s");
 }
+void ScannerArduinoInterface::scanStep(){
+    _write("i");
+}
+void ScannerArduinoInterface::endScan(){
+    _write("x");
+}
+
 void ScannerArduinoInterface::laserOn(){
     _write("l");
 }
@@ -51,6 +58,7 @@ void ScannerArduinoInterface::ledOff(){
     _write("f");
 }
 void ScannerArduinoInterface::home(){
+    qDebug()<<"homing";
     _write("h");
 }
 
@@ -78,7 +86,7 @@ void ScannerArduinoInterface::_write(QString s){
 
 void ScannerArduinoInterface::onDataAvailable(){
     QByteArray data = port_->readAll();
-    qDebug()<<"received: "<<QString(data);
+//    qDebug()<<"received: "<<QString(data);
     QString c = QString(data);
     if ("B"==c){
         emit buttonPressed();
@@ -86,6 +94,8 @@ void ScannerArduinoInterface::onDataAvailable(){
         emit scanMovementCompleted();
     }else if ("E"==c){
         emit errored();
+    }else if("I"==c){
+        emit scanIncremented();
     }else{
         qDebug()<<"received: "+c;
     }

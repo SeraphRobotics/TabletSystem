@@ -14,12 +14,15 @@ public:
 signals:
     void buttonPressed();
     void scanMovementCompleted();
+    void scanIncremented();
     void errored();
 
 public slots:
     bool connectPort(QString port, BaudRateType baudrate);
     bool isReady();
     void startScan();
+    void scanStep();
+    void endScan();
     void laserOn();
     void laserOff();
     void ledOn();
