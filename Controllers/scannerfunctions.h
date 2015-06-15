@@ -66,7 +66,7 @@ bool loopsContain(FAHVector3 pt, const FAHLoopInXYPlane *OuterLoop, QList<FAHLoo
 /**
  * returns in pointsInGrid all of the points in the grid ij->i+1,j+1 in an ordered list
  **/
-bool getPointsInGrid(int i, int j, float stepsize, FAHLoopInXYPlane *outerloop , QList<FAHLoopInXYPlane*> loops, QVector<FAHVector3>* pointsInGrid);
+bool getPointsInGrid(int i, int j, float stepsize_x, float stepsize_y, FAHLoopInXYPlane *outerloop , QList<FAHLoopInXYPlane*> loops, QVector<FAHVector3>* pointsInGrid);
 
 
 QVector<FAHVector3> intersection_points(QList<FAHLine> lines, const FAHLoopInXYPlane* outerloop, QList<FAHLoopInXYPlane*> loops);

@@ -142,19 +142,19 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
     int numInBounds=0;
 //    int numOnLoop=0;
 
-    p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSize());
+    p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSizeX(),grid->stepSizeY());
     b1=loopsContain(p1,OuterLoop,innerLoops);
     if(b1){numInBounds++;}
 
-    p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSize());
+    p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSizeX(),grid->stepSizeY());
     b2=loopsContain(p2,OuterLoop,innerLoops);
     if(b2){numInBounds++;}
 
-    p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSize());
+    p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
     b3=loopsContain(p3,OuterLoop,innerLoops);
     if(b3){numInBounds++;}
 
-    p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSize());
+    p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSizeX(),grid->stepSizeY());
     b4=loopsContain(p4,OuterLoop,innerLoops);
     if(b4){numInBounds++;}
 
@@ -385,25 +385,25 @@ void addChannelToSTL(int i, int j, XYGrid<float>* grid, STLMesh* mesh, FAHLoopIn
 
     int numInBounds=0;
 
-    p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSize());
+    p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSizeX(),grid->stepSizeY());
     d1=p1;
     d1.z=p1.z-depth;
     b1=loopsContain(p1,OuterLoop,innerLoops);
     if(b1){numInBounds++;}
 
-    p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSize());
+    p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSizeX(),grid->stepSizeY());
     d2=p2;
     d2.z=p2.z-depth;
     b2=loopsContain(p2,OuterLoop,innerLoops);
     if(b2){numInBounds++;}
 
-    p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSize());
+    p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
     d3=p3;
     d3.z=p3.z-depth;
     b3=loopsContain(p3,OuterLoop,innerLoops);
     if(b3){numInBounds++;}
 
-    p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSize());
+    p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSizeX(),grid->stepSizeY());
     d4=p4;
     d4.z=p4.z-depth;
     b4=loopsContain(p4,OuterLoop,innerLoops);
@@ -513,23 +513,27 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid ){
             FAHVector3 p1,p2,p3,p4;
             FAHVector3 p1prime,p2prime,p3prime,p4prime;
 
-
-            p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSize());
+            //float offset = 150;
+            p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSizeX(),grid->stepSizeY());
+            //p1.z=p1.z+offset;
             p1prime = FAHVector3(&p1);
             p1prime[2]=0;
 
 
-            p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSize());
+            p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSizeX(),grid->stepSizeY());
+            //p2.z=p2.z+offset;
             p2prime = FAHVector3(&p2);
             p2prime[2]=0;
 
 
-            p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSize());
+            p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
+            //p3.z=p3.z+offset;
             p3prime = FAHVector3(&p3);
             p3prime[2]=0;
 
 
-            p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSize());
+            p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSizeX(),grid->stepSizeY());
+            //p4.z=p4.z+offset;
             p4prime = FAHVector3(&p4);
             p4prime[2]=0;
 
@@ -552,64 +556,65 @@ STLMesh* makeSTLfromScan(XYGrid<T>* grid ){
             addFacetToSTL(p2,p4,p1,mesh);
 
             /// Make Triangles p4'-p1'-p3' and p4'-p2'-p1' with Zs=0 to form bottom
-            addFacetToSTL(p4prime,p1prime,p3prime,mesh);
-            addFacetToSTL(p4prime,p2prime,p1prime,mesh);
+            //addFacetToSTL(p4prime,p1prime,p3prime,mesh);
+            //addFacetToSTL(p4prime,p2prime,p1prime,mesh);
 
             /// BOUNDARIES
-            /// NEED CASSES FOR i=0,j=0,i=nx-1,j=ny-1 to make walls
-            if ( (0==j) ){ // FRONT section
-                /**
-                 * p1--p2
-                 *  | \ |
-                 * p1'--p2'
-                 *
-                 * need facets p1-p1'-p2' ,   p2-p1-p2'
-                **/
-                addFacetToSTL(p1,p1prime,p2prime,mesh);
-                addFacetToSTL(p2,p1,p2prime,mesh);
-            }
-            if ( ((grid->ny()-2)==j) ){//BACK
-                /**
-                 * p3--p4
-                 *  | \ |
-                 * p3'--p4'
-                 *
-                 * need facets p3-p3'-p4' ,   p4-p3-p4'
-                **/
-                addFacetToSTL(p3,p3prime,p4prime,mesh);
-                addFacetToSTL(p4,p3,p4prime,mesh);
-            }
+//            /// NEED CASSES FOR i=0,j=0,i=nx-1,j=ny-1 to make walls
+//            if ( (0==j) ){ // FRONT section
+//                /**
+//                 * p1--p2
+//                 *  | \ |
+//                 * p1'--p2'
+//                 *
+//                 * need facets p1-p1'-p2' ,   p2-p1-p2'
+//                **/
+//                addFacetToSTL(p1,p1prime,p2prime,mesh);
+//                addFacetToSTL(p2,p1,p2prime,mesh);
+//            }
+//            if ( ((grid->ny()-2)==j) ){//BACK
+//                /**
+//                 * p3--p4
+//                 *  | \ |
+//                 * p3'--p4'
+//                 *
+//                 * need facets p3-p3'-p4' ,   p4-p3-p4'
+//                **/
+//                addFacetToSTL(p3,p3prime,p4prime,mesh);
+//                addFacetToSTL(p4,p3,p4prime,mesh);
+//            }
 
 
 
 
-            if (0==i){//LEFT
-                /**
-                 * p1--pb
-                 *  | \ |
-                 * p1'--pb'
-                 *
-                 * need facets p1-p1'-pb' ,   pb-p1'-pb'
-                **/
-                FAHVector3 pb, pbprime;
-                pb=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSize());
-                pbprime = FAHVector3(&pb);
-                pbprime[2]=0;
+//            if (0==i){//LEFT
+//                /**
+//                 * p1--pb
+//                 *  | \ |
+//                 * p1'--pb'
+//                 *
+//                 * need facets p1-p1'-pb' ,   pb-p1'-pb'
+//                **/
+//                FAHVector3 pb, pbprime;
+//                pb=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
+//                pbprime = FAHVector3(&pb);
+//                pbprime[2]=0;
 
-                addFacetToSTL(p1,p1prime,pbprime,mesh);
-                addFacetToSTL(pb,p1,pbprime,mesh);
-            }
-            if (grid->nx()-2==i){//RIGHT
-                /**
-                 * p2--p4
-                 *  | \ |
-                 * p2'--p4'
-                 *
-                 * need facets p1-p1'-pb' ,   pb-p1-pb'
-                **/
-                addFacetToSTL(p4prime,p4,p2,mesh);
-                addFacetToSTL(p2,p2prime,p4prime,mesh);
-            }
+//                addFacetToSTL(p1,p1prime,pbprime,mesh);
+//                addFacetToSTL(pb,p1,pbprime,mesh);
+//            }
+//            if (grid->nx()-2==i){//RIGHT
+//                /**
+//                 * p2--p4
+//                 *  | \ |
+//                 * p2'--p4'
+//                 *
+//                 * need facets p1-p1'-pb' ,   pb-p1-pb'
+//                **/
+//                addFacetToSTL(p4prime,p4,p2,mesh);
+//                addFacetToSTL(p2,p2prime,p4prime,mesh);
+//            }
+
         }
     }
     return mesh;
@@ -935,7 +940,7 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
             int numInBounds=0;
             //int numOnLoop=0;
 
-            p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSize());
+            p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSizeX(),grid->stepSizeY());
             p1prime = p1.xyprojection();//FAHVector3(&p1);
 //            p1prime[2]=0;
             b1=loopsContain(p1,OuterLoop,innerLoops);
@@ -943,7 +948,7 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
             if(b1){numInBounds++;}
             //if(l1){numOnLoop++;}
 
-            p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSize());
+            p2=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSizeX(),grid->stepSizeY());
             p2prime = p2.xyprojection();//FAHVector3(&p2);
 //            p2prime[2]=0;
             b2=loopsContain(p2,OuterLoop,innerLoops);
@@ -952,7 +957,7 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
             //if(l2){numOnLoop++;}
 
 
-            p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSize());
+            p3=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
             p3prime = p3.xyprojection();//FAHVector3(&p3);
 //            p3prime[2]=0;
             b3=loopsContain(p3,OuterLoop,innerLoops);
@@ -960,7 +965,7 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
             if(b3){numInBounds++;}
             //if(l3){numOnLoop++;}
 
-            p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSize());
+            p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSizeX(),grid->stepSizeY());
             p4prime = p4.xyprojection();//FAHVector3(&p4);
 //            p4prime[2]=0;
             b4=loopsContain(p4,OuterLoop,innerLoops);
@@ -1004,7 +1009,7 @@ STLMesh* makeSTLfromScanSection(XYGrid<T>* grid,FAHLoopInXYPlane* OuterLoop, QLi
                 QVector<FAHVector3> allpoints;
                 QVector<FAHVector3> points;
 
-                fromOuterloop= getPointsInGrid(i,j,grid->stepSize(),OuterLoop,innerLoops,&allpoints);
+                fromOuterloop= getPointsInGrid(i,j,grid->stepSizeX(),grid->stepSizeY(),OuterLoop,innerLoops,&allpoints);
                 QList<FAHVector3> gridpoints;
                 gridpoints.append(p1);
                 gridpoints.append(p2);

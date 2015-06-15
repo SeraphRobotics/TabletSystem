@@ -4,21 +4,24 @@ QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
 CONFIG += c++11
 CONFIG += test
-CONFIG += opencv243
-CONFIG += qt486
+CONFIG += opencv2411
+CONFIG += qt54
+CONFIG += eie
+
 
 ##############################
 # static libs
 #CONFIG += staticlib
 # ***
-TARGET = seraphLibs
-TEMPLATE = lib
-VERSION = 0.0.01
+#TARGET = seraphLibs
+#TEMPLATE = lib
+#VERSION = 0.0.01
 
 # stand alone
 #TEMPLATE = app
 #CONFIG   += console
 #CONFIG   -= app_bundle
+
 ##############################
 
 # shared libs
@@ -27,6 +30,9 @@ DEFINES += SERAPHLIBS_LIBRARY
 # DEFINES += SW_VERSION=\\\"\"$$PWD\"\\\"
 # DEFINES += SW_VERSION=$$PWD\;
 
+qt54{
+ win32:INCLUDEPATH +=C:\\Qt5\\5.4\\Src\\qtbase\\src\\3rdparty\\zlib
+}
 
 qt485{
  win32:INCLUDEPATH += C:\\Qt\\4.8.5\\src\\3rdparty\\zlib
@@ -34,6 +40,24 @@ qt485{
 
 qt486{
  win32:INCLUDEPATH += C:\\Qt\\4.8.6\\src\\3rdparty\\zlib
+}
+
+opencv2411{
+    win32:INCLUDEPATH += C:\\opencv\\build_with_Qt5\\release\\include
+    win32:LIBS += -LC:\\opencv\\build_with_Qt5\\release\\x64\\mingw\\lib \
+        -lopencv_calib3d2411.dll\
+        -lopencv_contrib2411.dll\
+        -lopencv_core2411.dll \
+        -lopencv_features2d2411.dll \
+        -lopencv_flann2411.dll \
+        -lopencv_gpu2411.dll \
+        -lopencv_highgui2411.dll \
+        -lopencv_imgproc2411.dll \
+        -lopencv_legacy2411.dll \
+        -lopencv_ml2411.dll\
+        -lopencv_objdetect2411.dll \
+        -lopencv_ts2411 \
+        -lopencv_video2411.dll
 }
 
 opencv245{
@@ -89,6 +113,7 @@ unix:LIBS += \
 unix:LIBS += -lz
 
 #win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
+
 win32:INCLUDEPATH +="C:\\Eigen\\eigen3"
 
 # run test suit,

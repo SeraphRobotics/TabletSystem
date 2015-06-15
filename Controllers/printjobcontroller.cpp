@@ -12,7 +12,7 @@
 
 
 PrintJobController::PrintJobController(Orthotic *orth, QObject *parent) :
-    QObject(parent),numSTLsRepaired(0),numSTLsToRepair(0), numSTLsSliced(0), numSTLToSlice(0), topcoatdone(false)
+    QObject(parent),numSTLsRepaired(0),numSTLsToRepair(0), numSTLsSliced(0), numSTLToSlice(0), topcoatdone(true)/// DISABLE TOPCOAT
 {
     orth_ = orth;
     QSettings s;
@@ -42,6 +42,37 @@ void PrintJobController::RunPrintJob(){
 
     numSTLsToRepair = 1+orth_->printjob.manipulationpairs.size();
 
+    FAHVector3 p1, p2, d;
+    if(orth_->getFootType()==Orthotic::kRight){
+        p1 = orth_->getForePoints().first().copy();
+        p2 = orth_->getHealPoints().first().copy();
+        //// EXTRA_SCALE p1.x=p1.x*2;
+        p1.y = p1.y+1.1;
+        p1.z=0;
+       //// EXTRA_SCALE  p2.x=p2.x*2;
+        p2.z=0;
+    }else{
+        p1 = orth_->getForePoints().last().copy();
+        p2 = orth_->getHealPoints().last().copy();
+        //// EXTRA_SCALE p1.x=p1.x*2;
+        p1.y = p1.y-1.1;
+        p1.z=0;
+        //// EXTRA_SCALE p2.x=p2.x*2;
+        p2.z=0;
+
+    }
+
+    d= p2-p1;
+    d.normalize();
+    FAHMatrix4x4 m;
+    FAHMatrix4x4 n;
+    n.rotationZ(Math::kPi/2.0);
+//    m.identity();
+    m.rotationPointAxisAngle(p2,d,-Math::kPi/2.0); //(Math::kPi)
+    m = n.mul(m);
+
+
+    orth_->printjob.shellpair.mesh->transform(m);
     RepairController* rs = new RepairController(orth_->printjob.shellpair.mesh,shellfilename);
     connect(rs,SIGNAL(Success()),this,SLOT(repairSucessful()));
     connect(workthread,SIGNAL(finished()),rs,SLOT(deleteLater()));
@@ -49,7 +80,6 @@ void PrintJobController::RunPrintJob(){
     rs->moveToThread(workthread);
     workthread->start();
     rs->repairMesh();
-
     shell_.stlfile = shellfilename ;
     shell_.gcode_file = shellfilename.replace(".stl","_fixed.gcode");
     shell_.z_offset = 0;
@@ -60,6 +90,7 @@ void PrintJobController::RunPrintJob(){
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
         QString fn = dir_ + "/"+ orth_->printjob.manipulationpairs.at(i).id;
         fn.append(".stl");
+        orth_->printjob.manipulationpairs[i].mesh->transform(m);
         RepairController* r = new RepairController(orth_->printjob.manipulationpairs.at(i).mesh,fn);
         connect(r,SIGNAL(Success()),this,SLOT(repairSucessful()));
         connect(workthread,SIGNAL(finished()),r,SLOT(deleteLater()));
@@ -72,11 +103,11 @@ void PrintJobController::RunPrintJob(){
 
     ///Start topcoat
     //TopCoatController* tcc = new TopCoatController(orth_,"");
-    TopCoatController* tcc = new TopCoatController(orth_, dir_);
-    tcc->moveToThread(workthread);
-    connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
-    connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
-    tcc->generateTopCoat();
+//    TopCoatController* tcc = new TopCoatController(orth_, dir_, m);
+//    tcc->moveToThread(workthread);
+//    connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
+//    connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
+//    tcc->generateTopCoat();
 
 
 
@@ -143,7 +174,7 @@ void PrintJobController::repairSucessful(){
         connect(sc,SIGNAL(Failed(QString)),this,SLOT(slicingFailure(QString)));
         connect(workthread,SIGNAL(finished()),sc,SLOT(deleteLater()));
         workthread->start();
-        sc->slice();
+        //sc->slice();
 
 
 //        int i=0;

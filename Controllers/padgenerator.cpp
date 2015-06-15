@@ -22,7 +22,7 @@ float GeneratePad(Manipulation* m, XYGrid<float>* pad_grid, XYGrid<float>* shell
 
     for(int j=0;j<pad_grid->ny()-1;j++){
         for(int i=0;i<pad_grid->nx()-1;i++){
-            FAHVector3 p1=vectorFromIJ(i,j,pad_grid->at(i,j),pad_grid->stepSize());
+            FAHVector3 p1=vectorFromIJ(i,j,pad_grid->at(i,j),pad_grid->stepSizeX(),pad_grid->stepSizeY());
             if ( loopsContain(p1,m->outerloop,m->innerloops) ){
                 float d = m->outerloop->distanceToPoint(p1);
                 ijd pt;

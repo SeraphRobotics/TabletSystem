@@ -163,7 +163,7 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
     qDebug()<<"maxX: "<<max_x<<" maxY: "<<max_y;
     qDebug()<<"minZ: "<<min_z;
 
-    XYGrid<float>* grid = new XYGrid<float>(nx,ny,GRID_SIZE);
+    XYGrid<float>* grid = new XYGrid<float>(nx,ny,1,1);
 
     for(int i=0; i<nx;i++){
 

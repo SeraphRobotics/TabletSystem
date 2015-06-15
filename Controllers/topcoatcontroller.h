@@ -8,7 +8,7 @@ class TopCoatController : public QObject
 {
     Q_OBJECT
 public:
-    explicit TopCoatController(Orthotic* orth, QString dir, QObject *parent = 0);
+    explicit TopCoatController(Orthotic* orth, QString dir, FAHMatrix4x4 transform, QObject *parent = 0);
 
 signals:
     void Failed(QString s);
@@ -20,7 +20,7 @@ public slots:
 private:
      Orthotic* orth_;
      QString dir_;
-
+     FAHMatrix4x4 transform_;
 };
 
 #endif // TOPCOATCONTROLLER_H

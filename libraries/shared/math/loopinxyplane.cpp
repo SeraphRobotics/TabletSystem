@@ -392,7 +392,7 @@ Vector3 LoopInXYPlane::center(){
 //    cent.x=cent.x/points.size();
 //    cent.y=cent.y/points.size();
     float A=0;
-    for(int i=0;i<points.size();i++){
+    for(int i=0;i<points.size()-1;i++){
         Vector3 pt = points.at(i);
         Vector3 pt_p = points.at(i+1);
         A=A+(pt.x*pt_p.y-pt_p.x*pt.y);

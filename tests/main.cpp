@@ -31,6 +31,13 @@ int main(int argc, char** argv) {
     settings.setValue("ortho-extension","ortho");
     settings.setValue("ortho-directory", SampleDataLocation);
 
+
+    settings.setValue("Generating/border",2);
+    settings.setValue("Generating/slope",63.5/101);
+    settings.setValue("Generating/offset",2.0);
+    settings.setValue("Generating/blurtimes",10);
+    settings.setValue("printing/topcoat-thickness",2.0);
+
     //settings.setValue("data-output-directory", SampleDataOutputLocation);
     settings.setValue("printing/directory", SampleDataOutputLocation);
 

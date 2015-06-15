@@ -59,6 +59,8 @@ public:
 
   void scale(float px,float py,float pz);
 
+  void transform(FAHMatrix4x4 m);
+
 private:
   QList<STLFacet*> facets_;
   //STLMesh(STLMesh&);

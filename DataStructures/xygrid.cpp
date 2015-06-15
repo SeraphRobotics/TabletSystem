@@ -18,7 +18,7 @@
 
 
 template <class T>
-XYGrid<T>::XYGrid():stepsize_(1.0),nx_(0),ny_(0)
+XYGrid<T>::XYGrid():stepsize_x_(1.0),stepsize_y_(1.0),nx_(0),ny_(0)
 {
 }
 
@@ -30,7 +30,8 @@ XYGrid<T>::XYGrid():stepsize_(1.0),nx_(0),ny_(0)
 // Constructs a null grid
 template <class T>
 XYGrid<T>::XYGrid(const XYGrid<T> *otherxygrid){
-    stepsize_ = otherxygrid->stepsize_;
+    stepsize_x_ = otherxygrid->stepsize_x_;
+    stepsize_y_ = otherxygrid->stepsize_y_;
 //    data_ = otherxygrid->data_;
     for(int i=0;i<otherxygrid->data_.size();i++){
         data_.append(otherxygrid->data_.at(i));
@@ -44,46 +45,51 @@ XYGrid<T>::XYGrid(int x, int y){
     nx_=x;
     ny_=y;
     data_ = QVector<T>(x*y);
-    stepsize_=1.0;
+    stepsize_x_=1.0;
+    stepsize_y_=1.0;
 }
 //Creates a grid of size x,y of zeros
 template <class T>
-XYGrid<T>::XYGrid(int x, int y, float stepsize){
+XYGrid<T>::XYGrid(int x, int y, float stepsizex, float stepsizey){
     nx_=x;
     ny_=y;
     data_ = QVector<T>(x*y);
-    stepsize_=stepsize;
+    stepsize_x_=stepsizex;
+    stepsize_y_=stepsizey;
 }
 //Creates a grid of size x,y of zeros and sets stepsize
 template <class T>
-XYGrid<T>::XYGrid(float Lx, float Ly, float stepsize){
-    nx_=(int) Lx/stepsize+1;
-    ny_=(int) Ly/stepsize+1;
+XYGrid<T>::XYGrid(float Lx, float Ly, float stepsizex, float stepsizey){
+    nx_=(int) Lx/stepsizex+1;
+    ny_=(int) Ly/stepsizey+1;
     data_ = QVector<T>(nx_*ny_);
-    stepsize_=stepsize;
+    stepsize_x_=stepsizex;
+    stepsize_y_=stepsizey;
 }
 //Creats a grid with the ceiling of Lx/stepsize, Ly/stepsize and sets stepsize
 template <class T>
-XYGrid<T>::XYGrid(FAHVector3 min, FAHVector3 max,float stepsize) {
+XYGrid<T>::XYGrid(FAHVector3 min, FAHVector3 max, float stepsizex, float stepsizey) {
     FAHVector3 delta(min.sub(max));
     float x,y;
     x = abs(delta.x);
     y = abs(delta.y);
-    nx_=(int) x/stepsize+1;
-    ny_=(int) y/stepsize+1;
+    nx_=(int) x/stepsizex+1;
+    ny_=(int) y/stepsizex+1;
     data_ = QVector<T>(x*y);
-    stepsize_=stepsize;
+    stepsize_x_=stepsizex;
+    stepsize_y_=stepsizey;
 }
 //Creates a grid of delta of the points in the X and Y dimensions
 template <class T>
-XYGrid<T>::XYGrid(FAHVector3 Delta, float stepsize) {
+XYGrid<T>::XYGrid(FAHVector3 Delta,float stepsizex, float stepsizey)  {
     float x,y;
     x = abs(Delta.x);
     y = abs(Delta.y);
-    nx_=(int) x/stepsize+1;
-    ny_=(int) y/stepsize+1;
+    nx_=(int) x/stepsizex+1;
+    ny_=(int) y/stepsizey+1;
     data_ = QVector<T>(x*y);
-    stepsize_=stepsize;
+    stepsize_x_=stepsizex;
+    stepsize_y_=stepsizey;
 }
 //Creates a grid of delta of the points in the X and Y dimensions
 template <class T>
@@ -93,16 +99,18 @@ XYGrid<T>::XYGrid(QVector<T> v, int rowSize){
         ny_ = rowSize;
         nx_ = v.size()/rowSize;
         data_ = v;
-        stepsize_=1.0;
+        stepsize_x_=1.0;
+        stepsize_y_=1.0;
     }
 }
 //Creates a grid from a Qvector and sets the rowSize
 template <class T>
-XYGrid<T>::XYGrid(QVector<T> v, int rowSize, float stepsize){
+XYGrid<T>::XYGrid(QVector<T> v, int rowSize, float stepsize_x, float stepsize_y){
     data_=v;
     ny_=rowSize;
     nx_ = v.size()/ny_;
-    stepsize_=stepsize;
+    stepsize_x_ = stepsize_x;
+    stepsize_y_ = stepsize_y;
 
 }
 //Overloaded constructor
@@ -110,7 +118,7 @@ XYGrid<T>::XYGrid(QVector<T> v, int rowSize, float stepsize){
 //XYGrid<T>::XYGrid(QByteArray barray,int rowSize,float stepsize) {}
 //Loads form QByteArray
 template <class T>
-XYGrid<T>::XYGrid(QString csv):stepsize_(1.0),nx_(0),ny_(0) {
+XYGrid<T>::XYGrid(QString csv):stepsize_x_(1.0),stepsize_y_(1.0),nx_(0),ny_(0) {
 
          QString data;
          QStringList lines;
@@ -126,7 +134,18 @@ XYGrid<T>::XYGrid(QString csv):stepsize_(1.0),nx_(0),ny_(0) {
          data = lines.first();
          lines.pop_front();
          vals = data.split(",");
-         stepsize_=vals[0].toFloat();
+         if (vals.size()>0){
+             stepsize_x_=vals[0].toFloat();
+         }
+
+         if (vals.size()>1){
+             stepsize_y_=vals[1].toFloat();
+         }else{
+             stepsize_y_=stepsize_x_;
+
+         }
+         qDebug()<<"set step x to "<<stepsize_x_;
+         qDebug()<<"set step y to "<<stepsize_y_;
          nx_ = lines.size();
          ny_ = lines[1].split(",").size();
          data_ = QVector<T>(nx_*ny_);
@@ -161,7 +180,7 @@ template <class T>
 QString XYGrid<T>::toCSV(){
     QString csv;
     QTextStream ss(&csv);
-    ss<<stepsize_;
+    ss<<stepsize_x_<<","<<stepsize_y_;
     for(int row=0; row<nx_;row++){
         ss<<"\n";
         for(int col=0;col<ny_-1;col++){
@@ -199,13 +218,18 @@ void XYGrid<T>::setDim(int x, int y){
 //Resets the dimensions of the array
 
 template <class T>
-void XYGrid<T>::setStepSize(float a){
-    stepsize_=a;
+void XYGrid<T>::setStepSizes(float x,float y){
+    stepsize_x_=x;
+    stepsize_y_=y;
 }
 //Sets the stepzie
 
 template <class T>
-float XYGrid<T>::stepSize() {return stepsize_;}
+float XYGrid<T>::stepSizeX() {return stepsize_x_;}
+//Returns stepsize
+
+template <class T>
+float XYGrid<T>::stepSizeY() {return stepsize_y_;}
 //Returns stepsize
 
 template <class T>
@@ -219,11 +243,11 @@ FAHVector3 XYGrid<T>::getDimensions(){
 //Returns a point of the dx, dy, 0
 
 template <class T>
-float XYGrid<T>::xDimension() {return nx_*stepsize_;}
+float XYGrid<T>::xDimension() {return nx_*stepsize_x_;}
 //Returns x length
 
 template <class T>
-float XYGrid<T>::yDimension() {return ny_*stepsize_;}
+float XYGrid<T>::yDimension() {return ny_*stepsize_y_;}
 //Returns y length
 
 
@@ -236,15 +260,40 @@ QVector<T> XYGrid<T>::asVector(){
 //Returns a copy of the data vector
 template <class T>
 const T XYGrid<T>::at(int I, int j){
+    if (I>nx_){
+        qDebug()<<" i>nx";
+        return T(10000);
+    }else if(j>ny_){
+        qDebug()<<" j>ny";
+        return T(10000);
+    }
     return T(data_[(ny_*I+j)]);
 }
 //Returns an integer of the value at I,j
 
 template <class T>
+const T XYGrid<T>::at(Math::Float x, Math::Float y){
+    return at(int(x/stepsize_x_),int(y/stepsize_y_));
+}
+
+
+template <class T>
 T& XYGrid<T>::operator()(int I,int j){
+    if (I>nx_){
+        qDebug()<<" i>nx";
+        return data_.last();
+    }else if(j>ny_){
+        qDebug()<<" j>ny";
+        return data_.last();
+    }
     return data_[(ny_*I+j)];
 }
 //Returns the interger at I,j
+
+template <class T>
+T& XYGrid<T>::operator()(Math::Float x, Math::Float y){
+    return operator()(int(x/stepsize_x_),int(y/stepsize_y_));
+}
 
 
 template <class T>
@@ -263,7 +312,7 @@ XYGrid<T> XYGrid<T>::getValueGrid( T v){
     for(int i=0;i<data_.size();i++){
         if(newdata.at(i)!=v){newdata[i]=T();}
     }
-    return XYGrid(newdata,ny_,stepsize_);
+    return XYGrid(newdata,ny_,stepsize_x_,stepsize_y_);
 }
 //Retruns a grid with only the points at the value. Null grid if value not in grid
 
@@ -310,7 +359,7 @@ void blurGrid(XYGrid<T>* grid,int ntimes){
      **/
     // make a copy
     for(int blurs=0;blurs<ntimes;blurs++){
-        XYGrid<T> copy(grid->asVector(),grid->ny(),grid->stepSize());
+        XYGrid<T> copy(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
         double p0,p1,p2,p3,p4;
         for(int i=1;i<grid->nx()-1;i++){
             for(int j=1;j<grid->ny()-1;j++){
@@ -331,7 +380,8 @@ template <class T>
 XYGrid<T>* increaseResolution(XYGrid<T>* grid, int zoom){
     XYGrid<T>* newgrid = new XYGrid<T>((grid->nx()-1)*zoom,
                                        (grid->ny()-1)*zoom,
-                                       grid->stepSize()*1.0/zoom);
+                                       grid->stepSizeX()*1.0/zoom,
+                                       grid->stepSizeY()*1.0/zoom);
 
 
     for(int i=0;i<grid->nx()-1;i++){
@@ -350,10 +400,10 @@ XYGrid<T>* increaseResolution(XYGrid<T>* grid, int zoom){
              **/
             FAHVector3 p1,p2,p3,p4;
 
-            p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSize());
-            p3=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSize());
-            p2=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSize());
-            p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSize());
+            p1=vectorFromIJ(i,j,grid->at(i,j),grid->stepSizeX(),grid->stepSizeY());
+            p3=vectorFromIJ(i+1,j,grid->at(i+1,j),grid->stepSizeX(),grid->stepSizeY());
+            p2=vectorFromIJ(i,j+1,grid->at(i,j+1),grid->stepSizeX(),grid->stepSizeY());
+            p4=vectorFromIJ(i+1,j+1,grid->at(i+1,j+1),grid->stepSizeX(),grid->stepSizeY());
             FAHTriangle t1(p1,p2,p4);
             FAHTriangle t2(p1,p3,p4);
 
@@ -396,9 +446,9 @@ FAHVector3 vectorFromIJScales(int i, int j, float val, float stepsize, float sca
     return FAHVector3(x,y,val);
 }
 
-FAHVector3 vectorFromIJ(int i, int j, float val, float stepsize){
-    float x=i*stepsize;
-    float y=j*stepsize;
+FAHVector3 vectorFromIJ(int i, int j, float val, float stepsize_x, float stepsize_y){
+    float x=i*stepsize_x;
+    float y=j*stepsize_y;
     return FAHVector3(x,y,val);
 }
 

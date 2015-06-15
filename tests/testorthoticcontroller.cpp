@@ -60,17 +60,26 @@ void TestOrthoticController::initTestCase()
     connect(oc,SIGNAL(stlsGenerated(QList<View_3D_Item>)), this, SLOT(stlsGenerated(QList<View_3D_Item>)));
 
     // LOAD WHAT HTE USER WOULD SET
-    float offset = 3.0;
+    float offset1 = 3.0;
+    float offset2 = 1.0;
+    float shift_y = 5;
+    float scalex =2.0;
+
+    // y
+    // |
+    // |
+    // o------>x
     QVector< FAHVector3 > forePts;
-    forePts.append(FAHVector3(105.0+offset,60.0,0));
-    forePts.append(FAHVector3(120.0+offset,90.0,0));
-    forePts.append(FAHVector3(115.0+offset,125.0,0));
-    forePts.append(FAHVector3(85.0+offset,130.0,0));
+    forePts.append(FAHVector3(scalex*(105.0+offset1),60.0,0));
+    forePts.append(FAHVector3(scalex*(120.0+offset1),90.0,0));
+    forePts.append(FAHVector3(scalex*(115.0+offset1),125.0,0));
+    forePts.append(FAHVector3(scalex*(85.0+offset1),135.0,0));
 
     QVector< FAHVector3 > healPts;
-    healPts.append(FAHVector3(35.0+offset,50.0,0));
-    healPts.append(FAHVector3(19.0+offset,70.0,0));
-    healPts.append(FAHVector3(26.0+offset,103.0,0));
+    //scalex=1.0;
+    healPts.append(FAHVector3(scalex*(35.0+offset2),50.0-shift_y+4,0)); //bottom
+    healPts.append(FAHVector3(scalex*(19.0+offset2-2),70.0-shift_y,0));
+    healPts.append(FAHVector3(scalex*(26.0+offset2),103.0-shift_y,0));//top
 
     Posting forpost;
     forpost.angle=0*M_PI/180.0;
@@ -91,17 +100,21 @@ void TestOrthoticController::initTestCase()
 
     oc->setScan(sm->scanIds()[0]);
     oc->setBorderPoints(healPts, forePts);
+    qDebug() << "border made";
     oc->setTopCoat(tc);
+    qDebug() << "topcoat set";
     oc->processBoundary();
+    qDebug() << "boundary processed";
     oc->setPosting(forpost);
+    qDebug() << "forpost";
 
     oc->setPosting(rearpost);
+    qDebug() << "rearpost";
     oc->setBottomType(Orthotic::kCurved);
-
-    qDebug() << "post setBottom";
+    qDebug() << "setBottom";
 
     for(int i=0;i<0;i++){
-        FAHLoopInXYPlane* c = circle(40.0+i*25,80.0+i*5,15.0);
+        FAHLoopInXYPlane* c = circle( (40.0+i*25), (80.0+i*5) ,15.0);
         Manipulation* m = new Manipulation();
         m->stiffness=25+i*25;
         m->depth=0;

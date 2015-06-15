@@ -58,7 +58,7 @@ void OrthoticController::processBoundary(){
     FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
     FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
     FAHVector3 minpt3 = orth_->getForePoints().first();
-    minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(int(minpt3.x),int(minpt3.y));
+    minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(minpt3.x, minpt3.y );
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
 
     FAHVector3 cent = orth_->getForePoints().first();
@@ -103,6 +103,7 @@ void OrthoticController::setPosting(Posting p){
                                                           orth_->getForePoints().last(),
                                                           orth_->getForFootPosting());
 
+
     QVector<FAHVector3> planeAndCent = makePostingPlane(heals[0],heals[1],fors[0],fors[1]);
 
 
@@ -112,15 +113,18 @@ void OrthoticController::setPosting(Posting p){
     orth_->getScan()->setPostedGrid(posted);
 
     anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
-    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),75);
-//    blurByBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),10);
-//    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),15);
-    blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),10);
-//    blurGrid(orth_->getScan()->getPostedXYGrid(),1);
+    QSettings settings;
+    int bordertimes = settings.value("Generating/bordertimes",75).toInt();//2;
+    float slope = settings.value("Generating/slope",63.5/101).toFloat();
+    float heightoffset =settings.value("Generating/offset",0.5).toFloat();//0.5;/// CANT BE ZERO OR A BAD STL IS MADE
+    int blurs = settings.value("Generating/blurtimes",10).toInt();//2;
+
+    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
+
+    blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
 
-    float slope = 63.5/101;
-    float heightoffset =0.5;/// CANT BE ZERO OR A BAD STL IS MADE
+
     scaleAndOffset(orth_->getScan()->getPostedXYGrid(),slope,heightoffset);
 
 //    QFile f("posted.csv");
@@ -129,7 +133,7 @@ void OrthoticController::setPosting(Posting p){
 //    fs<<orth_->getScan()->getPostedXYGrid()->toCSV();
 //    f.close();
 //    makeSTLs();
-    qDebug()<<"STLs made";
+    qDebug()<<"Posting made";
 
 }
 
@@ -158,7 +162,7 @@ void OrthoticController::makeSTLs(){
         STLMesh* m_mesh = new STLMesh();
         float min_z = GeneratePad(m,orth_->topcoatgrid,orth_->shellgrid,m_mesh,shell,thickness,make_thickness);
         inners.append(m->outerloop);
-        m_mesh->scale(2,1,1);
+        //// EXTRA_SCALE m_mesh->scale(2,1,1);
         View_3D_Item v3d;
         v3d.mesh =  m_mesh;
         v3d.color = QColor(Qt::black);
@@ -185,9 +189,10 @@ void OrthoticController::makeSTLs(){
 //    STLMesh* angleMesh =
 
     qDebug()<<"Making Shell";
+//    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
     if (make_thickness){FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);}
     else {STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);}
-    shell->scale(2,1,1);
+    //// EXTRA_SCALE shell->scale(2,1,1);
 
     //Generate Printjob outputs
     manipulationpair pair;

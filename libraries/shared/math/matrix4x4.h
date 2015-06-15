@@ -138,6 +138,14 @@ namespace Math {
   Matrix4x4& rotationAxisAngle(const Vector3& axis, Float angle);
 
   /**
+   * Initializes this structure as a rotation matrix about the given axis
+   * by the requested angle.  The axis must be normalized.
+   * Returns a reference to this object to allow method chaining.
+   */
+  Matrix4x4& rotationPointAxisAngle(const Vector3& point, const Vector3& axis, Float angle);
+
+
+  /**
    * Initializes this structure as a rotation matrix defined by
    * the given quaternion.  The input must be a unit quaternion.
    */

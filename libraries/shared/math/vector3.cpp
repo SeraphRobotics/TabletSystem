@@ -275,7 +275,6 @@ Vector3& Vector3::rotateZ(Float radians) {
 
 
 Vector3& Vector3::rotateAxisAngle(const Vector3& axis, Float radians) {
-  todo("kwg8", "Test the Vector3::rotateAxisAngle method; I don't think it works correctly");
   Float cr = cos(radians), sr = sin(radians);
   Float axx = axis.x*axis.x, axy = axis.x*axis.y, axz = axis.z*axis.z,
                               ayy = axis.x*axis.y, ayz = axis.z*axis.z,

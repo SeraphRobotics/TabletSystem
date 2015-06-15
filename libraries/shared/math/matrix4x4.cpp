@@ -3,6 +3,7 @@
 #include <math.h>     // for sin/cos/tan
 #include "libraries/common/confirm.h"
 #include "quaternion.h"
+#include <QDebug>
 
 
 namespace Math {
@@ -126,11 +127,11 @@ void Matrix4x4::transformInPlace(Vector3* v) const {
   // This is the 4th component of the resulting transformation.  The input vector's
   // 4th component is assumed to be 1.0 coming in, and the resulting vector is
   // normalized such that it would have a component of 1.0.
-  Float w = _14 * v->x + _24 * v->y + _34 * v->z + _44;
+  Float w = _41 * v->x + _42 * v->y + _43 * v->z + _44;
   v->set(
-    (_11 * v->x + _21 * v->y + _31 * v->z + _41) / w,
-    (_12 * v->x + _22 * v->y + _32 * v->z + _42) / w,
-    (_13 * v->x + _23 * v->y + _33 * v->z + _43) / w
+    (_11 * v->x + _12 * v->y + _13 * v->z + _14) / w,
+    (_21 * v->x + _22 * v->y + _23 * v->z + _24) / w,
+    (_31 * v->x + _32 * v->y + _33 * v->z + _34) / w
   );
 }
 
@@ -223,6 +224,25 @@ Matrix4x4& Matrix4x4::rotationAxisAngle(const Vector3& axis, Float angle) {
 //  _44 = Float(1.0);
 //  return *this;
 }
+
+Matrix4x4& Matrix4x4::rotationPointAxisAngle(const Vector3& point, const Vector3& axis, Float angle){
+    const Float ca = cos(angle);
+    const Float sa = sin(angle);
+    const Float u = axis.x;
+    const Float v = axis.y;
+    const Float w = axis.z;
+    const Float a = point.x;
+    const Float b = point.y;
+    const Float c = point.z;
+
+    _11 = u*u+(v*v+w*w)*ca;     _12 = u*v*(1-ca)-w*sa;   _13 = u*w*(1-ca)+v*sa;   _14 = (a*(v*v+w*w) - u*(b*v+c*w))*(1-ca) + (b*w-c*v)*sa;
+    _21 = u*v*(1-ca)+w*sa;      _22 = v*v+(u*u+w*w)*ca;  _23 = v*w*(1-ca)-u*sa;   _24 = (b*(u*u+w*w) - v*(a*u+c*w))*(1-ca) + (c*u-a*w)*sa;
+    _31 = u*w*(1-ca)-v*sa;      _32 = v*w*(1-ca)+u*sa;   _33 = w*w+(u*u+v*v)*ca;  _34 = (c*(u*u+v*v) - w*(a*u+b*v))*(1-ca) + (a*v-b*u)*sa;
+    _41 = 0;                    _42 = 0;                 _43 = 0;                 _44 = 1;
+    return *this;
+}
+
+
 
 Matrix4x4& Matrix4x4::rotationQuaternion(const Quaternion& q) {
   if (!(q.isNormalized())) {
