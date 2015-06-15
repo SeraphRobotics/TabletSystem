@@ -3,11 +3,13 @@
 #include "scannerfunctions.h"
 #include <QSettings>
 #include "globals.h"
+#include "Controllers/repaircontroller.h"
+#include "Controllers/stlgeneration.h"
 
 //#include "UnitTest/debugfunctions.h"
 
-TopCoatController::TopCoatController(Orthotic* orth, QString dir, QObject *parent):
-    QObject(parent),dir_(dir)
+TopCoatController::TopCoatController(Orthotic* orth, QString dir, FAHMatrix4x4 transform, QObject *parent):
+    QObject(parent),dir_(dir),transform_(transform)
 {
     orth_=orth;
 }
@@ -20,148 +22,21 @@ void TopCoatController::generateTopCoat(){
         return;
     }
 
-    QVector< FAHVector3> pts;
-    QSettings s;
-    float scale = s.value("printing/scale","1").toFloat();
-
-    XYGrid<float>* grid = orth_->topcoatgrid;
-    float scaley = grid->stepSizeY();
-    float scalex = grid->stepSizeX();
-    // EXTRA_SCALE float scalex = 2.0;
-    float path_width=1.0;
-    float path_height=1.0;
-    float z_offset=1.0;
-    float speed = 10.0;
-
-    FAHLoopInXYPlane* outerLoop = mapOntoGrid( orth_->getLoop(), grid,false);
-    FAHVector3 minp = outerLoop->min();
-    minp.x = minp.x*scalex;
-    minp.y = minp.y*scaley;
-    QList<FAHLoopInXYPlane* > innerLoops;
-
-    printPoint(minp);
-    //    enum Style{ kNone,kAuto,kCloth};
-    //   enum Density {kLow,kMedium,kHigh};
-
-
-
-    if(t.density == Top_Coat::kLow){
-        path_width = s.value("printing/topcoat/low/pw","0.5").toFloat();
-        path_height = s.value("printing/topcoat/low/ph","1.3").toFloat();
-        z_offset = s.value("printing/topcoat/low/zo","5.0").toFloat();
-        speed =  s.value("printing/topcoat/low/ps","30").toFloat();
-    }else if(t.density == Top_Coat::kMedium){
-        path_width = s.value("printing/topcoat/medium/pw","0.9").toFloat();
-        path_height = s.value("printing/topcoat/medium/ph","0.8").toFloat();
-        z_offset = s.value("printing/topcoat/medium/zo","3.0").toFloat();
-        speed =  s.value("printing/topcoat/medium/ps","20").toFloat();
-    }else if(t.density == Top_Coat::kHigh){
-        path_width = s.value("printing/topcoat/high/pw","1.0").toFloat();
-        path_height = s.value("printing/topcoat/high/ph","0.85").toFloat();
-        z_offset = s.value("printing/topcoat/high/zo","3.0").toFloat();
-        speed =  s.value("printing/topcoat/high/ps","10").toFloat();
-    }
-
-    path_width= path_width/scale;
-
-    QVector<float> xs;
-    float x=0;
-    float stop=grid->nx()*scalex;
-    int n=0;
-    while(x<stop && n<1000){
-        xs.append(x);
-        x+=path_width;
-        n++;
-    }
-
-
-    int j=0;
-    foreach(float x,xs){
-        j++;
-
-        for(int i=0; i<grid->ny();i++){
-
-            ///Oscilate directions
-            int index = i;
-            if(j%2==0){index = i;}
-            else{index = grid->ny()-i;}
-
-
-
-
-
-            //Calculate hights
-            int xjminus = floor(x/scalex);
-            float xminus = xjminus;
-            float zminus = grid->at(xjminus,index);
-
-            int xjplus = ceil(x/scalex);
-            float xplus = xjplus;
-            float zplus = grid->at(xjplus,index);
-
-            float m;
-            Q_UNUSED(m);
-            if( (xplus-xminus)>0.1 && (zplus-zminus)>0.1 ){
-                m = (zplus-zminus)/(xplus-xminus);
-            }else{
-                m = 0.0;
-            }
-//            float b = zplus-m*xplus;
-
-//            pt.z = m*x+b + z_offset;
-             FAHVector3 pt(xplus,index,0);
-             pt.z = zplus + z_offset;
-
-            //append if inside outer border
-            if (loopsContain(pt,outerLoop,innerLoops) ){
-                pt.x = x - minp.x+3;
-                pt.y = pt.y*scaley;// + 10;
-                pts.append(pt);
-//                qDebug()<<"Z: "<< pt.z;
-            }
+    STLMesh* topcoat = new STLMesh();
+    QList<FAHLoopInXYPlane*> inners;
+    QSettings settings;
+    float thickness = settings.value("printing/topcoat-thickness",5).toFloat();
+    for(int i=0;i<orth_->topcoatgrid->nx();i++){
+        for(int j=0;j<orth_->topcoatgrid->ny();j++){
+            orth_->topcoatgrid->operator ()(i,j) = orth_->topcoatgrid->at(i,j)+thickness;
         }
     }
+    FixedThicknessSTL(topcoat,orth_->topcoatgrid,orth_->getLoop(),inners,thickness);
+    topcoat->transform(transform_);
+    QString topcoat_file_name = dir_ + "/topcoat.stl";
+    RepairController* rs = new RepairController(topcoat,topcoat_file_name);
+    rs->repairMesh();
 
 
 
-    //// GENERATE GCODE FOR THE PATTERN
-    QStringList gcodes;
-    speed = 60*speed;
-    int numlayers = floor(t.thickness/path_height);
-
-    for(int layer=0;layer<numlayers;layer++){
-        qDebug()<<"Layer: "<<layer;
-        QString openLine = s.value("Printing/open","\nG4 P2\nM340 P0 S2100").toString();
-        QString closeLine = s.value("Printing/close","\nG4 P2\nM340 P0 S1650").toString();
-        QString relativelift = s.value("Printing/lift","\nG91 \nG1 Z40 F2400 \nG90").toString();
-
-        FAHVector3 first = pts.first();
-        QString first_pt_line = "G1 X"+QString::number(first.x*scale)+
-                           " Y"+QString::number(first.y*scale)+
-                           " Z"+QString::number(scale*(first.z+layer*path_height))+
-                           " F"+QString::number(speed);
-
-        gcodes<<relativelift;
-        gcodes<<first_pt_line;
-        gcodes<<openLine;
-        foreach(FAHVector3 pt,pts){
-            QString line = "G1 X"+QString::number(scale*pt.x)+
-                               " Y"+QString::number(scale*pt.y)+
-                               " Z"+QString::number(scale*(pt.z+layer*path_height))+
-                               " F"+QString::number(speed);
-            gcodes.append(line);
-        }
-        gcodes<<closeLine;
-    }
-    QString filename = dir_ + "/" + "topcoat.gcode";
-    QFile f(filename);
-    if(!f.open(QFile::WriteOnly | QFile::Text)){
-        return;
-    }
-    QTextStream fs(&f);
-    for (int line = 0; line < gcodes.size(); ++line){
-      fs << gcodes.at(line) << '\n';
-    }
-    f.close();
-    emit generatedCoatingFile(filename);
 }

@@ -12,7 +12,7 @@
 
 
 PrintJobController::PrintJobController(Orthotic *orth, QObject *parent) :
-    QObject(parent),numSTLsRepaired(0),numSTLsToRepair(0), numSTLsSliced(0), numSTLToSlice(0), topcoatdone(false)
+    QObject(parent),numSTLsRepaired(0),numSTLsToRepair(0), numSTLsSliced(0), numSTLToSlice(0), topcoatdone(true)/// DISABLE TOPCOAT
 {
     orth_ = orth;
     QSettings s;
@@ -103,11 +103,11 @@ void PrintJobController::RunPrintJob(){
 
     ///Start topcoat
     //TopCoatController* tcc = new TopCoatController(orth_,"");
-    TopCoatController* tcc = new TopCoatController(orth_, dir_);
-    tcc->moveToThread(workthread);
-    connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
-    connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
-    tcc->generateTopCoat();
+//    TopCoatController* tcc = new TopCoatController(orth_, dir_, m);
+//    tcc->moveToThread(workthread);
+//    connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
+//    connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
+//    tcc->generateTopCoat();
 
 
 
@@ -174,7 +174,7 @@ void PrintJobController::repairSucessful(){
         connect(sc,SIGNAL(Failed(QString)),this,SLOT(slicingFailure(QString)));
         connect(workthread,SIGNAL(finished()),sc,SLOT(deleteLater()));
         workthread->start();
-        sc->slice();
+        //sc->slice();
 
 
 //        int i=0;
