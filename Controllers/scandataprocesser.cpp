@@ -134,7 +134,10 @@ void ScanDataProcesser::processedImage(float x, QVector < FAHVector3 >* row ){
 
 
 XYGrid<float>* ScanDataProcesser::makeGrid(){
-    float GRID_SIZE = 2; /// need to save from elsewhere
+    QSettings settings;
+
+    float Grid_Size_X = settings.value("scanner/x_step",2).toFloat(); /// need to save from elsewhere
+    float Grid_Size_Y = settings.value("scanner/y_step",1).toFloat();
     float Tolerance = 0.3;
     float max_x=0;
     float min_x=0;
@@ -155,15 +158,15 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
         }
     }
 
-    int nx = ceil((max_x-min_x)/GRID_SIZE);
-    int ny = ceil((max_y-min_y)/GRID_SIZE);
+    int nx = ceil((max_x-min_x)/Grid_Size_X);
+    int ny = ceil((max_y-min_y)/Grid_Size_Y);
 
     qDebug()<<"NX: "<<nx<<" NY: "<<ny;
     qDebug()<<"minX: "<<min_x<<" minY: "<<min_y;
     qDebug()<<"maxX: "<<max_x<<" maxY: "<<max_y;
     qDebug()<<"minZ: "<<min_z;
 
-    XYGrid<float>* grid = new XYGrid<float>(nx,ny,1,1);
+    XYGrid<float>* grid = new XYGrid<float>(nx,ny,Grid_Size_X,Grid_Size_Y);
 
     for(int i=0; i<nx;i++){
 
@@ -171,7 +174,7 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
 //        qDebug()<<"i:"<<i;
         float x=-1;
         for(int j=0;j<xs.size();j++){
-            if(   (xs.at(j)<(i*GRID_SIZE+Tolerance)) && (xs.at(j)>(i*GRID_SIZE-Tolerance) )){
+            if(   (xs.at(j)<(i*Grid_Size_X+Tolerance)) && (xs.at(j)>(i*Grid_Size_X-Tolerance) )){
                 x=xs.at(j);
 //                qDebug()<<"x:"<<i*GRID_SIZE <<"\tx'"<<xs.at(j);
             }
@@ -190,7 +193,7 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
 
                 float y_p = row->at(k).y-min_y; //compensate for negative min_y
 
-                if(   (y_p<(j*GRID_SIZE+Tolerance)) && (y_p>(j*GRID_SIZE-Tolerance) )){
+                if(   (y_p<(j*Grid_Size_Y+Tolerance)) && (y_p>(j*Grid_Size_Y-Tolerance) )){
                     grid->operator ()(i,j)=row->at(k).z-min_z;
 //                    qDebug()<<i<<","<<j<<":"<<row->at(k).z-min_z;
                     k=row->size();
