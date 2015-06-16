@@ -18,6 +18,7 @@ ScannerWatcher::ScannerWatcher(QObject *parent) :
 }
 
 void ScannerWatcher::updatePorts(){
+
     //QList<QextPortInfo> newports = enumer->getPorts();
      QList<QSerialPortInfo> newports = QSerialPortInfo::availablePorts();
     if (newports.size()!=ports_.size()){
@@ -45,6 +46,8 @@ void ScannerWatcher::updatePorts(){
                     portName_ = port.portName();
                     hasport = true;
                     emit scannerPort(portName_);
+                }else{
+                    qDebug()<<"found: "<<port.description();
                 }
             }
         }

@@ -12,7 +12,7 @@ public:
 
 signals:
     void Failed(QString s);
-     void generatedCoatingFile(QString file);
+    void generatedCoatingFile(QString file);
 
 public slots:
      void generateTopCoat();

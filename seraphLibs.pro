@@ -218,7 +218,8 @@ HEADERS += \
     libraries/qdevicewatcher/src/qdevicechangeevent.h \
     globals.h \
     runtime/mastercontrolunit.h \
-    View/UI_structs.h
+    View/UI_structs.h \
+    tests/testscannercontroller.h
 
 SOURCES += \
     Controllers/gcodecontroller.cpp \
@@ -284,7 +285,8 @@ SOURCES += \
     libraries/qdevicewatcher/src/qdevicechangeevent.cpp \
     runtime/mastercontrolunit.cpp \
     View/UI_structs.cpp \
-    globals.cpp
+    globals.cpp \
+    tests/testscannercontroller.cpp
 
 
 
