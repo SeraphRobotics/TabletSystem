@@ -4,25 +4,10 @@ QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
 QT     += serialport
 CONFIG += c++11
-CONFIG += test
+#CONFIG += test
 CONFIG += opencv2411
 CONFIG += qt54
 CONFIG += eie
-
-
-##############################
-# static libs
-#CONFIG += staticlib
-# ***
-#TARGET = seraphLibs
-#TEMPLATE = lib
-#VERSION = 0.0.01
-
-# stand alone
-#TEMPLATE = app
-#CONFIG   += console
-#CONFIG   -= app_bundle
-
 ##############################
 
 # shared libs
@@ -145,7 +130,16 @@ test {
 
 } else {
     message(shared libs build)
+    #static libs
+    CONFIG += staticlib
+     ***
+    TARGET = seraphLibs
+    TEMPLATE = lib
+    VERSION = 0.0.01
 }
+
+
+
 
 HEADERS += \
     Controllers/gcodecontroller.h \

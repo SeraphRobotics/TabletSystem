@@ -47,7 +47,7 @@ public slots:
 
 private slots:
 
-
+    void clearScanDir();
 
     void processImage(QString file, cv::Mat noise);
 
@@ -70,6 +70,7 @@ public:
     QDir dir_;
     int numFilesToProcess;
     int numFilesProcessed;
+    QString img_format_;
 
 };
 

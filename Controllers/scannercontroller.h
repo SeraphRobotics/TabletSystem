@@ -15,10 +15,13 @@ public:
     explicit ScannerController(QObject *parent = 0);
 
 signals:
+    void ScanComplete();
+    void ScanError();
 
 public slots:
     void portSelected(QString port);
     void disconnected();
+    void startScan();
 
 
 private slots:

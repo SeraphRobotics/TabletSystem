@@ -11,6 +11,8 @@ ScanDataProcesser::ScanDataProcesser(QObject *parent) :
 {
     id_=QUuid::createUuid().toString();
     dir_=QDir::current();
+    QSettings s;
+    img_format_ = s.value("scanner/imageformat",".jpeg").toString().toLower();
 
 }
 
@@ -38,7 +40,7 @@ void ScanDataProcesser::calibrateWithScan(QString folder){
 
     qDebug()<<"Scan calibratation Folder: "<<d.absolutePath();
     QStringList filters;
-    filters<<"*.jpeg";
+    filters<<img_format_;
     QStringList files = d.entryList(filters);
 
     qDebug()<<"Files: \n"<<files;
@@ -59,13 +61,22 @@ void ScanDataProcesser::calibrateWithScan(QString folder){
     params.push_back(CV_IMWRITE_JPEG_QUALITY);
     params.push_back(99);
 
-    QString writelocation = default_path+"//"+"summed.jpeg";
+    QString writelocation = default_path+"//"+"summed"+img_format_;
     cv::imwrite(writelocation.toStdString(),baseImg,params);
     settings.setValue("scanner/noisefile",writelocation);
 
 }
 
+void ScanDataProcesser::clearScanDir(){
+    QDir dir(dir_);
+    dir.setNameFilters(QStringList() << img_format_<<img_format_.toUpper());
+    dir.setFilter(QDir::Files);
+    foreach(QString dirFile, dir.entryList())
+    {
+        dir.remove(dirFile);
+    }
 
+}
 void  ScanDataProcesser::processScan(QString folder){
 
     cv::Mat noisesum;
@@ -102,7 +113,7 @@ void  ScanDataProcesser::processScan(QString folder){
 
 void ScanDataProcesser::processImage(QString file, cv::Mat noise){
 
-    float x = QString(file).toLower().replace(".jpeg","").toFloat();//file.split(".")[0].toFloat();
+    float x = QString(file).toLower().replace(img_format_,"").toFloat();//file.split(".")[0].toFloat();
 //    qDebug()<<"x: "<<x<<"File: "<<file;
 
 
@@ -127,6 +138,7 @@ void ScanDataProcesser::processedImage(float x, QVector < FAHVector3 >* row ){
     if(numFilesProcessed == numFilesToProcess){
         Scan* s = new Scan();
         s->setInitialData( makeGrid());
+        clearScanDir();
         qDebug()<<"Made Scan";
         emit scanProcessed(s);
     }

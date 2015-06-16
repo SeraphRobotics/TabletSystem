@@ -60,6 +60,10 @@ void ScannerController::setupCamera(){
     }
 }
 
+void ScannerController::startScan(){
+    if(sai_->isReady()){buttonPress();}
+}
+
 void ScannerController::buttonPress(){
     if (!timer_->isActive() ){
         sai_->startScan();
@@ -69,9 +73,11 @@ void ScannerController::buttonPress(){
         QTimer::singleShot(100,this,SLOT(ScanStep()));
     }
 }
-void ScannerController::scannerError(){}
+void ScannerController::scannerError(){
+    emit ScanError();
+}
 void ScannerController::scanComplete(){
-
+    emit ScanComplete();
 }
 
 void ScannerController::ScanStep(){
