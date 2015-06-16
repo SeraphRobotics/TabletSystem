@@ -7,7 +7,8 @@ ScannerController::ScannerController(QObject *parent) :
     QObject(parent),camNumber_(1),scandistance_(338),stepsize_(2),framerate_(5),width_(1920),height_(1080),dist(0)
 {
     QSettings s;
-    camNumber_ = s.value("camNumber",1).toInt();
+    dir_ = QDir(s.value("scanner/directory",QDir::currentPath()).toString());
+    camNumber_ = s.value("scanner/camNumber",1).toInt();
     sai_=  new ScannerArduinoInterface();
     timer_ = new QTimer();
 //    timer_->setInterval(1000.0/framerate_*0.925);
@@ -96,7 +97,7 @@ void ScannerController::ScanStep(){
             if (!m.isNull()){
                 qDebug()<<"saving";
                 qDebug()<<m.byteCount();
-                m.save(QString::number(dist)+".jpeg","JPEG");
+                m.save(dir_.absoluteFilePath(QString::number(dist)+".jpeg"),"JPEG");
                 sai_->scanStep();
                 dist += stepsize_;
             }

@@ -18,10 +18,11 @@ TestScannerController::TestScannerController(QObject *parent): QObject(parent){}
 void TestScannerController::initTestCase(){
     QSettings s;
 
-    int cn = s.value("camNumber",-1).toInt();
+    int cn = s.value("scanner/camNumber",-1).toInt();
     if(cn ==-1){
-        s.setValue("camNumber",1);
+        s.setValue("scanner/camNumber",1);
     }
+    s.value("scanner/directory",QDir::currentPath());
     ScannerWatcher* sw = new ScannerWatcher();
     ScannerController* sc = new ScannerController();
 

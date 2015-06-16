@@ -41,6 +41,7 @@ private:
     ScannerArduinoInterface* sai_;
     cv::VideoCapture capwebcam;
     cv::Mat matOriginal;
+    QDir dir_;
 
 
 
