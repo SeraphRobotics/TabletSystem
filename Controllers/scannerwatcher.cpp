@@ -41,13 +41,14 @@ void ScannerWatcher::updatePorts(){
             //INITIALIZATION:
             bool hasport = false;
             foreach(QSerialPortInfo port,newports){
-                if(port.description().contains("arduino",Qt::CaseInsensitive) && !hasport ){
+                //qDebug()<<"PORT:"<<port.description();
+                if(port.description().contains("arduino uno",Qt::CaseInsensitive) && !hasport ){
                     qDebug()<<"port is now: "<<port.portName();
                     portName_ = port.portName();
                     hasport = true;
                     emit scannerPort(portName_);
                 }else{
-                    qDebug()<<"found: "<<port.description();
+                    //qDebug()<<"found: "<<port.description();
                 }
             }
         }

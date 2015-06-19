@@ -7,7 +7,7 @@
 #include <QDebug>
 
 ScanDataProcesser::ScanDataProcesser(QObject *parent) :
-    QObject(parent),numFilesToProcess(0),numFilesProcessed(0)
+    QObject(parent),numFilesToProcess(0),numFilesProcessed(0),is_foambox_(true)
 {
     id_=QUuid::createUuid().toString();
     dir_=QDir::current();
@@ -24,11 +24,26 @@ ScanDataProcesser::~ScanDataProcesser(){
 
 }
 
+ScanDataProcesser::ScanDataProcesser(QString folder):
+    QObject(),numFilesToProcess(0),numFilesProcessed(0),is_foambox_(true){
+    id_=QUuid::createUuid().toString();
+    dir_ = QDir(folder);
+    QSettings s;
+    img_format_ = s.value("scanner/imageformat",".jpeg").toString().toLower();
+}
+
+
 ScanDataProcesser::ScanDataProcesser(QString id, QString folder):
-    QObject(),numFilesToProcess(0),numFilesProcessed(0)
+    QObject(),numFilesToProcess(0),numFilesProcessed(0),is_foambox_(true)
 {
     id_=id;
     dir_ = QDir(folder);
+    QSettings s;
+    img_format_ = s.value("scanner/imageformat",".jpeg").toString().toLower();
+}
+
+void ScanDataProcesser::isFoamBox(bool box){
+    is_foambox_=box;
 }
 
 void ScanDataProcesser::processScan(){
@@ -113,10 +128,11 @@ void  ScanDataProcesser::processScan(QString folder){
 
 void ScanDataProcesser::processImage(QString file, cv::Mat noise){
 
+    //QString name = QString(file).toLower().replace(img_format_,"");
     float x = QString(file).toLower().replace(img_format_,"").toFloat();//file.split(".")[0].toFloat();
-//    qDebug()<<"x: "<<x<<"File: "<<file;
+    //qDebug()<<"x: "<<x<<"File: "<<file;
 
-
+    //qDebug()<<"Processing: "<<dir_.absoluteFilePath(file);
     ScanProcessing* worker = new ScanProcessing(x,dir_.absoluteFilePath(file),noise);
 //    QThread* thread = new QThread;
 //    worker->moveToThread(thread);
@@ -138,7 +154,11 @@ void ScanDataProcesser::processedImage(float x, QVector < FAHVector3 >* row ){
     if(numFilesProcessed == numFilesToProcess){
         Scan* s = new Scan();
         s->setInitialData( makeGrid());
+#ifdef DEBUGGING
+        //clearScanDir();
+#else
         clearScanDir();
+#endif
         qDebug()<<"Made Scan";
         emit scanProcessed(s);
     }
@@ -215,6 +235,17 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
         }
 
 
+    }
+
+    if(!is_foambox_){
+        QVector<float> bounds = grid->getValueRange();
+        float min = bounds.first();
+        float max = bounds.last();
+        for(int i=0; i<nx;i++){
+            for(int j=0; j<ny; j++){
+                grid->operator ()(i,j) = (min+max)-grid->at(i,j);
+            }
+        }
     }
 
     return grid;

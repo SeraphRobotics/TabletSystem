@@ -70,7 +70,7 @@ public:
 
     T& operator()(Math::Float x,Math::Float y);
 
-    QList<T> getValueRange();
+    QVector<T> getValueRange();
     //Returns a list of the values in the slice
     XYGrid<T> getValueGrid( T i);
     //Retruns a grid with only the points at the value. Null grid if value not in grid

@@ -297,10 +297,14 @@ T& XYGrid<T>::operator()(Math::Float x, Math::Float y){
 
 
 template <class T>
-QList<T> XYGrid<T>::getValueRange(){
-    QList<T> values;
+QVector<T> XYGrid<T>::getValueRange(){
+    QVector<T> values(2);
+    values.first()=10000;
+    values.last()=-10000;
     for(int i=0;i<data_.size();i++){
-        if(!values.contains(data_.at(i))){values.append(data_[i]);}
+        if(values.first()>data_.at(i)){values.first()=data_[i];}
+        if(values.last()<data_.at(i)){values.last()=data_[i];}
+        //if(!values.contains(data_.at(i))){values.append(data_[i]);}
     }
     return values;
 }
