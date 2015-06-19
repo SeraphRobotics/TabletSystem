@@ -131,21 +131,34 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVec
     QVector< FAHVector3 > b_curve;
     b_curve.append(heal_pts.first());
     FAHVector3 p1, p2,S,temp;
-    float m,n,b,c,d,e;
-    S = heal_pts.at(0);
-    m = -1.0/twoPtSlope(heal_pts.last(),heal_pts.first());
-    n = -1.0/m;
-    c = heal_pts.at(1).x-m*heal_pts.at(1).y;
-    d = heal_pts.at(0).x-n*heal_pts.at(0).y;
-    e = heal_pts.at(2).x-n*heal_pts.at(2).y;
-    p1.y = (c-d)/(n-m);
-    p1.x = m*p1.y+c;
-    p1.z = 0;
-    p2.y = (c-e)/(n-m);
-    p2.x = m*p1.y+c;
-    p2.z = 0;
 
-    temp = p1.copy()-S.copy();
+    S = heal_pts.at(1);
+
+    if (0.0001>twoPtSlope(heal_pts.last(),heal_pts.first())){
+
+        p1.y = heal_pts.first().y;
+        p1.x = S.x;
+        p1.z = 0;
+        p2.y = heal_pts.last().y;
+        p2.x = S.x;
+        p2.z = 0;
+    }else{
+        float m,n,c,d,e;
+        m = -1.0/twoPtSlope(heal_pts.last(),heal_pts.first());
+        n = -1.0/m;
+        c = heal_pts.at(1).x-m*heal_pts.at(1).y;
+        d = heal_pts.at(0).x-n*heal_pts.at(0).y;
+        e = heal_pts.at(2).x-n*heal_pts.at(2).y;
+        p1.y = (c-d)/(n-m);
+        p1.x = m*p1.y+c;
+        p1.z = 0;
+        p2.y = (c-e)/(n-m);
+        p2.x = m*p1.y+c;
+        p2.z = 0;
+    }
+
+
+    temp = S.copy()-p1.copy();
     p1 = p1+0.25*temp;
     temp = S.copy()-p2.copy();
     p2 = p2+0.25*temp;
