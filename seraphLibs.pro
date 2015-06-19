@@ -7,7 +7,6 @@ CONFIG += c++11
 #CONFIG += test
 CONFIG += opencv2411
 CONFIG += qt54
-CONFIG += eie
 ##############################
 
 # shared libs
@@ -98,7 +97,6 @@ unix:LIBS += \
 
 unix:LIBS += -lz
 
-#win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
 
 win32:INCLUDEPATH +="C:\\Eigen\\eigen3"
 
