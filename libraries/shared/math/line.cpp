@@ -334,10 +334,27 @@ Float Line::lineDistanceTo2DXY(const Vector3& point) const {
 
 Float Line::lineDistanceTo3D(const Vector3 &point) const{
     //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-    Vector3 p1 = b-a;
-    Vector3 p2 = a-point;
+    Vector3 p1 = point-a;
+    Vector3 p2 = point-b;
+    Vector3 d = b-a;
     Vector3 c = p1.cross(p2);
-    return c.magnitude()/p1.magnitude();
+    return c.magnitude()/d.magnitude();
+}
+
+Float Line::valueAtXY(Float X,Float Y) const{
+    //http://tutorial.math.lamar.edu/Classes/CalcIII/EqnsOfLines.aspx
+    Vector3 abc = b-a;
+    if (0==abc.z) return a.z;
+    if (0==abc.y && 0!=abc.x){
+        return abc.z/abc.x*(X-a.x)+a.z;
+    }
+    if (0==abc.x && 0!=abc.y){
+        return abc.z/abc.y*(Y-a.y)+a.z;
+    }
+    return a.z;
+
+
+
 }
 
 }

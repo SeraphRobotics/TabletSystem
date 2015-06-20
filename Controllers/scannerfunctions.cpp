@@ -265,15 +265,15 @@ float getHeightAt(float x, float y, FAHVector3 p1, FAHVector3 p2, FAHVector3 p3,
     FAHTriangle t1(p1,p2,p4);
     FAHTriangle t2(p1,p3,p4);
 
-
+    float h=0;
     FAHVector3 O(x,y,0);
     FAHVector3 R(0,0,1);
     if (t1.intersectedByRay(O,R)){
-        return t1.heightAt(O,R);
+        h= t1.heightAt(O,R);
     }else if(t2.intersectedByRay(O,R)){
         return t2.heightAt(O,R);
     }else{
-        float h = p1.z;
+        h = p1.z;
         FAHVector3 pt(x,y,0);
         FAHLine l1(p1,p2);
         FAHLine l2(p1,p3);
@@ -286,14 +286,15 @@ float getHeightAt(float x, float y, FAHVector3 p1, FAHVector3 p2, FAHVector3 p3,
         lines.append(l4);
         foreach(FAHLine l, lines){
             if(l.pointOnSegment2D(pt)){
-                h=  l.lineDistanceTo3D(pt);
+                h = l.valueAtXY(x,y);//l.lineDistanceTo3D(pt); //TODO THIS IS WRONG, this gives minimum to line not the value at X,y
             }
         }
 
-        printf("\nCouldnt set value: Array not intersected at %f,%f",x,y);
-        return h;
+        if (h==p1.z){printf("\nCouldnt set value: Array not intersected at %f,%f",x,y);}
+
+
     }
-    return 0;
+    return h;
 }
 
 

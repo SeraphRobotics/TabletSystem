@@ -190,6 +190,8 @@ namespace Math {
   Float lineDistanceTo2DXY(const Vector3& point) const;
 
   Float lineDistanceTo3D(const Vector3 &point) const;
+
+  Float valueAtXY(Float X,Float Y) const;
 };
 
 }
