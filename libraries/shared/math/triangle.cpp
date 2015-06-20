@@ -145,6 +145,15 @@ bool Triangle::intersectedByRay(const Vector3& origin,
   // vector is parallel to plane
   if (floatsEqual(a, 0)) return false;
 
+
+  Line l(origin.copy(),origin.copy()+1000*ray.copy());
+  Vector3 pt;
+  if(     edge0().intersectSegmentWithSegment3DXY(l,&pt) ||
+          edge1().intersectSegmentWithSegment3DXY(l,&pt)||
+          edge2().intersectSegmentWithSegment3DXY(l,&pt)){
+      return true;
+  }
+
   double f=1/a;
   Vector3 s;
   s.set(origin).sub(v[0]);

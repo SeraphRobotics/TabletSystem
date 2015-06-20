@@ -143,7 +143,25 @@ Line& Line::changeLength(Float amount) {
 }
 
 
+bool Line::intersectSegmentWithSegment3DXY(const Line& other, Vector3* result){
+    //http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+    result->set(0,0,0);
+    Vector3 q,p,r,s;
+    q = a.copy();
+    p = other.a.copy();
+    r = b.copy()-q;
+    s = other.b.copy();
 
+    if(r.cross(s).magnitude()==0){return false;}
+
+    float t = ((q-p).cross((s/(r.cross(s).magnitude())))).magnitude();
+    float u = ((q-p).cross((r/(r.cross(s).magnitude())))).magnitude();
+    if( (u<1 && u>0 && t>0 && t<1) || u==0 || u==1 || t==1 || t==0){
+        Vector3 pt = q+u*s;
+        result->set(pt);
+        return true;
+    }
+}
 bool Line::intersectSegmentWithSegment2DXY(
         const Line& other,
         Vector3* result) const {

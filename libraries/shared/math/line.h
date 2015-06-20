@@ -138,6 +138,8 @@ namespace Math {
    * only checks for 2D intersections on the XY plane (the Z coordinate is
    * entirely ignored on both segments).
    */
+  bool intersectSegmentWithSegment3DXY(const Line& other, Vector3* result);
+
   bool intersectSegmentWithSegment2DXY(const Line& other,
                                        Vector3* result) const;
 

@@ -273,7 +273,7 @@ float getHeightAt(float x, float y, FAHVector3 p1, FAHVector3 p2, FAHVector3 p3,
     }else if(t2.intersectedByRay(O,R)){
         h=t2.heightAt(O,R);
     }else{
-        printf("\nCouldnt set value: Array not intersected");
+        printf("\nCouldnt set value: Array not intersected at %f,%f",x,y);
         h=p1.z;
     }
     return h;

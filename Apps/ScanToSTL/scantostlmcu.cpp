@@ -29,7 +29,8 @@ ScanToSTLMCU::ScanToSTLMCU(QObject *parent) : QObject(parent)
 
     settings.setValue("Generating/healthickness",10);
     settings.setValue("Generating/border",2);
-    settings.setValue("Generating/slope",1.3);//63.5/101); 0.6048
+    settings.setValue("Generating/bordertimes",75);
+    settings.setValue("Generating/slope",1.1);//63.5/101); 0.6048
     settings.setValue("Generating/offset",2.0);
     settings.setValue("Generating/blurtimes",10);
     settings.setValue("printing/topcoat-thickness",2.0);
@@ -119,26 +120,7 @@ void ScanToSTLMCU::scanImageGenerated(QImage img){
 
 void ScanToSTLMCU::processScan(){
 
-    float scalex =2.0;
-    float scaley =0.5;
 
-    // y
-    // |
-    // |
-    // o------>x
-    QVector< FAHVector3 > forePts;
-    forePts.append(pointFromValues("BV",71,scalex,scaley));
-    forePts.append(pointFromValues("CN",56,scalex,scaley));
-    forePts.append(pointFromValues("FM",48,scalex,scaley));
-    forePts.append(pointFromValues("GU",54,scalex,scaley));
-
-    QVector< FAHVector3 > healPts;
-    //scalex=1.0;
-    healPts.append(pointFromValues("DO",132,scalex,scaley));
-    FAHVector3 heal = pointFromValues("FC",149,scalex,scaley);
-    heal.x= heal.x+0.5;
-    healPts.append(heal);
-    healPts.append(pointFromValues("GM",131,scalex,scaley));
 
     Posting forpost;
     forpost.angle=0*M_PI/180.0;
@@ -159,6 +141,28 @@ void ScanToSTLMCU::processScan(){
 
     oc->setScan(sm->scanIds()[0]);
     oc->getOrthotic()->getScan()->reset();
+
+    float scalex =oc->getOrthotic()->getScan()->getProcessedXYGrid()->stepSizeX();
+    float scaley =oc->getOrthotic()->getScan()->getProcessedXYGrid()->stepSizeY();
+
+    // y
+    // |
+    // |
+    // o------>x
+    QVector< FAHVector3 > forePts;
+    forePts.append(pointFromValues("BK",71,scalex,scaley));
+    forePts.append(pointFromValues("CN",56,scalex,scaley));
+    forePts.append(pointFromValues("FM",48,scalex,scaley));
+    forePts.append(pointFromValues("GW",54,scalex,scaley));
+
+    QVector< FAHVector3 > healPts;
+    //scalex=1.0;
+    healPts.append(pointFromValues("DO",135,scalex,scaley));
+    FAHVector3 heal = pointFromValues("FC",146,scalex,scaley);
+    heal.x= heal.x+0.5;
+    healPts.append(heal);
+    healPts.append(pointFromValues("GM",135,scalex,scaley));
+
     oc->setBorderPoints(healPts, forePts);
     qDebug() << "border made";
     oc->setTopCoat(tc);
