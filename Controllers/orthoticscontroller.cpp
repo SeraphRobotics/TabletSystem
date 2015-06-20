@@ -137,7 +137,7 @@ void OrthoticController::setPosting(Posting p){
     float heightoffset =settings.value("Generating/offset",0.5).toFloat();//0.5;/// CANT BE ZERO OR A BAD STL IS MADE
     int blurs = settings.value("Generating/blurtimes",10).toInt();//2;
 
-    //normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
+    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
 
     blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
