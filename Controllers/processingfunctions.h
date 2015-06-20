@@ -70,6 +70,7 @@ void projectGridOntoPlane(FAHVector3 n,FAHVector3 cent, XYGrid< float >* grid);
  */
 QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVector3 fp2);
 
+FAHVector3 findHeal(XYGrid< float >* grid,QVector<FAHVector3> healpts);
 
 /**
  * @brief minAlongLine

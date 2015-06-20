@@ -41,6 +41,12 @@ Orthotic* OrthoticController::getOrthotic(){
 
 void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector< FAHVector3 > forePts){
     if(!(healPts.size()==3 && forePts.size()==4)){return;}
+    for(int i=0;i<healPts.size();i++){
+        healPts[i].z=orth_->getScan()->getProcessedXYGrid()->at(healPts[i].x,healPts[i].y);
+    }
+    for(int i=0;i<forePts.size();i++){
+        forePts[i].z=orth_->getScan()->getProcessedXYGrid()->at(forePts[i].x,forePts[i].y);
+    }
     orth_->setBorderPoints(healPts,forePts);
     FAHLoopInXYPlane* loop = loopFromPoints(healPts,forePts);
     orth_->setBoundary(loop);
@@ -55,14 +61,26 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
 void OrthoticController::processBoundary(){
 
     orth_->getScan()->reset();
-    FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
-    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
-    FAHVector3 minpt3 = orth_->getForePoints().first();
-    minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(minpt3.x, minpt3.y );
-    FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
+    //    FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
+    //    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
+    //    FAHVector3 minpt3 = minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
+    //        minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(minpt3.x, minpt3.y );
 
-    FAHVector3 cent = orth_->getForePoints().first();
-    FAHVector3 d(cent.x,cent.y,cent.z);
+    // generates a plane between the heal's minimum and the fore foot
+    FAHVector3 minpt1 = findHeal(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints());
+    FAHVector3 minpt2=orth_->getForePoints().first();
+    FAHVector3 minpt3=orth_->getForePoints().last();
+
+
+    FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
+    FAHVector3 d= minpt1.copy();
+
+
+    //ofset the plane by the thickness of the heal you want
+
+    QSettings settings;
+    float slope = settings.value("Generating/healthickness",10).toFloat();
+    d.z = d.z-slope;
     projectGridOntoPlane(planeVec.scale(1.0),d,orth_->getScan()->getProcessedXYGrid());
     //blurGrid(orth_->getScan()->getProcessedXYGrid(),6);
 //    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
@@ -114,8 +132,8 @@ void OrthoticController::setPosting(Posting p){
 
     anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
     QSettings settings;
-    int bordertimes = settings.value("Generating/bordertimes",75).toInt();//2;
-    float slope = settings.value("Generating/slope",63.5/101).toFloat();
+    int bordertimes = settings.value("Generating/bordertimes",25).toInt();//2;
+    float slope = settings.value("Generating/slope",1).toFloat();
     float heightoffset =settings.value("Generating/offset",0.5).toFloat();//0.5;/// CANT BE ZERO OR A BAD STL IS MADE
     int blurs = settings.value("Generating/blurtimes",10).toInt();//2;
 

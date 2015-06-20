@@ -444,6 +444,31 @@ QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp
     return returns;
 }
 
+FAHVector3 findHeal(XYGrid< float >* grid,QVector<FAHVector3> healpts){
+    float dy = healpts.last().y - healpts.first().y;
+    int ny = abs(dy/grid->stepSizeY());
+    float dx = healpts.first().x - healpts.at(1).x;
+    int nx = abs(dx/grid->stepSizeX());
+
+    FAHVector3 p0;
+    p0.x = std::min(healpts.first().x,healpts.at(1).x);
+    p0.y = std::min(healpts.last().y, healpts.first().y);
+    p0.z = 0;
+    FAHVector3 minpt = healpts.first().copy();
+    for(int i=0;i<nx;i++){
+        for(int j=0;j<ny;j++){
+            FAHVector3 pt;
+            pt.x = i*grid->stepSizeX()+p0.x;
+            pt.y = j*grid->stepSizeY()+p0.y;
+            if(grid->at(pt.x,pt.y)<minpt.z){
+                pt.z = grid->at(pt.x,pt.y);
+                minpt = pt.copy();
+            }
+        }
+    }
+    return minpt;
+}
+
 FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
     FAHVector3 v(0,0,0);
     FAHVector3 minpt(0,0,10000);
@@ -721,8 +746,10 @@ void normalizeBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times
 }
 
 QVector< FAHVector3> transformPointsWithPosting(FAHVector3 p1,FAHVector3 p2,Posting p){
-    p2.z=0;
-    p1.z=0;
+    FAHVector3 p1p = p1.copy();
+    FAHVector3 p2p = p2.copy();
+    p2p.z=0;
+    p1p.z=0;
 
     /**
       We calculate the height of a triangle
@@ -739,15 +766,15 @@ QVector< FAHVector3> transformPointsWithPosting(FAHVector3 p1,FAHVector3 p2,Post
     FAHVector3 D = p2-p1;
     float h = D.magnitude()*tan(p.angle);
     if(Posting::kValgus==p.varus_valgus){
-        p2.z=-1.0*(h+p.verticle);
-        p1.z=-1.0*(p.verticle);
+        p2p.z=-1.0*(h+p.verticle);
+        p1p.z=-1.0*(p.verticle);
     }else{
-        p2.z=-1.0*(p.verticle);
-        p1.z=-1.0*(h+p.verticle);
+        p2p.z=-1.0*(p.verticle);
+        p1p.z=-1.0*(h+p.verticle);
     }
     QVector< FAHVector3> returnvec;
-    returnvec.append(p1);
-    returnvec.append(p2);
+    returnvec.append(p1p);
+    returnvec.append(p2p);
     return returnvec;
 }
 

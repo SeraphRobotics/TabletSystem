@@ -2,8 +2,8 @@
 #include "globals.h"
 
 #ifdef Q_OS_WIN
-const QString SampleDataLocation(QString(QDir::currentPath()+ "/SampleData/" ));
-const QString SampleDataOutputLocation(QString(QDir::currentPath() + "/output/" ));
+const QString SampleDataLocation(QString(QDir::currentPath()));
+const QString SampleDataOutputLocation(QString(QDir::currentPath()));
 #else
 const QString SampleDataLocation(QString(QDir::currentPath() + "/../seraphLibs/SampleData/"));
 const QString SampleDataOutputLocation(QString(QDir::currentPath() + "/../seraphLibs/SampleData/output"));
@@ -18,9 +18,7 @@ QMap<QString,int> alphabet;
 
 ScanToSTLMCU::ScanToSTLMCU(QObject *parent) : QObject(parent)
 {
-    sm = new ScanManager();
-    om = new OrthoticManager(sm);
-    oc = new OrthoticController(om);
+
 
     QSettings settings;
     settings.setValue("scan-extension","scan");
@@ -29,9 +27,9 @@ ScanToSTLMCU::ScanToSTLMCU(QObject *parent) : QObject(parent)
     settings.setValue("ortho-extension","ortho");
     settings.setValue("ortho-directory", SampleDataLocation);
 
-
+    settings.setValue("Generating/healthickness",10);
     settings.setValue("Generating/border",2);
-    settings.setValue("Generating/slope",63.5/101);
+    settings.setValue("Generating/slope",1.3);//63.5/101); 0.6048
     settings.setValue("Generating/offset",2.0);
     settings.setValue("Generating/blurtimes",10);
     settings.setValue("printing/topcoat-thickness",2.0);
@@ -90,7 +88,9 @@ ScanToSTLMCU::ScanToSTLMCU(QObject *parent) : QObject(parent)
     alphabet["y"]=25;
     alphabet["z"]=26;
 
-
+    sm = new ScanManager();
+    om = new OrthoticManager(sm);
+    oc = new OrthoticController(om);
     connect(oc,SIGNAL(boundaryLoopUpdated(FAHLoopInXYPlane*)), this, SLOT(boundaryLoopUpdated(FAHLoopInXYPlane*)));
     connect(oc,SIGNAL(scanImageGenerated(QImage)), this, SLOT(scanImageGenerated(QImage)));
 }
@@ -119,15 +119,15 @@ void ScanToSTLMCU::scanImageGenerated(QImage img){
 
 void ScanToSTLMCU::processScan(){
 
-    float scalex =1.0;
-    float scaley =1.0;
+    float scalex =2.0;
+    float scaley =0.5;
 
     // y
     // |
     // |
     // o------>x
     QVector< FAHVector3 > forePts;
-    forePts.append(pointFromValues("BU",71,scalex,scaley));
+    forePts.append(pointFromValues("BV",71,scalex,scaley));
     forePts.append(pointFromValues("CN",56,scalex,scaley));
     forePts.append(pointFromValues("FM",48,scalex,scaley));
     forePts.append(pointFromValues("GU",54,scalex,scaley));
@@ -135,7 +135,9 @@ void ScanToSTLMCU::processScan(){
     QVector< FAHVector3 > healPts;
     //scalex=1.0;
     healPts.append(pointFromValues("DO",132,scalex,scaley));
-    healPts.append(pointFromValues("FA",146,scalex,scaley));
+    FAHVector3 heal = pointFromValues("FC",149,scalex,scaley);
+    heal.x= heal.x+0.5;
+    healPts.append(heal);
     healPts.append(pointFromValues("GM",131,scalex,scaley));
 
     Posting forpost;
@@ -156,6 +158,7 @@ void ScanToSTLMCU::processScan(){
     tc.thickness=5;
 
     oc->setScan(sm->scanIds()[0]);
+    oc->getOrthotic()->getScan()->reset();
     oc->setBorderPoints(healPts, forePts);
     qDebug() << "border made";
     oc->setTopCoat(tc);
@@ -170,7 +173,7 @@ void ScanToSTLMCU::processScan(){
     oc->setBottomType(Orthotic::kCurved);
     qDebug() << "setBottom";
 
-
+    oc->getOrthotic()->getScan()->writeToDisk();
 //    oc->save();
     qDebug() << "pre make stls";
 
