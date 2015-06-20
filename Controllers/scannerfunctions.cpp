@@ -265,18 +265,35 @@ float getHeightAt(float x, float y, FAHVector3 p1, FAHVector3 p2, FAHVector3 p3,
     FAHTriangle t1(p1,p2,p4);
     FAHTriangle t2(p1,p3,p4);
 
+
     FAHVector3 O(x,y,0);
     FAHVector3 R(0,0,1);
-    float h=0;
     if (t1.intersectedByRay(O,R)){
-        h=t1.heightAt(O,R);
+        return t1.heightAt(O,R);
     }else if(t2.intersectedByRay(O,R)){
-        h=t2.heightAt(O,R);
+        return t2.heightAt(O,R);
     }else{
+        float h = p1.z;
+        FAHVector3 pt(x,y,0);
+        FAHLine l1(p1,p2);
+        FAHLine l2(p1,p3);
+        FAHLine l3(p2,p4);
+        FAHLine l4(p3,p4);
+        QList<FAHLine> lines;
+        lines.append(l1);
+        lines.append(l2);
+        lines.append(l3);
+        lines.append(l4);
+        foreach(FAHLine l, lines){
+            if(l.pointOnSegment2D(pt)){
+                h=  l.lineDistanceTo3D(pt);
+            }
+        }
+
         printf("\nCouldnt set value: Array not intersected at %f,%f",x,y);
-        h=p1.z;
+        return h;
     }
-    return h;
+    return 0;
 }
 
 
