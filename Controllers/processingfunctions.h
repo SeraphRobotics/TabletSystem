@@ -70,7 +70,7 @@ void projectGridOntoPlane(FAHVector3 n,FAHVector3 cent, XYGrid< float >* grid);
  */
 QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp1, FAHVector3 fp2);
 
-FAHVector3 findHeal(XYGrid< float >* grid,QVector<FAHVector3> healpts);
+FAHVector3 findHeal(XYGrid< float >* grid, QVector<FAHVector3> healpts, FAHLoopInXYPlane *loop);
 
 /**
  * @brief minAlongLine
@@ -105,7 +105,11 @@ void blurByBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times);
 
 void normalizeBorder(XYGrid<float>* grid, FAHLoopInXYPlane* borderloop, int times);
 
+void gradientFilter(XYGrid<float>* grid);
+
 void medianNoiseFiltering(XYGrid<float>* grid);
+
+int compare (const void * a, const void * b);
 
 void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times);
 

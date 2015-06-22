@@ -4,6 +4,8 @@ ScanningMCU::ScanningMCU(QObject *parent) : QObject(parent)
 {
     QSettings s;
     s.setValue("scanner/directory",QDir::currentPath()+"/ScanRaw");
+    s.setValue("scanner/y_step",0.6);
+    s.setValue("scanner/x_step",2);
 
     int cn = s.value("scanner/camNumber",-1).toInt();
     if(cn ==-1){

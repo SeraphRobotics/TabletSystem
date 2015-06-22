@@ -60,16 +60,18 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
 
 void OrthoticController::processBoundary(){
 
-    orth_->getScan()->reset();
+    //orth_->getScan()->reset();
     //    FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
     //    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
     //    FAHVector3 minpt3 = minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
     //        minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(minpt3.x, minpt3.y );
 
     // generates a plane between the heal's minimum and the fore foot
-    FAHVector3 minpt1 = findHeal(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints());
-    FAHVector3 minpt2=orth_->getForePoints().first();
-    FAHVector3 minpt3=orth_->getForePoints().last();
+    FAHVector3 minpt1 = findHeal(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints(),orth_->getLoop());
+//    FAHVector3 minpt2=orth_->getForePoints().first();
+//    FAHVector3 minpt3=orth_->getForePoints().last();
+    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
+    FAHVector3 minpt3 = orth_->getForePoints().last();//minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
 
 
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
@@ -124,13 +126,11 @@ void OrthoticController::setPosting(Posting p){
 
     QVector<FAHVector3> planeAndCent = makePostingPlane(heals[0],heals[1],fors[0],fors[1]);
 
-
-
     projectGridOntoPlane(planeAndCent[0],planeAndCent[1], posted);
 
     orth_->getScan()->setPostedGrid(posted);
 
-    anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
+
     QSettings settings;
     int bordertimes = settings.value("Generating/bordertimes",75).toInt();//2;
     float slope = settings.value("Generating/slope",1).toFloat();
@@ -139,11 +139,13 @@ void OrthoticController::setPosting(Posting p){
 
     normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
 
+    anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
     blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
 
 
     scaleAndOffset(orth_->getScan()->getPostedXYGrid(),slope,heightoffset);
+
 
 //    QFile f("posted.csv");
 //    f.open(QFile::WriteOnly);
@@ -204,13 +206,15 @@ void OrthoticController::makeSTLs(){
 
 
     FAHLoopInXYPlane* bottomloop = bottomLoopFromPoints(orth_->getHealPoints(),orth_->getForePoints());
-//    STLMesh* angleMesh =
 
     qDebug()<<"Making Shell";
+#ifdef FULLSCAN
 //    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
+#else
     if (make_thickness){
         FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);
     }
+#endif
     else {STLFromSection(shell,orth_->shellgrid,bottomloop,orth_->getLoop(),inners);}
     //// EXTRA_SCALE shell->scale(2,1,1);
 

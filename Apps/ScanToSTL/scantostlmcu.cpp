@@ -1,5 +1,6 @@
 #include "scantostlmcu.h"
 #include "globals.h"
+#include "Controllers/processingfunctions.h"
 
 #ifdef Q_OS_WIN
 const QString SampleDataLocation(QString(QDir::currentPath()));
@@ -30,7 +31,7 @@ ScanToSTLMCU::ScanToSTLMCU(QObject *parent) : QObject(parent)
     settings.setValue("Generating/healthickness",10);
     settings.setValue("Generating/border",2);
     settings.setValue("Generating/bordertimes",75);
-    settings.setValue("Generating/slope",1.1);//63.5/101); 0.6048
+    settings.setValue("Generating/slope",63.5/101);//63.5/101); 0.6048 //1.1
     settings.setValue("Generating/offset",2.0);
     settings.setValue("Generating/blurtimes",10);
     settings.setValue("printing/topcoat-thickness",2.0);
@@ -123,12 +124,12 @@ void ScanToSTLMCU::processScan(){
 
 
     Posting forpost;
-    forpost.angle=0*M_PI/180.0;
+    forpost.angle=10*M_PI/180.0;
     forpost.verticle=0;
     forpost.varus_valgus=Posting::kValgus;
     forpost.for_rear=Posting::kForFoot;
     Posting rearpost;
-    rearpost.angle=0*M_PI/180.0;
+    rearpost.angle=10*M_PI/180.0;
     rearpost.verticle=0;
     rearpost.varus_valgus=Posting::kValgus;
     rearpost.for_rear=Posting::kRearFoot;
@@ -141,27 +142,45 @@ void ScanToSTLMCU::processScan(){
 
     oc->setScan(sm->scanIds()[0]);
     oc->getOrthotic()->getScan()->reset();
-
+    medianNoiseFiltering(oc->getOrthotic()->getScan()->getProcessedXYGrid() );
+    oc->getOrthotic()->getScan()->setPostedGrid(oc->getOrthotic()->getScan()->getProcessedXYGrid());
+    //oc->getOrthotic()->getScan()->writeToDisk();
+    //return;
     float scalex =oc->getOrthotic()->getScan()->getProcessedXYGrid()->stepSizeX();
     float scaley =oc->getOrthotic()->getScan()->getProcessedXYGrid()->stepSizeY();
 
+    qDebug()<<"scale x, scale y: " <<scalex<<","<<scaley;
     // y
     // |
     // |
     // o------>x
     QVector< FAHVector3 > forePts;
-    forePts.append(pointFromValues("BK",71,scalex,scaley));
-    forePts.append(pointFromValues("CN",56,scalex,scaley));
-    forePts.append(pointFromValues("FM",48,scalex,scaley));
-    forePts.append(pointFromValues("GW",54,scalex,scaley));
-
     QVector< FAHVector3 > healPts;
-    //scalex=1.0;
-    healPts.append(pointFromValues("DO",135,scalex,scaley));
-    FAHVector3 heal = pointFromValues("FC",146,scalex,scaley);
-    heal.x= heal.x+0.5;
+    //ADAM AT1
+//    forePts.append(pointFromValues("BK",71,scalex,scaley));
+//    forePts.append(pointFromValues("CN",56,scalex,scaley));
+//    forePts.append(pointFromValues("FM",48,scalex,scaley));
+//    forePts.append(pointFromValues("GW",54,scalex,scaley));
+
+//
+//    //scalex=1.0;
+//    healPts.append(pointFromValues("DO",135,scalex,scaley));
+//    FAHVector3 heal = pointFromValues("FC",146,scalex,scaley);
+//    heal.x= heal.x+0.5;
+//    healPts.append(heal);
+//    healPts.append(pointFromValues("GM",135,scalex,scaley));
+
+    forePts.append(pointFromValues("DG",71,scalex,scaley));
+    forePts.append(pointFromValues("EH",62,scalex,scaley));
+    forePts.append(pointFromValues("HI",61,scalex,scaley));
+    forePts.append(pointFromValues("IJ",69,scalex,scaley));
+
+
+    healPts.append(pointFromValues("ED",130,scalex,scaley));
+    FAHVector3 heal = pointFromValues("FX",151,scalex,scaley);
+//    heal.x= heal.x+0.5;
     healPts.append(heal);
-    healPts.append(pointFromValues("GM",135,scalex,scaley));
+    healPts.append(pointFromValues("HT",131,scalex,scaley));
 
     oc->setBorderPoints(healPts, forePts);
     qDebug() << "border made";
@@ -173,12 +192,12 @@ void ScanToSTLMCU::processScan(){
     qDebug() << "forpost";
 
     oc->setPosting(rearpost);
+
     qDebug() << "rearpost";
     oc->setBottomType(Orthotic::kCurved);
     qDebug() << "setBottom";
 
-    oc->getOrthotic()->getScan()->writeToDisk();
-//    oc->save();
+
     qDebug() << "pre make stls";
 
     oc->makeSTLs();

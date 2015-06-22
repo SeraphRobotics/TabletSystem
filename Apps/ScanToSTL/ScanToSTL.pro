@@ -19,6 +19,8 @@ INCLUDEPATH += ../
 include("seraphlibs.pro")
 
 
+DEFINES += DEBUGGING
+
 SOURCES += main.cpp \
     scantostlmcu.cpp
 

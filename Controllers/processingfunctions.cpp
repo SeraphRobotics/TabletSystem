@@ -444,7 +444,7 @@ QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp
     return returns;
 }
 
-FAHVector3 findHeal(XYGrid< float >* grid,QVector<FAHVector3> healpts){
+FAHVector3 findHeal(XYGrid< float >* grid,QVector<FAHVector3> healpts,FAHLoopInXYPlane* loop){
     float dy = healpts.last().y - healpts.first().y;
     int ny = abs(dy/grid->stepSizeY());
     float dx = healpts.first().x - healpts.at(1).x;
@@ -460,9 +460,11 @@ FAHVector3 findHeal(XYGrid< float >* grid,QVector<FAHVector3> healpts){
             FAHVector3 pt;
             pt.x = i*grid->stepSizeX()+p0.x;
             pt.y = j*grid->stepSizeY()+p0.y;
-            if(grid->at(pt.x,pt.y)<minpt.z){
-                pt.z = grid->at(pt.x,pt.y);
-                minpt = pt.copy();
+            if(loop->pointInside(pt)){
+                if(grid->at(pt.x,pt.y)<minpt.z){
+                    pt.z = grid->at(pt.x,pt.y);
+                    minpt = pt.copy();
+                }
             }
         }
     }
@@ -537,24 +539,24 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
 void medianNoiseFiltering(XYGrid<float>* grid){
     //http://eeweb.poly.edu/~yao/EE3414/image_filtering.pdf
     XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
-    for(int j=1;j<grid->ny()-1;j++){
-        for(int i=1;i<grid->nx()-1;i++){
-            float avg=0;
-            for(int k=-1;k<1;k++){
-                for(int L=-1;L<1;L++){
-                    avg += copy.at(i+k,j+L);
+    for(int j=2;j<grid->ny()-2;j++){
+        for(int i=3;i<grid->nx()-3;i++){
+            float points[35];
+            for(int k=-2;k<2;k++){
+                for(int L=-3;L<3;L++){
+                    points[(7*(k+2)+(L+3))] = copy.at(i+k,j+L) ;
                 }
             }
-            float others = avg - copy.at(i,j);
-            others = others/8.0;
-            avg = avg/9.0;
-            if (copy.at(i,j)>1.2*others){grid->operator ()(i,j)=others;}
-            else {grid->operator ()(i,j)=avg;}
+            qsort(points,35,sizeof(float),compare);
+            grid->operator ()(i,j)=points[17];
         }
     }
 }
 
-
+int compare (const void * a, const void * b)
+{
+  return ( *(float*)a - *(float*)b );
+}
 
 void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
     QList<FAHLoopInXYPlane*> innerLoops;

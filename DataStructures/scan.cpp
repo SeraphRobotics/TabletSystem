@@ -91,6 +91,7 @@ XYGrid<float>* Scan::getPostedXYGrid(){return posted_;}
 
 void Scan::reset(){
     processed_ = new XYGrid<float>(raw_->asVector(),raw_->ny(),raw_->stepSizeX(),raw_->stepSizeY());
+    posted_ = new XYGrid<float>(processed_->asVector(),processed_->ny(),processed_->stepSizeX(),processed_->stepSizeY());
 }
 
 void Scan::setInitialData(XYGrid<float>* grid){// makes a copy of the data
