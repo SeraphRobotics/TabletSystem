@@ -521,7 +521,7 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
             }
         }
     }
-//    qDebug()<<"Min: "<<min;
+    qDebug()<<"Min: "<<min;
     for(int i=0; i<grid->nx();i++){
         for(int j=0; j<grid->ny();j++){
             if(grid->at(i,j)<min){
@@ -532,6 +532,26 @@ void thresholdWithLoop(XYGrid< float >* grid, FAHLoopInXYPlane* loop){
         }
     }
 
+}
+
+void medianNoiseFiltering(XYGrid<float>* grid){
+    //http://eeweb.poly.edu/~yao/EE3414/image_filtering.pdf
+    XYGrid<float> copy(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
+    for(int j=1;j<grid->ny()-1;j++){
+        for(int i=1;i<grid->nx()-1;i++){
+            float avg=0;
+            for(int k=-1;k<1;k++){
+                for(int L=-1;L<1;L++){
+                    avg += copy.at(i+k,j+L);
+                }
+            }
+            float others = avg - copy.at(i,j);
+            others = others/8.0;
+            avg = avg/9.0;
+            if (copy.at(i,j)>1.2*others){grid->operator ()(i,j)=others;}
+            else {grid->operator ()(i,j)=avg;}
+        }
+    }
 }
 
 

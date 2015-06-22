@@ -105,6 +105,8 @@ void blurByBorder(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times);
 
 void normalizeBorder(XYGrid<float>* grid, FAHLoopInXYPlane* borderloop, int times);
 
+void medianNoiseFiltering(XYGrid<float>* grid);
+
 void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times);
 
 ///IMAGE MAKING
