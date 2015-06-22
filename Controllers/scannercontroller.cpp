@@ -33,7 +33,7 @@ void ScannerController::portSelected(QString port){
     sai_=  new ScannerArduinoInterface(port,QSerialPort::Baud9600);
     connect(sai_,SIGNAL(buttonPressed()),this,SLOT(buttonPress()));
     connect(sai_,SIGNAL(errored()),this,SLOT(scannerError()));
-    connect(sai_,SIGNAL(scanMovementCompleted()),this,SLOT(scanComplete()));
+    //connect(sai_,SIGNAL(scanMovementCompleted()),this,SLOT(scanComplete()));
     connect(sai_,SIGNAL(scanIncremented()),this,SLOT(ScanStep()));
 
     qDebug()<<"selected: "<<port<<" opened:"<<sai_->isReady();
@@ -101,7 +101,7 @@ void ScannerController::ScanStep(){
 
             m = QImage((unsigned char*) dest.data,dest.cols,dest.rows,dest.step,QImage::Format_RGB888);
             if (!m.isNull()){
-                qDebug()<<"saving";
+                qDebug()<<"saving to "<<dir_.absoluteFilePath(QString::number(dist)+".jpeg");
                 qDebug()<<m.byteCount();
                 m.save(dir_.absoluteFilePath(QString::number(dist)+".jpeg"),"JPEG");
                 sai_->scanStep();
@@ -117,6 +117,7 @@ void ScannerController::ScanStep(){
         capwebcam.release();
         QTimer::singleShot(100.0,sai_,SLOT(endScan()));
         qDebug()<<"ending";
+        QTimer::singleShot(100.0,this,SLOT( ScanComplete() ));
     }else{
         qDebug()<<"STEP";
 //        QTimer::singleShot(1000.0,this,SLOT(ScanStep()));

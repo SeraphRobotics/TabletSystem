@@ -35,8 +35,22 @@ bool ScannerArduinoInterface::connectPort(QString port, BaudRateType baudrate){
 bool ScannerArduinoInterface::isReady(){
     return port_->isOpen();
 }
+
 void ScannerArduinoInterface::startScan(){
+    startScan(2);
+}
+void ScannerArduinoInterface::startScan(int mm){
     _write("s");
+
+    QChar c(mm);
+//    QChar c(100);
+    char fill= c.cell();
+    QByteArray ba(1,fill);
+//    ba.push_front(c.row());
+    qint64 l = ba.length();
+    qDebug()<<"writing: "<<ba.toHex();
+    qint64 received  = port_->write(ba,l);
+    qDebug()<<"wrote:"<<received;
 }
 void ScannerArduinoInterface::scanStep(){
     _write("i");
@@ -91,7 +105,8 @@ void ScannerArduinoInterface::onDataAvailable(){
     if ("B"==c){
         emit buttonPressed();
     }else if ("D"==c){
-        emit scanMovementCompleted();
+        qDebug()<<"Scan Movement Complete";
+        //emit scanMovementCompleted();
     }else if ("E"==c){
         emit errored();
     }else if("I"==c){

@@ -3,7 +3,7 @@
 ScanningMCU::ScanningMCU(QObject *parent) : QObject(parent)
 {
     QSettings s;
-    s.setValue("scanner/directory",QDir::currentPath()+"/AT1");
+    s.setValue("scanner/directory",QDir::currentPath()+"/ScanRaw");
 
     int cn = s.value("scanner/camNumber",-1).toInt();
     if(cn ==-1){
@@ -21,7 +21,7 @@ ScanningMCU::ScanningMCU(QObject *parent) : QObject(parent)
     connect(sc_,SIGNAL(ScanComplete()),this,SLOT(scanComplete()));
     connect(this,SIGNAL(processScanFolder(QString)),sp_,SLOT(processScan(QString)));
     connect(sp_,SIGNAL(scanProcessed(Scan*)),sm_,SLOT(addScan(Scan*)));
-    sp_->isFoamBox(false);
+    //sp_->isFoamBox(false);
 
 }
 

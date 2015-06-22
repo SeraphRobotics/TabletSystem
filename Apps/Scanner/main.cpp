@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     settings.sync();
 
     ScanningMCU* smcu = new ScanningMCU();
-    smcu->processNow();
+    //smcu->processNow();
 
     return a.exec();
 }
