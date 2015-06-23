@@ -99,6 +99,7 @@ public slots:
 
     void processBoundary();
     void save();
+    void offset(float mm);
     void makeSTLs();
 
 private:

@@ -20,6 +20,7 @@ include("seraphlibs.pro")
 
 
 DEFINES += DEBUGGING
+#DEFINES += FULLSCAN
 
 SOURCES += main.cpp \
     scantostlmcu.cpp

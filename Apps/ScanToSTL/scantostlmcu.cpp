@@ -34,6 +34,7 @@ ScanToSTLMCU::ScanToSTLMCU(QObject *parent) : QObject(parent)
     settings.setValue("Generating/slope",63.5/101);//63.5/101); 0.6048 //1.1
     settings.setValue("Generating/offset",2.0);
     settings.setValue("Generating/blurtimes",10);
+    settings.setValue("Generating/thickness",10);
     settings.setValue("printing/topcoat-thickness",2.0);
 
     //settings.setValue("data-output-directory", SampleDataOutputLocation);
@@ -124,12 +125,12 @@ void ScanToSTLMCU::processScan(){
 
 
     Posting forpost;
-    forpost.angle=10*M_PI/180.0;
+    forpost.angle=0*M_PI/180.0;
     forpost.verticle=0;
     forpost.varus_valgus=Posting::kValgus;
     forpost.for_rear=Posting::kForFoot;
     Posting rearpost;
-    rearpost.angle=10*M_PI/180.0;
+    rearpost.angle=0*M_PI/180.0;
     rearpost.verticle=0;
     rearpost.varus_valgus=Posting::kValgus;
     rearpost.for_rear=Posting::kRearFoot;
@@ -170,17 +171,30 @@ void ScanToSTLMCU::processScan(){
 //    healPts.append(heal);
 //    healPts.append(pointFromValues("GM",135,scalex,scaley));
 
-    forePts.append(pointFromValues("DG",71,scalex,scaley));
-    forePts.append(pointFromValues("EH",62,scalex,scaley));
-    forePts.append(pointFromValues("HI",61,scalex,scaley));
-    forePts.append(pointFromValues("IJ",69,scalex,scaley));
+    //Jeff Scan 2
+//    forePts.append(pointFromValues("DG",71,scalex,scaley));
+//    forePts.append(pointFromValues("EH",62,scalex,scaley));
+//    forePts.append(pointFromValues("HI",61,scalex,scaley));
+//    forePts.append(pointFromValues("IJ",69,scalex,scaley));
 
 
-    healPts.append(pointFromValues("ED",130,scalex,scaley));
-    FAHVector3 heal = pointFromValues("FX",151,scalex,scaley);
+//    healPts.append(pointFromValues("ED",130,scalex,scaley));
+//    FAHVector3 heal = pointFromValues("FX",150,scalex,scaley);
+////    heal.x= heal.x+0.5;
+//    healPts.append(heal);
+//    healPts.append(pointFromValues("HT",131,scalex,scaley));
+    forePts.append(pointFromValues("DJ",62,scalex,scaley));
+    forePts.append(pointFromValues("EI",49,scalex,scaley));
+    forePts.append(pointFromValues("HW",47,scalex,scaley));
+    forePts.append(pointFromValues("II",52,scalex,scaley));
+
+
+    healPts.append(pointFromValues("EH",128,scalex,scaley));
+    FAHVector3 heal = pointFromValues("GB",142,scalex,scaley);
 //    heal.x= heal.x+0.5;
     healPts.append(heal);
-    healPts.append(pointFromValues("HT",131,scalex,scaley));
+    healPts.append(pointFromValues("HR",128,scalex,scaley));
+
 
     oc->setBorderPoints(healPts, forePts);
     qDebug() << "border made";
@@ -188,10 +202,11 @@ void ScanToSTLMCU::processScan(){
     qDebug() << "topcoat set";
     oc->processBoundary();
     qDebug() << "boundary processed";
+    oc->offset(5.0);
     oc->setPosting(forpost);
     qDebug() << "forpost";
 
-    oc->setPosting(rearpost);
+    //oc->setPosting(rearpost);
 
     qDebug() << "rearpost";
     oc->setBottomType(Orthotic::kCurved);
@@ -201,7 +216,7 @@ void ScanToSTLMCU::processScan(){
     qDebug() << "pre make stls";
 
     oc->makeSTLs();
-
+    oc->getOrthotic()->getScan()->writeToDisk();
     qDebug() << "post make stls";
     PrintJobController* pjc = new PrintJobController(oc->getOrthotic());
     pjc->RunPrintJob();

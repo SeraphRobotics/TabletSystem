@@ -117,7 +117,7 @@ void ScannerController::ScanStep(){
         capwebcam.release();
         QTimer::singleShot(100.0,sai_,SLOT(endScan()));
         qDebug()<<"ending";
-        QTimer::singleShot(101.0,this,SLOT( scanComplete() ));
+        QTimer::singleShot(110.0,this,SLOT( scanComplete() ));
     }else{
         qDebug()<<"STEP";
 //        QTimer::singleShot(1000.0,this,SLOT(ScanStep()));

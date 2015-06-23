@@ -168,8 +168,8 @@ void ScanDataProcesser::processedImage(float x, QVector < FAHVector3 >* row ){
 XYGrid<float>* ScanDataProcesser::makeGrid(){
     QSettings settings;
 
-    float Grid_Size_X = settings.value("scanner/x_step",2).toFloat(); /// need to save from elsewhere
-    float Grid_Size_Y = settings.value("scanner/y_step",0.6).toFloat();
+    float Grid_Size_X = settings.value("scanner/processing/x_step",2).toFloat(); /// need to save from elsewhere
+    float Grid_Size_Y = settings.value("scanner/processing/y_step",1).toFloat();
     float Tolerance = 0.3;
     float max_x=0;
     float min_x=0;
@@ -198,7 +198,9 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
     qDebug()<<"maxX: "<<max_x<<" maxY: "<<max_y;
     qDebug()<<"minZ: "<<min_z;
 
-    XYGrid<float>* grid = new XYGrid<float>(nx,ny,Grid_Size_X,Grid_Size_Y);
+    float Grid_Size_X_a = settings.value("scanner/anaylsis/x_step",2).toFloat(); /// need to save from elsewhere
+    float Grid_Size_Y_a = settings.value("scanner/anaylsis/y_step",0.6).toFloat();
+    XYGrid<float>* grid = new XYGrid<float>(nx,ny,Grid_Size_X_a,Grid_Size_Y_a);
 
     for(int i=0; i<nx;i++){
 

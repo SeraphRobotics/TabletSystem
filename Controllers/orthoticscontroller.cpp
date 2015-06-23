@@ -68,10 +68,10 @@ void OrthoticController::processBoundary(){
 
     // generates a plane between the heal's minimum and the fore foot
     FAHVector3 minpt1 = findHeal(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints(),orth_->getLoop());
-//    FAHVector3 minpt2=orth_->getForePoints().first();
-//    FAHVector3 minpt3=orth_->getForePoints().last();
-    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
-    FAHVector3 minpt3 = orth_->getForePoints().last();//minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
+    FAHVector3 minpt2=orth_->getForePoints().first();
+    FAHVector3 minpt3=orth_->getForePoints().last();
+//    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
+//    FAHVector3 minpt3 = orth_->getForePoints().last();//minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
 
 
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
@@ -111,6 +111,15 @@ void OrthoticController::addManipulation(Manipulation *m){
     orth_->addManipulation(m);
 //    makeSTLs();
 }
+void OrthoticController::offset(float mm){
+    XYGrid<float>* grid = orth_->getScan()->getPostedXYGrid() ;
+    for(int i=0;i<grid->nx();i++){
+        for(int j=0; j<grid->ny(); j++){
+            grid->operator ()(i,j)=grid->operator ()(i,j)+mm;
+//            if(i==10 and j==10){qDebug()<<"D: "<<QString::number(D);}
+        }
+    }
+}
 
 void OrthoticController::setPosting(Posting p){
     orth_->setPosting(p);
@@ -137,9 +146,10 @@ void OrthoticController::setPosting(Posting p){
     float heightoffset =settings.value("Generating/offset",0.5).toFloat();//0.5;/// CANT BE ZERO OR A BAD STL IS MADE
     int blurs = settings.value("Generating/blurtimes",10).toInt();//2;
 
+    anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
     normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
 
-    anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
+
     blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
 
@@ -172,7 +182,8 @@ void OrthoticController::makeSTLs(){
     STLMesh* shell = new STLMesh();
 
     bool make_thickness = (Orthotic::kCurved == orth_->getBottomType());
-    float thickness = 10.0;
+    QSettings settings;
+    float thickness = settings.value("Generating/thickness",1).toFloat();;
 
     /// GENERATE PADS
     int i=0;
@@ -209,7 +220,7 @@ void OrthoticController::makeSTLs(){
 
     qDebug()<<"Making Shell";
 #ifdef FULLSCAN
-//    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
+    if (make_thickness){shell=makeSTLfromScan(orth_->shellgrid);}
 #else
     if (make_thickness){
         FixedThicknessSTL(shell,orth_->shellgrid,orth_->getLoop(),inners,thickness);
