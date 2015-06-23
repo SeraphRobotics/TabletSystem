@@ -4,6 +4,7 @@
 //#include "UnitTest/debugfunctions.h"
 #include "padgenerator.h"
 #include "globals.h"
+#include <QDateTime>
 
 OrthoticController::OrthoticController(OrthoticManager* om, QObject *parent) :
     QObject(parent),om_(om)
@@ -62,17 +63,74 @@ void OrthoticController::processBoundary(){
     anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
 
 
+    ////////////////////////////Make heal cup
+    QVector< FAHVector3 > curve =  secondOrder(orth_->getHealPoints(),orth_->getForePoints(), 100);
+    /// GET ARCH MAX
+    FAHVector3 pheal,pfront;
+    if(Orthotic::kRight==orth_->getFootType()){
+        pheal = orth_->getHealPoints().first();
+        pfront = orth_->getForePoints().first();
+    }else{ //left
+        pheal = orth_->getHealPoints().last();
+        pfront = orth_->getForePoints().last();
+    }
+    FAHVector3 max_arch= maxAlongLine( orth_->getScan()->getPostedXYGrid(),pheal,pfront);
+
+    /////Determine s height
+    float setz=0;
+    if(orth_->getHealType()==Orthotic::kShallow){
+        int n=0;
+        for(int i=0;i<curve.size();i++){
+            setz+= orth_->getScan()->getPostedXYGrid()->at(curve.at(i).x,curve.at(i).y);
+            n++;
+        }
+        setz = setz/n;
+
+    }else{// Deep cup
+        setz = max_arch.z;
+    }
+
+    /////////Set Points
+    /// set curve points
+    for(int i=0;i<curve.size();i++){
+        int a=curve.at(i).x/orth_->getScan()->getPostedXYGrid()->stepSizeX();
+        int b=curve.at(i).y/orth_->getScan()->getPostedXYGrid()->stepSizeY();
+        //qDebug()<<"("<<a<<","<<b<<")";
+        for(int k=-1;k<3;k++){
+            for(int L=-1;L<1;L++){
+                orth_->getScan()->getPostedXYGrid()->operator ()(a+k,b+L)=setz;
+            }
+        }
+    }
+    FAHVector3 v = max_arch-pheal;
+    FAHVector3 testp;
+    int numpts=1000;
+    for(int i=0; i<numpts;i++){
+        float t = 1.0/numpts*i;
+        testp = pheal+t*v;
+        testp.z=orth_->getScan()->getPostedXYGrid()->operator ()(testp.x,testp.y);
+        if (testp.z<setz){
+            int a=testp.x/orth_->getScan()->getPostedXYGrid()->stepSizeX();
+            int b=testp.y/orth_->getScan()->getPostedXYGrid()->stepSizeY();
+            for(int k=-1;k<1;k++){
+                for(int L=-3;L<3;L++){
+                    orth_->getScan()->getPostedXYGrid()->operator ()(a+k,b+L)=setz;
+                }
+            }
+        }
+    }
+
 }
 void OrthoticController::normalizeByBoundary(){
 
-    //orth_->getScan()->reset();
+    {//orth_->getScan()->reset();
     //    FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
     //    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
     //    FAHVector3 minpt3 = minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
     //        minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(minpt3.x, minpt3.y );
     //    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
     //    FAHVector3 minpt3 = orth_->getForePoints().last();//minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
-
+    }
     // generates a plane between the heal's minimum and the fore foot
     FAHVector3 minpt1 = findHeal(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints(),orth_->getLoop());
     FAHVector3 minpt2=orth_->getForePoints().first();
@@ -135,14 +193,19 @@ void OrthoticController::processPosting(){
     int blurs = settings.value("Generating/blurtimes",10).toInt();//2;
 
     //anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
+    qint64 s = QDateTime::currentMSecsSinceEpoch();
     processBoundary();
-
-    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
-
+    qint64 p = QDateTime::currentMSecsSinceEpoch();
+    //normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
+    qint64 n = QDateTime::currentMSecsSinceEpoch();
     blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
-
+    qint64 b = QDateTime::currentMSecsSinceEpoch();
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
-
+    qint64 t = QDateTime::currentMSecsSinceEpoch();
+    qDebug()<<"Time to process boundary: "<< (p-s);
+    qDebug()<<"Time to normalize boundary: "<< (n-p);
+    qDebug()<<"Time to blur in boundary: "<< (b-n);
+    qDebug()<<"Time to threshold inside boundary: "<< (t-b);
 
 }
 

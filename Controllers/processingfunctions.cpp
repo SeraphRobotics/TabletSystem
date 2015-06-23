@@ -167,7 +167,7 @@ QVector< FAHVector3 > secondOrder(QVector< FAHVector3 >heal_pts, QVector< FAHVec
     b_curve.append(p1);
     b_curve.append(p2);
     b_curve.append(heal_pts.last());
-    return bezier_curve(b_curve,50);
+    return bezier_curve(b_curve,nTimes);
 
 /**
     // dx/dy since x is dependant
@@ -469,6 +469,29 @@ FAHVector3 findHeal(XYGrid< float >* grid,QVector<FAHVector3> healpts,FAHLoopInX
         }
     }
     return minpt;
+}
+
+FAHVector3 maxAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){
+    FAHVector3 v(0,0,0);
+    FAHVector3 maxpt(0,0,-10000);
+    FAHVector3 p = p1;
+    FAHVector3 testp(0,0,0);
+    v.x = p2.x-p1.x;
+    v.y = p2.y-p1.y;
+    int numpts=1000;
+    for(int i=0; i<numpts;i++){
+        float t = 1.0/numpts*i;
+        testp = p+t*v;
+        testp.z=grid->operator ()(testp.x,testp.y);
+        if (testp.z > maxpt.z){
+            maxpt = testp;
+        }
+        if(testp.z >9000){
+            qDebug()<<"outside grid";
+            i=numpts;
+        }
+    }
+    return maxpt;
 }
 
 FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2){

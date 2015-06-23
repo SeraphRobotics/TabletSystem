@@ -81,6 +81,8 @@ FAHVector3 findHeal(XYGrid< float >* grid, QVector<FAHVector3> healpts, FAHLoopI
  */
 FAHVector3 minAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2);
 
+FAHVector3 maxAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2);
+
 /**
  * @brief normFrom3Pts
  * @param p1
