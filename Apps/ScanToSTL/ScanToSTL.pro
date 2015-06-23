@@ -19,7 +19,7 @@ INCLUDEPATH += ../
 include("seraphlibs.pro")
 
 
-DEFINES += DEBUGGING
+#DEFINES += DEBUGGING
 #DEFINES += FULLSCAN
 
 SOURCES += main.cpp \

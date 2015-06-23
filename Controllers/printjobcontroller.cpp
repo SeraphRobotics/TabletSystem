@@ -43,6 +43,7 @@ void PrintJobController::RunPrintJob(){
     numSTLsToRepair = 1+orth_->printjob.manipulationpairs.size();
 
     FAHVector3 p1, p2, d;
+    float rotation=0;
     if(orth_->getFootType()==Orthotic::kRight){
         p1 = orth_->getForePoints().first().copy();
         p2 = orth_->getHealPoints().first().copy();
@@ -51,6 +52,7 @@ void PrintJobController::RunPrintJob(){
         p1.z=0;
        //// EXTRA_SCALE  p2.x=p2.x*2;
         p2.z=0;
+        rotation = Math::kPi/2.0;
     }else{
         p1 = orth_->getForePoints().last().copy();
         p2 = orth_->getHealPoints().last().copy();
@@ -59,7 +61,7 @@ void PrintJobController::RunPrintJob(){
         p1.z=0;
         //// EXTRA_SCALE p2.x=p2.x*2;
         p2.z=0;
-
+        rotation = -Math::kPi/2.0;
     }
 
     d= p2-p1;
@@ -70,7 +72,7 @@ void PrintJobController::RunPrintJob(){
 #ifdef DEBUGGING
     m.identity();
 #else
-    m.rotationPointAxisAngle(p2,d,Math::kPi/2.0); //(-Math::kPi)
+    m.rotationPointAxisAngle(p2,d,rotation); //(-Math::kPi)
     m = n.mul(m);
 #endif
 

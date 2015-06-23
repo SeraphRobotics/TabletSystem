@@ -195,7 +195,7 @@ void ScanToSTLMCU::processScan(){
     healPts.append(heal);
     healPts.append(pointFromValues("HR",128,scalex,scaley));
 
-
+    oc->getOrthotic()->setFootType(Orthotic::kLeft);
     oc->setBorderPoints(healPts, forePts);
     qDebug() << "border made";
     oc->setTopCoat(tc);
