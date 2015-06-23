@@ -3,7 +3,7 @@
 #include <QTextStream>
 
 Orthotic::Orthotic(QObject *parent) :
-    QObject(parent),foot_(Orthotic::kRight),bottom_(Orthotic::kFlat)
+    QObject(parent),foot_(Orthotic::kRight),bottom_(Orthotic::kFlat),heal_(Orthotic::kShallow)
 {
     id_=QUuid::createUuid();
     filename_ = id_.toString()+QString(".ortho");
@@ -17,7 +17,7 @@ Orthotic::Orthotic(QObject *parent) :
 
 }
 
-Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::kFlat){
+Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::kFlat),heal_(Orthotic::kShallow){
     filename_=filename;
     id_=QUuid::createUuid();
     scan_ = new Scan();
@@ -53,6 +53,8 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
             foot_= static_cast<Orthotic::foot_type>(el.text().toUInt());
         }else if("bottom"==name){
             bottom_= static_cast<Orthotic::bottom_type>(el.text().toUInt());
+        }else if("heal"==name){
+            heal_= static_cast<Orthotic::heal_type>(el.text().toUInt());
         }else if("posting"==name){
             Posting p = nodeToPosting(mchild);
             if(Posting::kForFoot==p.for_rear){
@@ -107,6 +109,11 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
     QDomElement bottomTypeEl = d.createElement("bottom");
     bottomTypeEl.appendChild(d.createTextNode(QString::number(bottom_)));
     node.appendChild(bottomTypeEl);
+
+    //heal Type
+    QDomElement healTypeEl = d.createElement("heal");
+    healTypeEl.appendChild(d.createTextNode(QString::number(heal_)));
+    node.appendChild(healTypeEl);
 
     //posting
     QDomNode fpostEl = postingToNode(forfoot_);
@@ -238,8 +245,17 @@ void Orthotic::setScan(Scan* scan){///placeholder for scan class
 void Orthotic::setBottomType(bottom_type b){
     bottom_=b;
 }
+
+void Orthotic::setHealType(Orthotic::heal_type h){
+    heal_ = h;
+}
+
 Orthotic::bottom_type Orthotic::getBottomType(){
     return bottom_;
+}
+
+Orthotic::heal_type Orthotic::getHealType(){
+    return heal_;
 }
 
 
