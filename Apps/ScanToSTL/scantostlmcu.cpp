@@ -142,22 +142,20 @@ void ScanToSTLMCU::processScan(){
     tc.thickness=5;
 
     oc->setScan(sm->scanIds()[0]);
-    oc->getOrthotic()->getScan()->reset();
-    medianNoiseFiltering(oc->getOrthotic()->getScan()->getProcessedXYGrid() );
-    oc->getOrthotic()->getScan()->setPostedGrid(oc->getOrthotic()->getScan()->getProcessedXYGrid());
-    //oc->getOrthotic()->getScan()->writeToDisk();
-    //return;
+    oc->processFromRaw();
+//    oc->getOrthotic()->getScan()->writeToDisk();
+//    return;
     float scalex =oc->getOrthotic()->getScan()->getProcessedXYGrid()->stepSizeX();
     float scaley =oc->getOrthotic()->getScan()->getProcessedXYGrid()->stepSizeY();
 
-    qDebug()<<"scale x, scale y: " <<scalex<<","<<scaley;
     // y
     // |
     // |
     // o------>x
     QVector< FAHVector3 > forePts;
     QVector< FAHVector3 > healPts;
-    //ADAM AT1
+
+    {   //ADAM AT1
 //    forePts.append(pointFromValues("BK",71,scalex,scaley));
 //    forePts.append(pointFromValues("CN",56,scalex,scaley));
 //    forePts.append(pointFromValues("FM",48,scalex,scaley));
@@ -183,6 +181,7 @@ void ScanToSTLMCU::processScan(){
 ////    heal.x= heal.x+0.5;
 //    healPts.append(heal);
 //    healPts.append(pointFromValues("HT",131,scalex,scaley));
+}
     forePts.append(pointFromValues("DJ",62,scalex,scaley));
     forePts.append(pointFromValues("EI",49,scalex,scaley));
     forePts.append(pointFromValues("HW",47,scalex,scaley));
@@ -198,15 +197,18 @@ void ScanToSTLMCU::processScan(){
     oc->getOrthotic()->setFootType(Orthotic::kLeft);
     oc->setBorderPoints(healPts, forePts);
     qDebug() << "border made";
+
+    oc->normalizeByBoundary();
+    qDebug() << "boundary processed";
+
     oc->setTopCoat(tc);
     qDebug() << "topcoat set";
-    oc->processBoundary();
-    qDebug() << "boundary processed";
+
     oc->offset(5.0);
     oc->setPosting(forpost);
     qDebug() << "forpost";
 
-    //oc->setPosting(rearpost);
+    oc->setPosting(rearpost);
 
     qDebug() << "rearpost";
     oc->setBottomType(Orthotic::kCurved);
@@ -214,7 +216,6 @@ void ScanToSTLMCU::processScan(){
 
 
     qDebug() << "pre make stls";
-
     oc->makeSTLs();
     oc->getOrthotic()->getScan()->writeToDisk();
     qDebug() << "post make stls";

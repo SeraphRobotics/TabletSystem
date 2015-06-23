@@ -11,6 +11,15 @@ void printPoint(FAHVector3 pt){
     printf("\n %.4f\t%.4f\t%.4f",pt.x,pt.y,pt.z);
 }
 
+
+void dumpToFile(QString filename, QString content){
+    QFile f(filename);
+    f.open(QFile::WriteOnly);
+    QTextStream fs(&f);
+    fs<<content;
+    f.close();
+}
+
 void writeLoopToXDFL(FAHLoopInXYPlane *loop, QString file){
      QDomDocument document;
      QDomElement root = document.createElement("xdfl");

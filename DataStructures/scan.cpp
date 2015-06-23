@@ -90,6 +90,8 @@ XYGrid<float>* Scan::getProcessedXYGrid(){return processed_;}
 XYGrid<float>* Scan::getPostedXYGrid(){return posted_;}
 
 void Scan::reset(){
+    delete processed_;
+    delete posted_;
     processed_ = new XYGrid<float>(raw_->asVector(),raw_->ny(),raw_->stepSizeX(),raw_->stepSizeY());
     posted_ = new XYGrid<float>(processed_->asVector(),processed_->ny(),processed_->stepSizeX(),processed_->stepSizeY());
 }
@@ -102,10 +104,13 @@ void Scan::setInitialData(XYGrid<float>* grid){// makes a copy of the data
     }
 }
 void Scan::setProcessedGrid(XYGrid<float>* grid){
-    processed_=grid;
-    posted_= new XYGrid<float>(grid);
+    delete processed_;
+    processed_=new XYGrid<float>(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
+    delete posted_;
+    posted_=new XYGrid<float>(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
 }
 
 void Scan::setPostedGrid(XYGrid<float>* grid){
-    posted_=grid;
+    delete posted_;
+    posted_=new XYGrid<float>(grid->asVector(),grid->ny(),grid->stepSizeX(),grid->stepSizeY());
 }

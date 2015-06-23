@@ -97,6 +97,11 @@ public slots:
 
     void setPosting(Posting p);
 
+    void setHealType(Orthotic::heal_type t);
+
+    void processFromRaw();
+    void processPosting();
+    void normalizeByBoundary();
     void processBoundary();
     void save();
     void offset(float mm);

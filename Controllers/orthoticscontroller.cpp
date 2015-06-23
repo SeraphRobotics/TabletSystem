@@ -59,44 +59,39 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
 }
 
 void OrthoticController::processBoundary(){
+    anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
+
+
+}
+void OrthoticController::normalizeByBoundary(){
 
     //orth_->getScan()->reset();
     //    FAHVector3 minpt1 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints().first(),orth_->getHealPoints().last());
     //    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
     //    FAHVector3 minpt3 = minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
     //        minpt3.z=orth_->getScan()->getProcessedXYGrid()->at(minpt3.x, minpt3.y );
+    //    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
+    //    FAHVector3 minpt3 = orth_->getForePoints().last();//minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
 
     // generates a plane between the heal's minimum and the fore foot
     FAHVector3 minpt1 = findHeal(orth_->getScan()->getProcessedXYGrid(),orth_->getHealPoints(),orth_->getLoop());
     FAHVector3 minpt2=orth_->getForePoints().first();
     FAHVector3 minpt3=orth_->getForePoints().last();
-//    FAHVector3 minpt2 = minAlongLine(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints().last(),orth_->getForePoints().first());
-//    FAHVector3 minpt3 = orth_->getForePoints().last();//minpt2.copy()+0.05*(minpt2.copy()-orth_->getForePoints().last().copy());
+
 
 
     FAHVector3 planeVec = normFrom3Pts(minpt1,minpt2,minpt3);
     FAHVector3 d= minpt1.copy();
 
 
-    //ofset the plane by the thickness of the heal you want
+    //offset the plane by the thickness of the heal you want
 
     QSettings settings;
     float slope = settings.value("Generating/healthickness",10).toFloat();
     d.z = d.z-slope;
     projectGridOntoPlane(planeVec.scale(1.0),d,orth_->getScan()->getProcessedXYGrid());
-    //blurGrid(orth_->getScan()->getProcessedXYGrid(),6);
-//    thresholdWithLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop());
-//    anchorFront(orth_->getScan()->getProcessedXYGrid(),orth_->getForePoints());
-//    normalizeBorder(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),75);
-//    blurInLoop(orth_->getScan()->getProcessedXYGrid(),orth_->getLoop(),7);
-//    blurGrid(orth_->getScan()->getProcessedXYGrid(),1);
 
 
-//    QFile f("processed.csv");
-//    f.open(QFile::WriteOnly);
-//    QTextStream fs(&f);
-//    fs<<orth_->getScan()->getProcessedXYGrid()->toCSV();
-//    f.close();
 }
 
 void OrthoticController::setTopCoat(Top_Coat tc){
@@ -107,18 +102,48 @@ void OrthoticController::setBottomType(Orthotic::bottom_type type){
     orth_->setBottomType(type);
 }
 
+void OrthoticController::setHealType(Orthotic::heal_type t){
+    orth_->setHealType(t);
+}
+
 void OrthoticController::addManipulation(Manipulation *m){
     orth_->addManipulation(m);
-//    makeSTLs();
 }
 void OrthoticController::offset(float mm){
     XYGrid<float>* grid = orth_->getScan()->getPostedXYGrid() ;
     for(int i=0;i<grid->nx();i++){
         for(int j=0; j<grid->ny(); j++){
             grid->operator ()(i,j)=grid->operator ()(i,j)+mm;
-//            if(i==10 and j==10){qDebug()<<"D: "<<QString::number(D);}
         }
     }
+}
+
+void OrthoticController::processFromRaw(){
+    QSettings settings;
+    orth_->getScan()->reset();
+    medianNoiseFiltering(orth_->getScan()->getProcessedXYGrid() );
+    float slope = settings.value("Generating/slope",1).toFloat();
+    float heightoffset =settings.value("Generating/offset",0.5).toFloat();//0.5;/// CANT BE ZERO OR A BAD STL IS MADE
+    scaleAndOffset(orth_->getScan()->getProcessedXYGrid(),slope,heightoffset);
+    orth_->getScan()->setPostedGrid(orth_->getScan()->getProcessedXYGrid());
+}
+
+void OrthoticController::processPosting(){
+    QSettings settings;
+    int bordertimes = settings.value("Generating/bordertimes",75).toInt();//2;
+
+    int blurs = settings.value("Generating/blurtimes",10).toInt();//2;
+
+    //anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
+    processBoundary();
+
+    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
+
+    blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
+
+    thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
+
+
 }
 
 void OrthoticController::setPosting(Posting p){
@@ -138,31 +163,7 @@ void OrthoticController::setPosting(Posting p){
     projectGridOntoPlane(planeAndCent[0],planeAndCent[1], posted);
 
     orth_->getScan()->setPostedGrid(posted);
-
-
-    QSettings settings;
-    int bordertimes = settings.value("Generating/bordertimes",75).toInt();//2;
-    float slope = settings.value("Generating/slope",1).toFloat();
-    float heightoffset =settings.value("Generating/offset",0.5).toFloat();//0.5;/// CANT BE ZERO OR A BAD STL IS MADE
-    int blurs = settings.value("Generating/blurtimes",10).toInt();//2;
-
-    anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
-    normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
-
-
-    blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
-    thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
-
-
-    scaleAndOffset(orth_->getScan()->getPostedXYGrid(),slope,heightoffset);
-
-
-//    QFile f("posted.csv");
-//    f.open(QFile::WriteOnly);
-//    QTextStream fs(&f);
-//    fs<<orth_->getScan()->getPostedXYGrid()->toCSV();
-//    f.close();
-//    makeSTLs();
+    processPosting();
     qDebug()<<"Posting made";
 
 }
