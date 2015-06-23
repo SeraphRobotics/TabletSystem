@@ -185,14 +185,14 @@ void ScanToSTLMCU::processScan(){
     forePts.append(pointFromValues("DJ",62,scalex,scaley));
     forePts.append(pointFromValues("EI",49,scalex,scaley));
     forePts.append(pointFromValues("HW",47,scalex,scaley));
-    forePts.append(pointFromValues("II",52,scalex,scaley));
+    forePts.append(pointFromValues("IN",56,scalex,scaley));
 
 
     healPts.append(pointFromValues("EH",128,scalex,scaley));
     FAHVector3 heal = pointFromValues("GB",142,scalex,scaley);
 //    heal.x= heal.x+0.5;
     healPts.append(heal);
-    healPts.append(pointFromValues("HR",128,scalex,scaley));
+    healPts.append(pointFromValues("HU",129,scalex,scaley));
 
     oc->getOrthotic()->setFootType(Orthotic::kLeft);
     oc->setBorderPoints(healPts, forePts);
