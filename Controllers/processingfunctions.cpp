@@ -568,7 +568,7 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
 
                 FAHVector3 p1,p2,p3,p4,pcent;
                 bool b1=true,b2=true,b3=true,b4=true,bp=true;
-                Q_UNUSED(bp);
+                //Q_UNUSED(bp);
 
                 QVector<FAHVector3> pts;
 
@@ -576,7 +576,7 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
                 bp = loopsContain(pcent,borderloop,innerLoops);
 
                 p1=vectorFromIJ(i,j,copy.at(i-1,j),copy.stepSizeX(),copy.stepSizeY());
-                b1=loopsContain(p1,borderloop,innerLoops);
+                //b1=loopsContain(p1,borderloop,innerLoops);
                 if(b1){pts.append(p1);
                 }else{
                     p1.z=pcent.z;
@@ -584,7 +584,7 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
                 }
 
                 p2=vectorFromIJ(i+1,j,copy.at(i+1,j),copy.stepSizeX(),copy.stepSizeY());
-                b2=loopsContain(p2,borderloop,innerLoops);
+                //b2=loopsContain(p2,borderloop,innerLoops);
                 if(b2){pts.append(p2);}else{
                     p2.z=pcent.z;
                     pts.append(p2);
@@ -593,14 +593,14 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
 
 
                 p3=vectorFromIJ(i,j+1,copy.at(i,j-1),copy.stepSizeX(),copy.stepSizeY());
-                b3=loopsContain(p3,borderloop,innerLoops);
+                //b3=loopsContain(p3,borderloop,innerLoops);
                 if(b3){pts.append(p3);}else{
                     p3.z=pcent.z;
                     pts.append(p3);
                 }
 
                 p4=vectorFromIJ(i+1,j+1,copy.at(i,j+1),copy.stepSizeX(),copy.stepSizeY());
-                b4=loopsContain(p4,borderloop,innerLoops);
+                //b4=loopsContain(p4,borderloop,innerLoops);
                 if(b4){pts.append(p4);}else{
                     p4.z=pcent.z;
                     pts.append(p4);
@@ -613,7 +613,7 @@ void blurInLoop(XYGrid<float>* grid,FAHLoopInXYPlane* borderloop, int times){
                     }
                     z= z/pts.size();
 //                    (p1.z+p2.z+p3.z+p4.z)/4.0;
-                    grid->operator ()(i,j)=z;
+                    if(bp){grid->operator ()(i,j)=z;}
                 }
             }
         }
