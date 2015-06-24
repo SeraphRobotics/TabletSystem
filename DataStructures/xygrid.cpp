@@ -273,7 +273,7 @@ const T XYGrid<T>::at(int I, int j){
 
 template <class T>
 const T XYGrid<T>::at(Math::Float x, Math::Float y){
-    return at(int(x/stepsize_x_),int(y/stepsize_y_));
+    return at(int(x/stepsize_x_+0.5),int(y/stepsize_y_+0.5));
 }
 
 
@@ -292,7 +292,7 @@ T& XYGrid<T>::operator()(int I,int j){
 
 template <class T>
 T& XYGrid<T>::operator()(Math::Float x, Math::Float y){
-    return operator()(int(x/stepsize_x_),int(y/stepsize_y_));
+    return operator()(int(x/stepsize_x_+0.5),int(y/stepsize_y_+0.5));
 }
 
 

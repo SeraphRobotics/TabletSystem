@@ -60,22 +60,49 @@ void OrthoticController::setBorderPoints(QVector< FAHVector3 > healPts, QVector<
 }
 
 void OrthoticController::processBoundary(){
+
+    //blur pt
+//    int ntimes = 1;
+//    for(int i=0;i<ntimes;i++){
+//        foreach(FAHVector3 pt, orth_->getLoop()->points){
+//            float z = medianNoiseFilteringAtPt(orth_->getScan()->getPostedXYGrid(),pt);
+//            int a=pt.x/orth_->getScan()->getPostedXYGrid()->stepSizeX();
+//            int b=pt.y/orth_->getScan()->getPostedXYGrid()->stepSizeY();
+//            orth_->getScan()->getPostedXYGrid()->operator ()(a,b)=z;
+//        }
+//    }
+    int ntimes = 40;
+    for(int i=0;i<ntimes;i++){
+        blurAlongLine(orth_->getScan()->getPostedXYGrid(),
+                      orth_->getHealPoints().first(),
+                      orth_->getForePoints().first());
+        blurAlongLine(orth_->getScan()->getPostedXYGrid(),
+                      orth_->getHealPoints().last(),
+                      orth_->getForePoints().last());
+    }
     anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
+
+    //dumpToFile("posted-blured.csv",orth_->getScan()->getPostedXYGrid()->toCSV());
+    //return;
 
 
     ////////////////////////////Make heal cup
     QVector< FAHVector3 > curve =  secondOrder(orth_->getHealPoints(),orth_->getForePoints(), 100);
     /// GET ARCH MAX
-    FAHVector3 pheal,pfront;
+    FAHVector3 pheal,pfront, p_heal_other, p_front_other;
     int plus_y=0, minus_y=0;
     if(Orthotic::kRight==orth_->getFootType()){
         pheal = orth_->getHealPoints().first();
         pfront = orth_->getForePoints().first();
+        p_heal_other = orth_->getHealPoints().last();
+        p_front_other = orth_->getForePoints().last();
         plus_y = 3;
         minus_y = -4;
     }else{ //left
         pheal = orth_->getHealPoints().last();
         pfront = orth_->getForePoints().last();
+        p_heal_other = orth_->getHealPoints().first();
+        p_front_other = orth_->getForePoints().first();
         plus_y = 4;
         minus_y = -3;
     }
@@ -98,11 +125,11 @@ void OrthoticController::processBoundary(){
     /////////Set Points
     /// set curve points
     for(int i=0;i<curve.size();i++){
-        int a=curve.at(i).x/orth_->getScan()->getPostedXYGrid()->stepSizeX();
-        int b=curve.at(i).y/orth_->getScan()->getPostedXYGrid()->stepSizeY();
+        int a=curve.at(i).x/orth_->getScan()->getPostedXYGrid()->stepSizeX()+0.5;
+        int b=curve.at(i).y/orth_->getScan()->getPostedXYGrid()->stepSizeY()+0.5;
         //qDebug()<<"("<<a<<","<<b<<")";
-        for(int k=-1;k<3;k++){
-            for(int L=-1;L<1;L++){
+        for(int k=-2;k<3;k++){
+            for(int L=-2;L<2;L++){
                 orth_->getScan()->getPostedXYGrid()->operator ()(a+k,b+L)=setz;
             }
         }
@@ -115,8 +142,8 @@ void OrthoticController::processBoundary(){
         testp = pheal+t*v;
         testp.z=orth_->getScan()->getPostedXYGrid()->operator ()(testp.x,testp.y);
         if (testp.z<setz){
-            int a=testp.x/orth_->getScan()->getPostedXYGrid()->stepSizeX();
-            int b=testp.y/orth_->getScan()->getPostedXYGrid()->stepSizeY();
+            int a=testp.x/orth_->getScan()->getPostedXYGrid()->stepSizeX() +0.5;
+            int b=testp.y/orth_->getScan()->getPostedXYGrid()->stepSizeY() +0.5;
             for(int k=-1;k<1;k++){
                 for(int L=minus_y;L<plus_y;L++){
                     orth_->getScan()->getPostedXYGrid()->operator ()(a+k,b+L)=setz;
@@ -124,6 +151,43 @@ void OrthoticController::processBoundary(){
             }
         }
     }
+    if(orth_->getHealType()==Orthotic::kDeep){
+        v.z=0;
+        QSettings settings;
+        float percent = settings.value("Generating/healpercent",0.75).toFloat();
+        float distance = v.magnitude()*percent;
+        FAHVector3 delta = p_front_other - p_heal_other;
+        FAHVector3 norm = delta.copy();
+        norm.normalize();
+        FAHVector3 other = distance*norm + p_heal_other;
+        delta = other-p_heal_other;
+
+        FAHVector3 test_other;
+        float z_other = orth_->getScan()->getPostedXYGrid()->at(other.x,other.y);
+        float z=0;
+        int numpts2=500;
+        for(int q=0; q<numpts2;q++){
+            float t = 1.0/numpts2*q;
+            test_other = p_heal_other+t*delta;
+
+            int a=test_other.x/orth_->getScan()->getPostedXYGrid()->stepSizeX() +0.5;
+            int b=test_other.y/orth_->getScan()->getPostedXYGrid()->stepSizeY() +0.5;
+            z = (z_other-setz)/numpts2*q+setz;
+    //        qDebug()<<test_other.x<<","<<test_other.y;
+    //        orth_->getScan()->getPostedXYGrid()->operator ()(test_other.x,test_other.y) = z;
+
+            for(int k=-2;k<2;k++){
+                for(int L=-2;L<2;L++){
+                    orth_->getScan()->getPostedXYGrid()->operator ()(a+k,b+L)=z;
+                }
+            }
+
+        }
+    }
+
+
+
+    //dumpToFile("posted-blured.csv",orth_->getScan()->getPostedXYGrid()->toCSV());
 
 }
 void OrthoticController::normalizeByBoundary(){
@@ -203,7 +267,7 @@ void OrthoticController::processPosting(){
     qint64 p = QDateTime::currentMSecsSinceEpoch();
     //normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
     qint64 n = QDateTime::currentMSecsSinceEpoch();
-    //blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
+    blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
     qint64 b = QDateTime::currentMSecsSinceEpoch();
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
     qint64 t = QDateTime::currentMSecsSinceEpoch();

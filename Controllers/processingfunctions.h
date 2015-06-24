@@ -72,6 +72,8 @@ QVector<FAHVector3> makePostingPlane(FAHVector3 hp1,FAHVector3 hp2,FAHVector3 fp
 
 FAHVector3 findHeal(XYGrid< float >* grid, QVector<FAHVector3> healpts, FAHLoopInXYPlane *loop);
 
+void blurAlongLine(XYGrid< float >* grid, FAHVector3 p1, FAHVector3 p2);
+
 /**
  * @brief minAlongLine
  * @param grid
@@ -110,6 +112,8 @@ void normalizeBorder(XYGrid<float>* grid, FAHLoopInXYPlane* borderloop, int time
 void gradientFilter(XYGrid<float>* grid);
 
 void medianNoiseFiltering(XYGrid<float>* grid);
+
+float medianNoiseFilteringAtPt(XYGrid<float>* grid,FAHVector3 pt);
 
 int compare (const void * a, const void * b);
 

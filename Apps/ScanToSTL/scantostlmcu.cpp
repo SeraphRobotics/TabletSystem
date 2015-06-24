@@ -35,6 +35,7 @@ ScanToSTLMCU::ScanToSTLMCU(QObject *parent) : QObject(parent)
     settings.setValue("Generating/offset",2.0);
     settings.setValue("Generating/blurtimes",10);
     settings.setValue("Generating/thickness",10);
+    settings.setValue("Generating/healpercent",0.75);
     settings.setValue("printing/topcoat-thickness",2.0);
 
     //settings.setValue("data-output-directory", SampleDataOutputLocation);
@@ -143,8 +144,8 @@ void ScanToSTLMCU::processScan(){
 
     oc->setScan(sm->scanIds()[0]);
     oc->processFromRaw();
-//    oc->getOrthotic()->getScan()->writeToDisk();
-//    return;
+    //oc->getOrthotic()->getScan()->writeToDisk();
+    //return;
     float scalex =oc->getOrthotic()->getScan()->getProcessedXYGrid()->stepSizeX();
     float scaley =oc->getOrthotic()->getScan()->getProcessedXYGrid()->stepSizeY();
 
@@ -201,6 +202,7 @@ void ScanToSTLMCU::processScan(){
     oc->normalizeByBoundary();
     qDebug() << "boundary processed";
 
+    //oc->setHealType(Orthotic::kDeep);
     oc->setTopCoat(tc);
     qDebug() << "topcoat set";
 
