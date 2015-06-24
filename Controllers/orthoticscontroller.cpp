@@ -257,20 +257,23 @@ void OrthoticController::processFromRaw(){
 
 void OrthoticController::processPosting(){
     QSettings settings;
-    int bordertimes = settings.value("Generating/bordertimes",75).toInt();//2;
+    //int bordertimes = settings.value("Generating/bordertimes",75).toInt();//2;
 
     int blurs = settings.value("Generating/blurtimes",10).toInt();//2;
 
     //anchorFront(orth_->getScan()->getPostedXYGrid(),orth_->getForePoints());
+
     qint64 s = QDateTime::currentMSecsSinceEpoch();
     processBoundary();
     qint64 p = QDateTime::currentMSecsSinceEpoch();
     //normalizeBorder(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),bordertimes);
     qint64 n = QDateTime::currentMSecsSinceEpoch();
+    dumpToFile("posted-preblur.csv",orth_->getScan()->getPostedXYGrid()->toCSV());
     blurInLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop(),blurs);
     qint64 b = QDateTime::currentMSecsSinceEpoch();
     thresholdWithLoop(orth_->getScan()->getPostedXYGrid(),orth_->getLoop());
     qint64 t = QDateTime::currentMSecsSinceEpoch();
+    dumpToFile("posted-final.csv",orth_->getScan()->getPostedXYGrid()->toCSV());
     qDebug()<<"Time to process boundary: "<< (p-s);
     qDebug()<<"Time to normalize boundary: "<< (n-p);
     qDebug()<<"Time to blur in boundary: "<< (b-n);
@@ -293,7 +296,7 @@ void OrthoticController::setPosting(Posting p){
     QVector<FAHVector3> planeAndCent = makePostingPlane(heals[0],heals[1],fors[0],fors[1]);
 
     projectGridOntoPlane(planeAndCent[0],planeAndCent[1], posted);
-
+    dumpToFile("posted-preprocess.csv",posted->toCSV());
     orth_->getScan()->setPostedGrid(posted);
     processPosting();
     qDebug()<<"Posting made";

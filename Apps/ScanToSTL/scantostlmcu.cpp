@@ -190,7 +190,7 @@ void ScanToSTLMCU::processScan(){
 
 
     healPts.append(pointFromValues("EH",128,scalex,scaley));
-    FAHVector3 heal = pointFromValues("GB",142,scalex,scaley);
+    FAHVector3 heal = pointFromValues("GB",140,scalex,scaley);
 //    heal.x= heal.x+0.5;
     healPts.append(heal);
     healPts.append(pointFromValues("HU",129,scalex,scaley));
