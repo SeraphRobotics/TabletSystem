@@ -71,7 +71,7 @@ void OrthoticController::processBoundary(){
 //            orth_->getScan()->getPostedXYGrid()->operator ()(a,b)=z;
 //        }
 //    }
-    int ntimes = 40;
+    int ntimes = 10;
     for(int i=0;i<ntimes;i++){
         blurAlongLine(orth_->getScan()->getPostedXYGrid(),
                       orth_->getHealPoints().first(),
@@ -183,6 +183,17 @@ void OrthoticController::processBoundary(){
             }
 
         }
+
+        int ntimes = 10;
+        for(int i=0;i<ntimes;i++){
+            blurAlongLine(orth_->getScan()->getPostedXYGrid(),
+                          orth_->getHealPoints().first(),
+                          orth_->getForePoints().first());
+            blurAlongLine(orth_->getScan()->getPostedXYGrid(),
+                          orth_->getHealPoints().last(),
+                          orth_->getForePoints().last());
+        }
+
     }
 
 

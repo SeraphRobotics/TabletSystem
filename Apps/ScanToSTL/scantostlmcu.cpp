@@ -202,7 +202,7 @@ void ScanToSTLMCU::processScan(){
     oc->normalizeByBoundary();
     qDebug() << "boundary processed";
 
-    //oc->setHealType(Orthotic::kDeep);
+    oc->setHealType(Orthotic::kDeep);
     oc->setTopCoat(tc);
     qDebug() << "topcoat set";
 
