@@ -4,7 +4,7 @@ QT     += core gui xml concurrent
 QT     += widgets   # for QMessageBox
 QT     += serialport
 CONFIG += c++11
-#CONFIG += test
+CONFIG += test
 CONFIG += opencv2411
 CONFIG += qt54
 ##############################
