@@ -105,14 +105,19 @@ void PrintJobController::RunPrintJob(){
 
     }
 
-
-    ///Start topcoat
-    //TopCoatController* tcc = new TopCoatController(orth_,"");
-//    TopCoatController* tcc = new TopCoatController(orth_, dir_, m);
-//    tcc->moveToThread(workthread);
-//    connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
-//    connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
-//    tcc->generateTopCoat();
+    if (orth_->getTopCoat().style == Top_Coat.kNone ||
+       orth_->getTopCoat().style == Top_Coat.kAuto) {
+       topcoatdone = true;
+       topcoat_file_ ='';
+    }else{
+        ///Start topcoat
+        //TopCoatController* tcc = new TopCoatController(orth_,"");
+        TopCoatController* tcc = new TopCoatController(orth_, dir_, m);
+        tcc->moveToThread(workthread);
+        connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
+        connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
+        tcc->generateTopCoat();
+    }
 
 
 
