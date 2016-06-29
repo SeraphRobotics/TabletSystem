@@ -4,6 +4,7 @@
 #include <math.h>
 #include <qalgorithms.h>
 
+
 ScanProcessing::ScanProcessing(float x, QString imagelocation, cv::Mat noisefile, QObject *parent) :
     QObject(parent),  imagelocation_( imagelocation),x_(x)
 {
@@ -25,6 +26,10 @@ void ScanProcessing::process(){
     }
     if(noise.data){
         img = img-noise;
+#ifdef DEBUGGING
+        QString name = QString("d-") + QString::number(x_) + ".jpeg";
+        cv::imwrite(name.toStdString(), img);
+#endif
     }
     bool metOne = false;
 

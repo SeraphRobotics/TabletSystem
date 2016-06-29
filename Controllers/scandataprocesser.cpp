@@ -106,7 +106,7 @@ void  ScanDataProcesser::processScan(QString folder){
 //        return;
     }
 
-
+    qDebug()<<"Dir: "<<folder;
     dir_ = QDir(folder);
     QFileInfoList list = dir_.entryInfoList();
     numFilesToProcess = list.size()-2;
@@ -130,9 +130,9 @@ void ScanDataProcesser::processImage(QString file, cv::Mat noise){
 
     //QString name = QString(file).toLower().replace(img_format_,"");
     float x = QString(file).toLower().replace(img_format_,"").toFloat();//file.split(".")[0].toFloat();
-    //qDebug()<<"x: "<<x<<"File: "<<file;
+    qDebug()<<"x: "<<x<<"File: "<<file;
 
-    //qDebug()<<"Processing: "<<dir_.absoluteFilePath(file);
+    qDebug()<<"Processing: "<<dir_.absoluteFilePath(file);
     ScanProcessing* worker = new ScanProcessing(x,dir_.absoluteFilePath(file),noise);
 //    QThread* thread = new QThread;
 //    worker->moveToThread(thread);

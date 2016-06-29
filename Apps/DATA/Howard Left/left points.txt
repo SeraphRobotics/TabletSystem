@@ -1,0 +1,11 @@
+    forePts.append(pointFromValues("DP",98,scalex,scaley));
+    forePts.append(pointFromValues("FE",106,scalex,scaley));
+    forePts.append(pointFromValues("HP",100,scalex,scaley));
+    forePts.append(pointFromValues("JG",89,scalex,scaley));
+
+
+    healPts.append(pointFromValues("EL",35,scalex,scaley));
+    FAHVector3 heal = pointFromValues("GK",17,scalex,scaley);
+//    heal.x= heal.x+0.5;
+    healPts.append(heal);
+    healPts.append(pointFromValues("II",33,scalex,scaley));

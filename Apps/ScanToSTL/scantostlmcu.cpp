@@ -34,7 +34,7 @@ ScanToSTLMCU::ScanToSTLMCU(QObject *parent) : QObject(parent)
     settings.setValue("Generating/slope",63.5/101);//63.5/101); 0.6048 //1.1
     settings.setValue("Generating/offset",2.0);
     settings.setValue("Generating/blurtimes",10);
-    settings.setValue("Generating/thickness",10);
+    settings.setValue("Generating/thickness",8);
     settings.setValue("Generating/healpercent",0.75);
     settings.setValue("printing/topcoat-thickness",2.0);
 
@@ -156,61 +156,35 @@ void ScanToSTLMCU::processScan(){
     QVector< FAHVector3 > forePts;
     QVector< FAHVector3 > healPts;
 
-    {   //ADAM AT1
-//    forePts.append(pointFromValues("BK",71,scalex,scaley));
-//    forePts.append(pointFromValues("CN",56,scalex,scaley));
-//    forePts.append(pointFromValues("FM",48,scalex,scaley));
-//    forePts.append(pointFromValues("GW",54,scalex,scaley));
-
-//
-//    //scalex=1.0;
-//    healPts.append(pointFromValues("DO",135,scalex,scaley));
-//    FAHVector3 heal = pointFromValues("FC",146,scalex,scaley);
-//    heal.x= heal.x+0.5;
-//    healPts.append(heal);
-//    healPts.append(pointFromValues("GM",135,scalex,scaley));
-
-    //Jeff Scan 2
-//    forePts.append(pointFromValues("DG",71,scalex,scaley));
-//    forePts.append(pointFromValues("EH",62,scalex,scaley));
-//    forePts.append(pointFromValues("HI",61,scalex,scaley));
-//    forePts.append(pointFromValues("IJ",69,scalex,scaley));
+    forePts.append(pointFromValues("CT",91,scalex,scaley));
+    forePts.append(pointFromValues("EQ",104,scalex,scaley));
+    forePts.append(pointFromValues("HH",109,scalex,scaley));
+    forePts.append(pointFromValues("IN",102,scalex,scaley));
 
 
-//    healPts.append(pointFromValues("ED",130,scalex,scaley));
-//    FAHVector3 heal = pointFromValues("FX",150,scalex,scaley);
-////    heal.x= heal.x+0.5;
-//    healPts.append(heal);
-//    healPts.append(pointFromValues("HT",131,scalex,scaley));
-}
-    forePts.append(pointFromValues("DJ",62,scalex,scaley));
-    forePts.append(pointFromValues("EI",49,scalex,scaley));
-    forePts.append(pointFromValues("HW",47,scalex,scaley));
-    forePts.append(pointFromValues("IN",56,scalex,scaley));
-
-
-    healPts.append(pointFromValues("EH",128,scalex,scaley));
-    FAHVector3 heal = pointFromValues("GB",140,scalex,scaley);
+    healPts.append(pointFromValues("DQ",34,scalex,scaley));
+    FAHVector3 heal = pointFromValues("FU",17,scalex,scaley);
 //    heal.x= heal.x+0.5;
     healPts.append(heal);
-    healPts.append(pointFromValues("HU",129,scalex,scaley));
+    healPts.append(pointFromValues("HM",34,scalex,scaley));
 
-    oc->getOrthotic()->setFootType(Orthotic::kLeft);
+    oc->getOrthotic()->setFootType(Orthotic::kRight);
     oc->setBorderPoints(healPts, forePts);
     qDebug() << "border made";
 
     oc->normalizeByBoundary();
     qDebug() << "boundary processed";
 
-    oc->setHealType(Orthotic::kDeep);
+    oc->setHealType(Orthotic::kShallow);
     oc->setTopCoat(tc);
     qDebug() << "topcoat set";
 
-    oc->offset(5.0);
-    oc->setPosting(forpost);
+    oc->offset(1.0);
+    //oc->setPosting(forpost);
     qDebug() << "forpost";
 
     oc->setPosting(rearpost);
+//    oc->processPosting();
 
     qDebug() << "rearpost";
     oc->setBottomType(Orthotic::kCurved);

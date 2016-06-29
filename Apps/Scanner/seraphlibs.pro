@@ -6,9 +6,14 @@ CONFIG += c++11
 CONFIG += opencv2411
 CONFIG += qt54
 
-qt54{
+qt554{
  win32:INCLUDEPATH +=C:\\Qt5\\5.4\\Src\\qtbase\\src\\3rdparty\\zlib
 }
+
+qt54{
+ win32:INCLUDEPATH +=C:\\Qt\\5.4\\Src\\qtbase\\src\\3rdparty\\zlib
+}
+
 
 opencv2411{
     win32:INCLUDEPATH += C:\\opencv\\build_with_Qt5\\release\\include

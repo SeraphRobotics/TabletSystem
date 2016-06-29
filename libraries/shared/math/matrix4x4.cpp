@@ -365,6 +365,15 @@ Float Matrix4x4::determinant() const {
   return a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
 }
 
+Matrix4x4& Matrix4x4::xyswap(){
+    zero();
+    _12 = Float(1.0);
+    _21 = Float(1.0);
+    _33 = Float(1.0);
+    _44 = Float(1.0);
+    return *this;
+  }
+
 
 Matrix4x4& Matrix4x4::transpose() {
   Float t;

@@ -261,7 +261,7 @@ void OrthoticController::processFromRaw(){
     orth_->getScan()->reset();
     medianNoiseFiltering(orth_->getScan()->getProcessedXYGrid() );
     float slope = settings.value("Generating/slope",1).toFloat();
-    float heightoffset =settings.value("Generating/offset",0.5).toFloat();//0.5;/// CANT BE ZERO OR A BAD STL IS MADE
+    float heightoffset =settings.value("Generating/offset",2).toFloat();//0.5;/// CANT BE ZERO OR A BAD STL IS MADE
     scaleAndOffset(orth_->getScan()->getProcessedXYGrid(),slope,heightoffset);
     orth_->getScan()->setPostedGrid(orth_->getScan()->getProcessedXYGrid());
 }

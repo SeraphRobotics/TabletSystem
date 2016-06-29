@@ -7,12 +7,30 @@ CONFIG += opencv2411
 CONFIG += qt54
 
 qt54{
- win32:INCLUDEPATH +=C:\\Qt5\\5.4\\Src\\qtbase\\src\\3rdparty\\zlib
+ win32:INCLUDEPATH +=C:\\Qt\\5.4\\Src\\qtbase\\src\\3rdparty\\zlib
 }
 
 opencv2411{
-    win32:INCLUDEPATH += C:\\opencv\\build_with_Qt5\\release\\include
-    win32:LIBS += -LC:\\opencv\\build_with_Qt5\\release\\x64\\mingw\\lib \
+#CONFIG(debug, debug|release) {
+#    win32:INCLUDEPATH += C:\\opencv\\build_with_Qt\\debug\\include
+#    win32:LIBS += -LC:\\opencv\\build_with_Qt\\debug\\x64\\mingw\\lib \
+#        -lopencv_calib3d2411d.dll\
+#        -lopencv_contrib2411d.dll\
+#        -lopencv_core2411d.dll \
+#        -lopencv_features2d2411d.dll \
+#        -lopencv_flann2411d.dll \
+#        -lopencv_gpu2411d.dll \
+#        -lopencv_highgui2411d.dll \
+#        -lopencv_imgproc2411d.dll \
+#        -lopencv_legacy2411d.dll \
+#        -lopencv_ml2411d.dll\
+#        -lopencv_objdetect2411d.dll \
+#        -lopencv_ts2411d \
+#        -lopencv_video2411d.dll
+#}
+#CONFIG(release, debug|release) {
+    win32:INCLUDEPATH += C:\\OpenCV\\build_with_qt5\\release\\include
+    win32:LIBS += -LC:\\OpenCV\\build_with_qt5\\release\\x64\\mingw\\lib \
         -lopencv_calib3d2411.dll\
         -lopencv_contrib2411.dll\
         -lopencv_core2411.dll \
@@ -26,6 +44,7 @@ opencv2411{
         -lopencv_objdetect2411.dll \
         -lopencv_ts2411 \
         -lopencv_video2411.dll
+#}
 }
 
 win32:INCLUDEPATH +="C:\\Eigen\\eigen3"

@@ -212,6 +212,12 @@ namespace Math {
   Matrix4x4& transpose();
 
   /**
+   * generates a parity transform in the XY plane
+   * Returns a reference to this object to allow method chaining.
+   */
+  Matrix4x4& xyswap();
+
+  /**
    * Sets this matrix to a matrix that transforms vertices from camera space
    * to screen space such that objects with a greater depth are smaller than
    * those with less depth.

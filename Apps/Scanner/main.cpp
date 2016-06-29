@@ -24,6 +24,8 @@ int main(int argc, char *argv[])
     QSettings settings;
     settings.setValue("scan-extension","scan");
     settings.setValue("scan-directory", SampleDataLocation);
+    settings.setValue("scanner/directory", SampleDataLocation);
+    settings.setValue("scanner/camNumber",0);
 
     QString default_path = QFileInfo(settings.fileName()).absolutePath();
     QString writelocation = default_path+"//"+"summed.jpeg";

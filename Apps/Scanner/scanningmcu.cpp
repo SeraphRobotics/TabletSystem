@@ -23,7 +23,7 @@ ScanningMCU::ScanningMCU(QObject *parent) : QObject(parent)
     connect(sc_,SIGNAL(ScanComplete()),this,SLOT(scanComplete()));
     connect(this,SIGNAL(processScanFolder(QString)),sp_,SLOT(processScan(QString)));
     connect(sp_,SIGNAL(scanProcessed(Scan*)),sm_,SLOT(addScan(Scan*)));
-    //sp_->isFoamBox(false);
+    sp_->isFoamBox(false);
 
 }
 

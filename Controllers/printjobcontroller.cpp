@@ -44,7 +44,7 @@ void PrintJobController::RunPrintJob(){
 
     FAHVector3 p1, p2, d;
     float rotation=0;
-    if(orth_->getFootType()==Orthotic::kRight){
+    if(orth_->getFootType()==Orthotic::kLeft){
         p1 = orth_->getForePoints().first().copy();
         p2 = orth_->getHealPoints().first().copy();
         //// EXTRA_SCALE p1.x=p1.x*2;
@@ -68,12 +68,15 @@ void PrintJobController::RunPrintJob(){
     d.normalize();
     FAHMatrix4x4 m;
     FAHMatrix4x4 n;
+    FAHMatrix4x4 p;
     n.rotationZ(Math::kPi/2.0);
 #ifdef DEBUGGING
     m.identity();
+    m.mul(p.xyswap());
 #else
     m.rotationPointAxisAngle(p2,d,rotation); //(-Math::kPi)
     m = n.mul(m);
+    m = p.xyswap().mul(m);
 #endif
 
 
