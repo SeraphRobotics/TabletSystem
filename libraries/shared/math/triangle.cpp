@@ -134,6 +134,15 @@ bool Triangle::intersectXYPlaneAtZ(Float z, Line* intersection) const {
 
 bool Triangle::intersectedByRay(const Vector3& origin,
                                 const Vector3& ray) {
+
+    //https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+
+//  Line l(origin.copy(),origin.copy()+1000*ray.copy());
+//  if (l.pointOnLine(v[0])) return true;
+//  if (l.pointOnLine(v[1])) return true;
+//  if (l.pointOnLine(v[2])) return true;
+
+
   Vector3 e1,e2;
   e1.set(v[1]).sub(v[0]);
   e2.set(v[2]).sub(v[0]);
@@ -145,13 +154,35 @@ bool Triangle::intersectedByRay(const Vector3& origin,
   // vector is parallel to plane
   if (floatsEqual(a, 0)) return false;
 
+
+
+//  Vector3 pt;
+//  if(     edge0().intersectSegmentWithSegment3DXY(l,&pt) ||
+//          edge1().intersectSegmentWithSegment3DXY(l,&pt)||
+//          edge2().intersectSegmentWithSegment3DXY(l,&pt)){
+//      return true;
+//  }
+  //Check Corners
+
+
+//  // Check Edges
+//  Line pt0,pt1,pt2;
+//  bool working0 = edge0().intersectLineWithLine(l,&pt0);
+//  bool working1 = edge1().intersectLineWithLine(l,&pt1);
+//  bool working2 = edge2().intersectLineWithLine(l,&pt2);
+
+//  if( ( working0 && pt0.length()<0.00001 )|| ( working1 &&pt1.length()<0.00001)||(  working2 &&pt2.length()<0.00001)){
+//      return true;
+//  }
+
+
   double f=1/a;
   Vector3 s;
   s.set(origin).sub(v[0]);
   double u=f*s.dot(q);
 
   // the intersection is outside the triangle
-  if (u<0.0) return false;
+  if (u<0.0 || u>1.0) return false;
 
   Vector3 r;
   r=s.cross(e1);

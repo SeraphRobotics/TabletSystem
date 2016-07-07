@@ -4,7 +4,7 @@
 Patient::Patient():id(QUuid::createUuid().toString()),gender(kMale),name(Name()){}
 
 
-Patient::Patient(const Patient& p):gender(p.gender),id(p.id),name(p.name) {
+Patient::Patient(const Patient& p):id(p.id),gender(p.gender),name(p.name) {
     for(int i=0;i<p.rxs.size();i++){
         rxs.append(Rx(p.rxs.at(i)));
     }
@@ -19,11 +19,13 @@ bool Patient::operator==(Patient p){
 
 Rx::Rx():docId(""),date(QDate::currentDate()),note(""),shoesize(0),
     leftScanId(""),leftOrthoticId(""),
-    rightScanId(""),rightOrthoticId(""){}
+    rightScanId(""),rightOrthoticId(""),
+    orthoticAvailable(false) {}
 
 Rx::Rx(const Rx& r):docId(r.docId),date(r.date),note(r.note),shoesize(r.shoesize),
     leftScanId(r.leftScanId),leftOrthoticId(r.leftOrthoticId),
-    rightScanId(r.rightScanId),rightOrthoticId(r.rightOrthoticId){}
+    rightScanId(r.rightScanId),rightOrthoticId(r.rightOrthoticId),
+    orthoticAvailable(r.orthoticAvailable) {}
 
 bool Rx::operator==(Rx r){
     int count=0;
@@ -68,15 +70,17 @@ QDomNode nodeFromRx(Rx r){
     scanl.setAttribute("foot",QString::number(Orthotic::kLeft));
     node.appendChild(scanl);
 
-    QDomElement orthor = d.createElement("orthotic");
-    orthor.setAttribute("id",r.rightOrthoticId);
-    orthor.setAttribute("foot",QString::number(Orthotic::kRight));
-    node.appendChild(orthor);
+    if (r.orthoticAvailable) {
+        QDomElement orthor = d.createElement("orthotic");
+        orthor.setAttribute("id",r.rightOrthoticId);
+        orthor.setAttribute("foot",QString::number(Orthotic::kRight));
+        node.appendChild(orthor);
 
-    QDomElement orthol = d.createElement("orthotic");
-    orthol.setAttribute("id",r.leftOrthoticId);
-    orthol.setAttribute("foot",QString::number(Orthotic::kLeft));
-    node.appendChild(orthol);
+        QDomElement orthol = d.createElement("orthotic");
+        orthol.setAttribute("id",r.leftOrthoticId);
+        orthol.setAttribute("foot",QString::number(Orthotic::kLeft));
+        node.appendChild(orthol);
+    }
 
     return node;
 }
@@ -89,7 +93,7 @@ Rx rxFromNode(QDomNode node){
 
 
     QDomNodeList mchildren = node.childNodes();
-    for(unsigned int i=0;i<mchildren.length();i++){
+    for(int i=0; i < mchildren.length(); i++){
         QDomNode mchild = mchildren.at(i);
         if(!mchild.isElement()){continue;}
 
@@ -118,12 +122,13 @@ Rx rxFromNode(QDomNode node){
         }else if("orthotic"==name){
             Orthotic::foot_type t= static_cast<Orthotic::foot_type>(el.attribute("foot",QString::number(Orthotic::kNull)).toUInt());
             QString id = el.attribute("id","");
-            if(!id.isNull()){
+            if(!id.isEmpty()){
                 if(Orthotic::kRight==t){
                     r.rightOrthoticId=id;
                 }else if(Orthotic::kLeft==t){
                     r.leftOrthoticId=id;
                 }
+                r.orthoticAvailable = true;
             }
         }
 
@@ -158,7 +163,7 @@ Patient patientFromNode(QDomNode node){
     p.id=node.toElement().attribute("id","");
 
     QDomNodeList mchildren = node.childNodes();
-    for(unsigned int i=0;i<mchildren.length();i++){
+    for(int i=0; i < mchildren.length(); i++){
         QDomNode mchild = mchildren.at(i);
         if(!mchild.isElement()){continue;}
 

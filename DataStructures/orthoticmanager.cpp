@@ -52,6 +52,7 @@ bool OrthoticManager::hasOrthotic(QString id){
 
 
 void OrthoticManager::updateList(){
+    dir_.refresh();
     QStringList files = dir_.entryList();
     idlist_.clear();
     for(int i=0;i<files.size();i++){

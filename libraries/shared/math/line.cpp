@@ -68,6 +68,22 @@ bool Line::pointOnLine(const Vector3& v) const {
 }
 
 
+bool Line::pointOnSegment2D(const Vector3& v) const{
+    Vector3 ap = a.copy();
+    ap.z=0;
+    Vector3 bp = b.copy();
+    bp.z=0;
+    Vector3 vp = v.copy();
+    vp.z=0;
+    bool point_on_segment = ap.equals(vp) || bp.equals(vp);
+    if (!point_on_segment) {
+      Vector3 t0, t1;
+      float dot_product = t0.ray(ap, vp).dot(t1.ray(bp, vp));
+      point_on_segment = floatsEqual(dot_product, -1.0);
+    }
+    return point_on_segment;
+}
+
 bool Line::pointOnSegment(const Vector3& v) const {
   // the point is in the segment if a ray from a->v is the reverse of
   // the ray from b->v, or either endpoint is equal to the point.
@@ -106,13 +122,62 @@ bool Line::equalsSegment(const Line& segment) const {
 
 
 
-Line Line::intersectLineWithLine(const Line& other) const {
-  Q_UNUSED(other);
-  if( !(!"intersectLineWithLine is not implemented") ) {
-//    todo("kwg8","implement intersectLineWithLine");
-  }
-  Line invalid;
-  return invalid.zero();
+bool Line::intersectLineWithLine(const Line& other, Line *result) const {
+    //http://paulbourke.net/geometry/pointlineplane/
+    result->zero();
+    double EPS = 0.000001;
+    Vector3 p1,p2,p3,p4;
+    p1 = a.copy();
+    p2 = b.copy();
+    p3 = other.a.copy();
+    p4 = other.b.copy();
+    double mua,mub;
+    Vector3 pa,pb;
+
+    Vector3 p13,p43,p21;
+    double d1343,d4321,d1321,d4343,d2121;
+    double numer,denom;
+
+    p13.x = p1.x - p3.x;
+    p13.y = p1.y - p3.y;
+    p13.z = p1.z - p3.z;
+    p43.x = p4.x - p3.x;
+    p43.y = p4.y - p3.y;
+    p43.z = p4.z - p3.z;
+    if (abs(p43.x) < EPS && abs(p43.y) < EPS && abs(p43.z) < EPS){
+      return false;}
+    p21.x = p2.x - p1.x;
+    p21.y = p2.y - p1.y;
+    p21.z = p2.z - p1.z;
+    if (abs(p21.x) < EPS && abs(p21.y) < EPS && abs(p21.z) < EPS){
+      return false;
+    }
+
+    d1343 = p13.x * p43.x + p13.y * p43.y + p13.z * p43.z;
+    d4321 = p43.x * p21.x + p43.y * p21.y + p43.z * p21.z;
+    d1321 = p13.x * p21.x + p13.y * p21.y + p13.z * p21.z;
+    d4343 = p43.x * p43.x + p43.y * p43.y + p43.z * p43.z;
+    d2121 = p21.x * p21.x + p21.y * p21.y + p21.z * p21.z;
+
+    denom = d2121 * d4343 - d4321 * d4321;
+    if (abs(denom) < EPS){
+      return false;
+    }
+    numer = d1343 * d4321 - d1321 * d4343;
+
+    mua = numer / denom;
+    mub = (d1343 + d4321 * (mua)) / d4343;
+
+    pa.x = p1.x + mua * p21.x;
+    pa.y = p1.y + mua * p21.y;
+    pa.z = p1.z + mua * p21.z;
+    pb.x = p3.x + mub * p43.x;
+    pb.y = p3.y + mub * p43.y;
+    pb.z = p3.z + mub * p43.z;
+
+    result->a = pa.copy();
+    result->b = pb.copy();
+    return true;
 }
 
 
@@ -143,7 +208,25 @@ Line& Line::changeLength(Float amount) {
 }
 
 
+bool Line::intersectSegmentWithSegment3DXY(const Line& other, Vector3* result){
+    //http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+    result->set(0,0,0);
+    Vector3 q,p,r,s;
+    q = a.copy();
+    p = other.a.copy();
+    r = b.copy()-q;
+    s = other.b.copy();
 
+    if(r.cross(s).magnitude()==0){return false;}
+
+    float t = ((q-p).cross((s/(r.cross(s).magnitude())))).magnitude();
+    float u = ((q-p).cross((r/(r.cross(s).magnitude())))).magnitude();
+    if( (u<1 && u>0 && t>0 && t<1) || u==0 || u==1 || t==1 || t==0){
+        Vector3 pt = q+u*s;
+        result->set(pt);
+        return true;
+    }
+}
 bool Line::intersectSegmentWithSegment2DXY(
         const Line& other,
         Vector3* result) const {
@@ -246,6 +329,32 @@ Float Line::lineDistanceTo2DXY(const Vector3& point) const {
   Float dy = point.y - yy;
 
   return sqrt(dx*dx + dy*dy);
+}
+
+
+Float Line::lineDistanceTo3D(const Vector3 &point) const{
+    //http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+    Vector3 p1 = point-a;
+    Vector3 p2 = point-b;
+    Vector3 d = b-a;
+    Vector3 c = p1.cross(p2);
+    return c.magnitude()/d.magnitude();
+}
+
+Float Line::valueAtXY(Float X,Float Y) const{
+    //http://tutorial.math.lamar.edu/Classes/CalcIII/EqnsOfLines.aspx
+    Vector3 abc = b-a;
+    if (0==abc.z) return a.z;
+    if (0==abc.y && 0!=abc.x){
+        return abc.z/abc.x*(X-a.x)+a.z;
+    }
+    if (0==abc.x && 0!=abc.y){
+        return abc.z/abc.y*(Y-a.y)+a.z;
+    }
+    return a.z;
+
+
+
 }
 
 }

@@ -30,7 +30,7 @@ Manipulation::Manipulation(QDomNode node):depth(0),stiffness(0),location(0,0,0){
 
 
     QDomNodeList mchildren = node.childNodes();
-    for(unsigned int i=0;i<mchildren.length();i++){
+    for(int i=0;i<mchildren.length();i++){
         QDomNode mchild = mchildren.at(i);
         if(!mchild.isElement()){continue;}
 
@@ -49,7 +49,7 @@ Manipulation::Manipulation(QDomNode node):depth(0),stiffness(0),location(0,0,0){
             QDomNodeList lchildren = mchild.childNodes();
             if(1>lchildren.length()){continue;}
 
-            for(unsigned int j=0;j<lchildren.length();j++){
+            for(int j=0;j<lchildren.length();j++){
 
                 QDomNode lchild = lchildren.at(j);
                 if(!lchild.isElement()){continue;}
@@ -109,17 +109,16 @@ QDomNode Manipulation::toNode(){
     locationEl.appendChild(yEl);
     node.appendChild(locationEl);
 
+    QDomElement outerEl = d.createElement("outerloop");
+    QDomNode ol=nodeFromLoop(outerloop);
+    outerEl.appendChild(ol);
+    node.appendChild(outerEl);
 
-//    QDomElement outerEl = d.createElement("outerloop");
-//    QDomNode ol=nodeFromLoop(outerloop);
-//    outerEl.appendChild(ol);
-//    node.appendChild(outerEl);
-
-//    QDomElement innerEl = d.createElement("innerloops");
-//    for(int i=0; i<innerloops.size();i++){
-//        innerEl.appendChild(nodeFromLoop(innerloops.at(i)));
-//    }
-//    node.appendChild(innerEl);
+    QDomElement innerEl = d.createElement("innerloops");
+    for(int i=0; i<innerloops.size();i++){
+        innerEl.appendChild(nodeFromLoop(innerloops.at(i)));
+    }
+    node.appendChild(innerEl);
 
     return node;
 }
@@ -155,7 +154,7 @@ Top_Coat topCoatFromNode(QDomNode node){
 
 
     QDomNodeList mchildren = node.childNodes();
-    for(unsigned int i=0;i<mchildren.length();i++){
+    for(int i=0;i<mchildren.length();i++){
         QDomNode mchild = mchildren.at(i);
         if(!mchild.isElement()){continue;}
 
@@ -256,7 +255,7 @@ Posting nodeToPosting(QDomNode node){
 
 
     QDomNodeList mchildren = node.childNodes();
-    for(unsigned int i=0;i<mchildren.length();i++){
+    for(int i=0;i<mchildren.length();i++){
         QDomNode mchild = mchildren.at(i);
         if(!mchild.isElement()){continue;}
 

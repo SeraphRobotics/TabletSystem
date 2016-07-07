@@ -11,7 +11,6 @@ UserDataManager::UserDataManager(QObject *parent) :
     dir_= settings.value("users-directory",QDir::currentPath()).toString();
     filename_ = settings.value("users-file","users.xml").toString();
     rescan();
-
 }
 
 QPixmap UserDataManager::getIcon(QString user_id){

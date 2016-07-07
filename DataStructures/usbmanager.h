@@ -16,17 +16,19 @@ public:
 
     QString getLocation(QString id);
 
+    void addItem(const UI_USB_Item &item);
+
 signals:
 
     /**
      * UI facing signal for the USB control widget
      **/
-    void usbConnected();
+    void usbConnected(const QString &path);
 
     /**
      * UI facing signal for the USB control widget
      **/
-    void usbDisconnected();
+    void usbDisconnected(const QString &path);
 
     /**
      * UI facing signal for the USB control widget
@@ -41,7 +43,6 @@ public slots:
      **/
     void deleteItem(QString id);
 
-
 private slots:
 
     /**
@@ -52,7 +53,9 @@ private slots:
     /**
      * connects to the USB minder thread and causes the system to process the usb key removal
      **/
-    void usbDisconnected(QString f);
+    void usbRemoved(QString f);
+
+    void processUsbAdded(const QString &f);
 
 private:
     /**
@@ -64,6 +67,11 @@ private:
      * writes UI_USB_Items into USBData.xml files
      **/
     void updateUSBData();
+
+    /**
+      * Returns mount dir by device path
+      **/
+    QString mountDir(const QString &device) const;
 
 private:
     QMap < QString, UI_USB_Item > items_;

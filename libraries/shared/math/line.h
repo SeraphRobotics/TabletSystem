@@ -84,9 +84,17 @@ namespace Math {
    * Checks intersection of a point on this segment presuming finite length
    * 
    * @param v the point in space to be checked
-   * @return true if 'v' is on the infinite line
+   * @return true if 'v' is on the finite line
    */
   bool pointOnSegment(const Vector3& v) const;
+
+  /**
+   * Checks intersection of a point on this segment presuming finite length
+   *
+   * @param v the point in space to be checked
+   * @return true if 'v' is on the finite line in 2d projection
+   */
+  bool pointOnSegment2D(const Vector3& v) const;
 
   /**
    * Assuming this line specifies a line segment, finds the center of the segment.
@@ -131,13 +139,15 @@ namespace Math {
    * intersection.  If both lines have no length, the returned segment will
    * simply be the segment containing a point from each line. 
    */
-  Line intersectLineWithLine(const Line& other) const;
+  bool intersectLineWithLine(const Line& other,Line* result) const;
 
   /**
    * This method has the same behavior as intersectSegmentWithSegment, but it
    * only checks for 2D intersections on the XY plane (the Z coordinate is
    * entirely ignored on both segments).
    */
+  bool intersectSegmentWithSegment3DXY(const Line& other, Vector3* result);
+
   bool intersectSegmentWithSegment2DXY(const Line& other,
                                        Vector3* result) const;
 
@@ -178,6 +188,10 @@ namespace Math {
    * z-coordinate.
    */
   Float lineDistanceTo2DXY(const Vector3& point) const;
+
+  Float lineDistanceTo3D(const Vector3 &point) const;
+
+  Float valueAtXY(Float X,Float Y) const;
 };
 
 }

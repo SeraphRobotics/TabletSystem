@@ -20,6 +20,7 @@ class ScanDataProcesser : public QObject
 public:
     explicit ScanDataProcesser(QObject *parent = 0);
     ~ScanDataProcesser();
+    ScanDataProcesser(QString folder);
     ScanDataProcesser(QString id, QString folder);
 
 
@@ -33,7 +34,7 @@ signals:
     void scannerNotCalibrated();
     
 public slots:
-
+    void isFoamBox(bool box);
 
     void processScan();
     /**
@@ -47,7 +48,7 @@ public slots:
 
 private slots:
 
-
+    void clearScanDir();
 
     void processImage(QString file, cv::Mat noise);
 
@@ -70,6 +71,8 @@ public:
     QDir dir_;
     int numFilesToProcess;
     int numFilesProcessed;
+    QString img_format_;
+    bool is_foambox_;
 
 };
 

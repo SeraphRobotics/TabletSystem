@@ -12,9 +12,10 @@ struct Rx{
     QString note;
     float shoesize;
     QString leftScanId;
+    QString leftOrthoticId;
     QString rightScanId;
     QString rightOrthoticId;
-    QString leftOrthoticId;
+    bool orthoticAvailable;
     Rx();
     Rx(const Rx& r);
     bool operator==(Rx r);

@@ -301,11 +301,14 @@ void addSquareToSTL(int i, int j, XYGrid<T>* grid, STLMesh *mesh,
             anchor2 = p4;
             sorted_points = sortByIndex(points,0,false);
         }
-        for(int m=0; m<sorted_points.size()-1; m++){
-//            printPoint( sorted_points[m] );
-            addFacetWithDirection(anchor1,sorted_points[m],sorted_points[m+1],mesh,d);
+
+        if(!sorted_points.isEmpty()) {
+            for(int m=0; m<sorted_points.size()-1; m++){
+    //            printPoint( sorted_points[m] );
+                addFacetWithDirection(anchor1,sorted_points[m],sorted_points[m+1],mesh,d);
+            }
+            addFacetWithDirection(anchor1,anchor2,sorted_points.last(),mesh,d);
         }
-        addFacetWithDirection(anchor1,anchor2,sorted_points.last(),mesh,d);
 
         break;
     case 1:
@@ -773,61 +776,65 @@ void addBetweenTwoLoopsToSTL(STLMesh* mesh,
         direction.normalize();
 
 
-        for(int j=0; j<pts.size()-1;j++){
-            direction = addFacetWithDirection(inner,pts.at(j),
-                                  pts.at( (j+1)%pts.size() ),
-                                  mesh,direction);
-        }
-        direction = addFacetWithDirection(inner,pts.last(),
-                              ptsp.first(),
-                              mesh,direction);
-
-        for(int j=k;j<kp;j++){
-
-            FAHVector3 p1 = innerLoop->points.at(j%innerLoop->points.size());
-            FAHVector3 p2 = innerLoop->points.at( (j+1)%innerLoop->points.size());
-
-
-
-            direction = addFacetWithDirection(p1,p2,
+        if(!pts.isEmpty() && !ptsp.isEmpty()) {
+            for(int j=0; j<pts.size()-1;j++){
+                direction = addFacetWithDirection(inner,pts.at(j),
+                                      pts.at( (j+1)%pts.size() ),
+                                      mesh,direction);
+            }
+            direction = addFacetWithDirection(inner,pts.last(),
                                   ptsp.first(),
                                   mesh,direction);
+
+            for(int j=k;j<kp;j++){
+
+                FAHVector3 p1 = innerLoop->points.at(j%innerLoop->points.size());
+                FAHVector3 p2 = innerLoop->points.at( (j+1)%innerLoop->points.size());
+
+
+
+                direction = addFacetWithDirection(p1,p2,
+                                      ptsp.first(),
+                                      mesh,direction);
+            }
         }
     }
     {
         QVector<FAHVector3> pts = indexToOuterloop[indices.last()];
         QVector<FAHVector3> ptsp = indexToOuterloop[0];
 
-        FAHVector3 p1 = innerLoop->points.first();
-        FAHVector3 p2;
-        p2 = innerLoop->points.last();
-        int n=0;
-        while(n<10 && p2.isInvalid()){
+        if(!pts.isEmpty() && !ptsp.isEmpty()) {
+            FAHVector3 p1 = innerLoop->points.first();
+            FAHVector3 p2;
+            p2 = innerLoop->points.last();
+            int n=0;
+            while(n<10 && p2.isInvalid()){
 
-            innerLoop->points.pop_back();
-            p2= innerLoop->points.last();
-            n++;
-//            qDebug()<<"n:"<<n;
-        }
-        n=0;
-        FAHVector3 outpt = pts.last();
-//        qDebug()<<"pts: "<<pts.size();
-        while(n<10 && outpt.isInvalid() && pts.size()>0){
-            pts.pop_back();
-            outpt = pts.last();
-            n++;
-//            qDebug()<<"n:"<<n;
-//            printPoint(outpt);
-        }
+                innerLoop->points.pop_back();
+                p2= innerLoop->points.last();
+                n++;
+    //            qDebug()<<"n:"<<n;
+            }
+            n=0;
+            FAHVector3 outpt = pts.last();
+    //        qDebug()<<"pts: "<<pts.size();
+            while(n<10 && outpt.isInvalid() && pts.size()>0){
+                pts.pop_back();
+                outpt = pts.last();
+                n++;
+    //            qDebug()<<"n:"<<n;
+    //            printPoint(outpt);
+            }
 
-//        qDebug()<<"\n\n 0";
-        addFacetWithDirection(p2,outpt,
-                              ptsp.first(),
-                              mesh,FAHVector3(-1,-1,-1));
-//        qDebug()<<"\n\n 1";
-        addFacetWithDirection(p1,p2,
-                              ptsp.first(),
-                              mesh,FAHVector3(-1,-1,-1));
+    //        qDebug()<<"\n\n 0";
+            addFacetWithDirection(p2,outpt,
+                                  ptsp.first(),
+                                  mesh,FAHVector3(-1,-1,-1));
+    //        qDebug()<<"\n\n 1";
+            addFacetWithDirection(p1,p2,
+                                  ptsp.first(),
+                                  mesh,FAHVector3(-1,-1,-1));
+        }
     }
 
 }

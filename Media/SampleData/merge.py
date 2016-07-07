@@ -392,14 +392,14 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         mergelist.append(pad_list)
     
     ## make TopCoat layer lists
-    [topcoat_file,z_topcoat,z_offset,x_offset,y_offset] = nodeToFileOffset(topcoatnode)
-    topcoat_list = processFileIntoLayers(topcoat_file,True,verbose)
-    parity(topcoat_list,verbose)
-    (topcoat_min,topcoat_max) = findMinMax(topcoat_list)
-    translate(topcoat_list,[-topcoat_min[0]+TOOLHEAD_OFFSET[0]+x_offset+BUILDTRAY_OFFSET[0],
-                            -topcoat_min[1]+TOOLHEAD_OFFSET[1]+y_offset,
-                            z_topcoat+z_offset+TOOLHEAD_OFFSET[2]+BUILDTRAY_OFFSET[2]],
-                            verbose, True)
+    #[topcoat_file,z_topcoat,z_offset,x_offset,y_offset] = nodeToFileOffset(topcoatnode)
+    #topcoat_list = processFileIntoLayers(topcoat_file,True,verbose)
+    #parity(topcoat_list,verbose)
+    #(topcoat_min,topcoat_max) = findMinMax(topcoat_list)
+    #translate(topcoat_list,[-topcoat_min[0]+TOOLHEAD_OFFSET[0]+x_offset+BUILDTRAY_OFFSET[0],
+    #                        -topcoat_min[1]+TOOLHEAD_OFFSET[1]+y_offset,
+    #                        z_topcoat+z_offset+TOOLHEAD_OFFSET[2]+BUILDTRAY_OFFSET[2]],
+    #                        verbose, True)
     #translate(topcoat_list,[TOOLHEAD_OFFSET[0]+x_offset,TOOLHEAD_OFFSET[1]+y_offset,TOOLHEAD_OFFSET[2]+z_offset],verbose)
     #translate(topcoat_list,[BUILDTRAY_OFFSET[0],BUILDTRAY_OFFSET[1],BUILDTRAY_OFFSET[2]],verbose)
     #setTopcoatSpeed(topcoat_list,1200,verbose)
@@ -452,9 +452,9 @@ def mergeFromXML(infilename, outfilename, verbose, debug):
         outfile.write(line)
     
     
-    for layer in topcoat_list:
-        for cmd in layer.cmds:
-            outfile.write(cmd)
+    #for layer in topcoat_list:
+    #    for cmd in layer.cmds:
+    #        outfile.write(cmd)
     
     print "done"
     
@@ -467,4 +467,3 @@ if __name__ == '__main__':
     outfilename = sys.argv[2]
     mergeFromXML(infilename,outfilename,'--verbose' in sys.argv, '--debug' in sys.argv )
     
- 

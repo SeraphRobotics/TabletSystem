@@ -44,6 +44,82 @@ void PatientManager::updateRx(QString PatientID, Rx r){
 
 }
 
+void PatientManager::removeRx(const QString &patientId, const QString &rxId)
+{
+    Patient p = getOriginalByID(patientId);
+    int index = patients_.indexOf(p);
+
+    for (int i = 0; i < patients_[index].rxs.count(); i++) {
+        if (patients_[index].rxs.at(i).leftOrthoticId == rxId ||
+                patients_[index].rxs.at(i).rightOrthoticId == rxId) {
+
+            patients_[index].rxs[i].leftOrthoticId =
+                    patients_[index].rxs[i].rightOrthoticId = QString();
+            patients_[index].rxs[i].orthoticAvailable = false;
+
+            writeToDisk();
+
+            return;
+        }
+    }
+}
+
+void PatientManager::replaceRxByScanId(const QString &patientId, const QString &scanId, Rx r)
+{
+    Patient p = getOriginalByID(patientId);
+    int index = patients_.indexOf(p);
+
+    for (int i = 0; i < patients_[index].rxs.count(); i++) {
+        if (patients_[index].rxs.at(i).leftScanId == scanId ||
+                patients_[index].rxs.at(i).rightScanId == scanId) {
+
+            patients_[index].rxs[i] = r;
+            writeToDisk();
+            return;
+        }
+    }
+
+    patients_[index].rxs.removeAll(r);
+    patients_[index].rxs.append(r);
+    writeToDisk();
+}
+
+void PatientManager::replaceRxByOrthoId(const QString &patientId, const QString &orthoId, Rx r)
+{
+    Patient p = getOriginalByID(patientId);
+    int index = patients_.indexOf(p);
+
+    for (int i = 0; i < patients_[index].rxs.count(); i++) {
+        if (patients_[index].rxs.at(i).leftOrthoticId == orthoId ||
+                patients_[index].rxs.at(i).rightOrthoticId == orthoId) {
+
+            patients_[index].rxs[i] = r;
+            writeToDisk();
+            return;
+        }
+    }
+
+    patients_[index].rxs.removeAll(r);
+    patients_[index].rxs.append(r);
+    writeToDisk();
+}
+
+void PatientManager::removeScan(const QString &patientId, const QString &scanId)
+{
+    Patient p = getOriginalByID(patientId);
+    int index = patients_.indexOf(p);
+
+    for (int i = 0; i < patients_[index].rxs.count(); i++) {
+        if (patients_[index].rxs.at(i).leftScanId == scanId ||
+                patients_[index].rxs.at(i).rightScanId == scanId) {
+
+            patients_[index].rxs.removeAt(i);
+            writeToDisk();
+            return;
+        }
+    }
+}
+
 Patient PatientManager::getOriginalByID(QString id){
     Patient p;
     for(int i=0;i<patients_.size();i++){

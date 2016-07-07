@@ -1,21 +1,21 @@
 # CONFIG += qt warn_off debug
 # QT       += network quick sql xml concurrent
-QT     += core gui xml concurrent
+QT     += core gui xml concurrent serialport
 QT     += widgets   # for QMessageBox
 CONFIG += c++11
-CONFIG += test
+#CONFIG += test
 CONFIG += opencv2411
 CONFIG += qt54
 CONFIG += eie
 
-
 ##############################
 # static libs
-#CONFIG += staticlib
+CONFIG += staticlib
 # ***
-#TARGET = seraphLibs
-#TEMPLATE = lib
-#VERSION = 0.0.01
+CONFIG(release, debug|release):TARGET = seraphLibs
+CONFIG(debug, debug|release):TARGET = seraphLibsd
+TEMPLATE = lib
+VERSION = 0.0.01
 
 # stand alone
 #TEMPLATE = app
@@ -30,91 +30,7 @@ DEFINES += SERAPHLIBS_LIBRARY
 # DEFINES += SW_VERSION=\\\"\"$$PWD\"\\\"
 # DEFINES += SW_VERSION=$$PWD\;
 
-qt54{
- win32:INCLUDEPATH +=C:\\Qt5\\5.4\\Src\\qtbase\\src\\3rdparty\\zlib
-}
-
-qt485{
- win32:INCLUDEPATH += C:\\Qt\\4.8.5\\src\\3rdparty\\zlib
-}
-
-qt486{
- win32:INCLUDEPATH += C:\\Qt\\4.8.6\\src\\3rdparty\\zlib
-}
-
-opencv2411{
-    win32:INCLUDEPATH += C:\\opencv\\build_with_Qt5\\release\\include
-    win32:LIBS += -LC:\\opencv\\build_with_Qt5\\release\\x64\\mingw\\lib \
-        -lopencv_calib3d2411.dll\
-        -lopencv_contrib2411.dll\
-        -lopencv_core2411.dll \
-        -lopencv_features2d2411.dll \
-        -lopencv_flann2411.dll \
-        -lopencv_gpu2411.dll \
-        -lopencv_highgui2411.dll \
-        -lopencv_imgproc2411.dll \
-        -lopencv_legacy2411.dll \
-        -lopencv_ml2411.dll\
-        -lopencv_objdetect2411.dll \
-        -lopencv_ts2411 \
-        -lopencv_video2411.dll
-}
-
-opencv245{
-    win32:INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
-    win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
-        -lopencv_calib3d245.dll\
-        -lopencv_contrib245.dll\
-        -lopencv_core245.dll \
-        -lopencv_features2d245.dll \
-        -lopencv_flann245.dll \
-        -lopencv_gpu245.dll \
-        -lopencv_highgui245.dll \
-        -lopencv_imgproc245.dll \
-        -lopencv_legacy245.dll \
-        -lopencv_ml245.dll\
-        -lopencv_objdetect245.dll \
-        -lopencv_ts245 \
-        -lopencv_video245.dll
-}
-
-opencv243{
-    win32:INCLUDEPATH += C:\\OpenCV\\build_with_Qt\\release\\include
-    win32:LIBS += -LC:\\OpenCV\\build_with_Qt\\release\\lib \
-        -lopencv_calib3d243.dll\
-        -lopencv_contrib243.dll\
-        -lopencv_core243.dll \
-        -lopencv_features2d243.dll \
-        -lopencv_flann243.dll \
-        -lopencv_gpu243.dll \
-        -lopencv_highgui243.dll \
-        -lopencv_imgproc243.dll \
-        -lopencv_legacy243.dll \
-        -lopencv_ml243.dll\
-        -lopencv_objdetect243.dll \
-        -lopencv_ts243 \
-        -lopencv_video243.dll
-}
-unix:LIBS += \
-    -lopencv_calib3d \
-    -lopencv_contrib \
-    -lopencv_core \
-    -lopencv_features2d \
-    -lopencv_flann \
-    -lopencv_gpu \
-    -lopencv_highgui \
-    -lopencv_imgproc \
-    -lopencv_legacy \
-    -lopencv_ml \
-    -lopencv_objdetect \
-    -lopencv_ts \
-    -lopencv_video
-
-unix:LIBS += -lz
-
-#win32:INCLUDEPATH += "C:\\Eigen\\include\\eigen3"
-
-win32:INCLUDEPATH +="C:\\Eigen\\eigen3"
+include(conf.pri)
 
 # run test suit,
 # clone a build in projects and add build additional args of CONFIG+=test to run below block
@@ -134,13 +50,14 @@ test {
     tests/main.cpp \
     tests/testscanmanger.cpp \
     tests/testorthoticmanager.cpp \
-    tests/testorthoticcontroller.cpp
+    tests/testorthoticcontroller.cpp \
+    tests/testscannercontroller.cpp
 
     HEADERS += \
     tests/testscanmanger.h \
     tests/testorthoticmanager.h \
-    tests/testorthoticcontroller.h
-
+    tests/testorthoticcontroller.h \
+    tests/testscannercontroller.h
 
 } else {
     message(shared libs build)
@@ -157,9 +74,12 @@ HEADERS += \
     Controllers/scandataprocesser.h \
     Controllers/scannerfunctions.h \
     Controllers/scanprocessing.h \
+    Controllers/scannercontroller.h \
+    Controllers/scannerwatcher.h \
     Controllers/slicercontroller.h \
     Controllers/stlgeneration.h \
     Controllers/topcoatcontroller.h \
+    Controllers/footrecognizer.h \
     DataStructures/usbmanager.h \
     DataStructures/usbminder.h \
     DataStructures/user.h \
@@ -174,6 +94,8 @@ HEADERS += \
     DataStructures/printingstructs.h \
     DataStructures/scan.h \
     DataStructures/scanmanager.h \
+    DataStructures/recordkeeper.h \
+    DataStructures/scannerarduinointerface.h \
     libraries/shared/amf/amffile.h \
     libraries/shared/amf/amfmesh.h \
     libraries/shared/amf/amfobject.h \
@@ -212,8 +134,8 @@ HEADERS += \
     libraries/qdevicewatcher/src/qdevicewatcher_global.h \
     libraries/qdevicewatcher/src/qdevicechangeevent.h \
     globals.h \
-    runtime/mastercontrolunit.h \
-    View/UI_structs.h
+    View/UI_structs.h \
+    Controllers/ImageProcessingClass/ImageContoursDetector.h
 
 SOURCES += \
     Controllers/gcodecontroller.cpp \
@@ -226,9 +148,12 @@ SOURCES += \
     Controllers/scandataprocesser.cpp \
     Controllers/scannerfunctions.cpp \
     Controllers/scanprocessing.cpp \
+    Controllers/scannercontroller.cpp \
+    Controllers/scannerwatcher.cpp \
     Controllers/slicercontroller.cpp \
     Controllers/stlgeneration.cpp \
     Controllers/topcoatcontroller.cpp \
+    Controllers/footrecognizer.cpp \
     DataStructures/usbmanager.cpp \
     DataStructures/usbminder.cpp \
     DataStructures/user.cpp \
@@ -243,6 +168,8 @@ SOURCES += \
     DataStructures/printingstructs.cpp \
     DataStructures/scan.cpp \
     DataStructures/scanmanager.cpp \
+    DataStructures/recordkeeper.cpp\
+    DataStructures/scannerarduinointerface.cpp\
     libraries/shared/amf/amffile.cpp \
     libraries/shared/amf/amfmesh.cpp \
     libraries/shared/amf/amfobject.cpp \
@@ -273,12 +200,9 @@ SOURCES += \
     libraries/common/todo.cpp \
     libraries/qdevicewatcher/src/qdevicewatcher.cpp \
     libraries/qdevicewatcher/src/qdevicechangeevent.cpp \
-    runtime/mastercontrolunit.cpp \
     View/UI_structs.cpp \
-    globals.cpp
-
-
-
+    globals.cpp \
+    Controllers/ImageProcessingClass/ImageContoursDetector.cpp
 
 
 unix:  SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_linux.cpp
@@ -290,10 +214,3 @@ macx {
     LIBS += -framework DiskArbitration -framework Foundation
     SOURCES += libraries/qdevicewatcher/src/qdevicewatcher_mac.cpp
 }
-
-
-
-
-
-
-

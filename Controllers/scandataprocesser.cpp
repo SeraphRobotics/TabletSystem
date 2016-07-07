@@ -7,10 +7,12 @@
 #include <QDebug>
 
 ScanDataProcesser::ScanDataProcesser(QObject *parent) :
-    QObject(parent),numFilesToProcess(0),numFilesProcessed(0)
+    QObject(parent),numFilesToProcess(0),numFilesProcessed(0),is_foambox_(true)
 {
     id_=QUuid::createUuid().toString();
     dir_=QDir::current();
+    QSettings s;
+    img_format_ = s.value("scanner/imageformat",".jpeg").toString().toLower();
 
 }
 
@@ -22,11 +24,26 @@ ScanDataProcesser::~ScanDataProcesser(){
 
 }
 
+ScanDataProcesser::ScanDataProcesser(QString folder):
+    QObject(),numFilesToProcess(0),numFilesProcessed(0),is_foambox_(true){
+    id_=QUuid::createUuid().toString();
+    dir_ = QDir(folder);
+    QSettings s;
+    img_format_ = s.value("scanner/imageformat",".jpeg").toString().toLower();
+}
+
+
 ScanDataProcesser::ScanDataProcesser(QString id, QString folder):
-    QObject(),numFilesToProcess(0),numFilesProcessed(0)
+    QObject(),numFilesToProcess(0),numFilesProcessed(0),is_foambox_(true)
 {
     id_=id;
     dir_ = QDir(folder);
+    QSettings s;
+    img_format_ = s.value("scanner/imageformat",".jpeg").toString().toLower();
+}
+
+void ScanDataProcesser::isFoamBox(bool box){
+    is_foambox_=box;
 }
 
 void ScanDataProcesser::processScan(){
@@ -38,7 +55,7 @@ void ScanDataProcesser::calibrateWithScan(QString folder){
 
     qDebug()<<"Scan calibratation Folder: "<<d.absolutePath();
     QStringList filters;
-    filters<<"*.jpeg";
+    filters<<img_format_;
     QStringList files = d.entryList(filters);
 
     qDebug()<<"Files: \n"<<files;
@@ -59,13 +76,22 @@ void ScanDataProcesser::calibrateWithScan(QString folder){
     params.push_back(CV_IMWRITE_JPEG_QUALITY);
     params.push_back(99);
 
-    QString writelocation = default_path+"//"+"summed.jpeg";
+    QString writelocation = default_path+"//"+"summed"+img_format_;
     cv::imwrite(writelocation.toStdString(),baseImg,params);
     settings.setValue("scanner/noisefile",writelocation);
 
 }
 
+void ScanDataProcesser::clearScanDir(){
+    QDir dir(dir_);
+    dir.setNameFilters(QStringList() << img_format_<<img_format_.toUpper());
+    dir.setFilter(QDir::Files);
+    foreach(QString dirFile, dir.entryList())
+    {
+        dir.remove(dirFile);
+    }
 
+}
 void  ScanDataProcesser::processScan(QString folder){
 
     cv::Mat noisesum;
@@ -102,10 +128,11 @@ void  ScanDataProcesser::processScan(QString folder){
 
 void ScanDataProcesser::processImage(QString file, cv::Mat noise){
 
-    float x = QString(file).toLower().replace(".jpeg","").toFloat();//file.split(".")[0].toFloat();
-//    qDebug()<<"x: "<<x<<"File: "<<file;
+    //QString name = QString(file).toLower().replace(img_format_,"");
+    float x = QString(file).toLower().replace(img_format_,"").toFloat();//file.split(".")[0].toFloat();
+    //qDebug()<<"x: "<<x<<"File: "<<file;
 
-
+    //qDebug()<<"Processing: "<<dir_.absoluteFilePath(file);
     ScanProcessing* worker = new ScanProcessing(x,dir_.absoluteFilePath(file),noise);
 //    QThread* thread = new QThread;
 //    worker->moveToThread(thread);
@@ -127,6 +154,11 @@ void ScanDataProcesser::processedImage(float x, QVector < FAHVector3 >* row ){
     if(numFilesProcessed == numFilesToProcess){
         Scan* s = new Scan();
         s->setInitialData( makeGrid());
+#ifdef DEBUGGING
+        //clearScanDir();
+#else
+        clearScanDir();
+#endif
         qDebug()<<"Made Scan";
         emit scanProcessed(s);
     }
@@ -134,7 +166,10 @@ void ScanDataProcesser::processedImage(float x, QVector < FAHVector3 >* row ){
 
 
 XYGrid<float>* ScanDataProcesser::makeGrid(){
-    float GRID_SIZE = 2; /// need to save from elsewhere
+    QSettings settings;
+
+    float Grid_Size_X = settings.value("scanner/processing/x_step",2).toFloat(); /// need to save from elsewhere
+    float Grid_Size_Y = settings.value("scanner/processing/y_step",1).toFloat();
     float Tolerance = 0.3;
     float max_x=0;
     float min_x=0;
@@ -155,15 +190,17 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
         }
     }
 
-    int nx = ceil((max_x-min_x)/GRID_SIZE);
-    int ny = ceil((max_y-min_y)/GRID_SIZE);
+    int nx = ceil((max_x-min_x)/Grid_Size_X);
+    int ny = ceil((max_y-min_y)/Grid_Size_Y);
 
     qDebug()<<"NX: "<<nx<<" NY: "<<ny;
     qDebug()<<"minX: "<<min_x<<" minY: "<<min_y;
     qDebug()<<"maxX: "<<max_x<<" maxY: "<<max_y;
     qDebug()<<"minZ: "<<min_z;
 
-    XYGrid<float>* grid = new XYGrid<float>(nx,ny,1,1);
+    float Grid_Size_X_a = settings.value("scanner/anaylsis/x_step",2).toFloat(); /// need to save from elsewhere
+    float Grid_Size_Y_a = settings.value("scanner/anaylsis/y_step",0.6).toFloat();
+    XYGrid<float>* grid = new XYGrid<float>(nx,ny,Grid_Size_X_a,Grid_Size_Y_a);
 
     for(int i=0; i<nx;i++){
 
@@ -171,7 +208,7 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
 //        qDebug()<<"i:"<<i;
         float x=-1;
         for(int j=0;j<xs.size();j++){
-            if(   (xs.at(j)<(i*GRID_SIZE+Tolerance)) && (xs.at(j)>(i*GRID_SIZE-Tolerance) )){
+            if(   (xs.at(j)<(i*Grid_Size_X+Tolerance)) && (xs.at(j)>(i*Grid_Size_X-Tolerance) )){
                 x=xs.at(j);
 //                qDebug()<<"x:"<<i*GRID_SIZE <<"\tx'"<<xs.at(j);
             }
@@ -190,7 +227,7 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
 
                 float y_p = row->at(k).y-min_y; //compensate for negative min_y
 
-                if(   (y_p<(j*GRID_SIZE+Tolerance)) && (y_p>(j*GRID_SIZE-Tolerance) )){
+                if(   (y_p<(j*Grid_Size_Y+Tolerance)) && (y_p>(j*Grid_Size_Y-Tolerance) )){
                     grid->operator ()(i,j)=row->at(k).z-min_z;
 //                    qDebug()<<i<<","<<j<<":"<<row->at(k).z-min_z;
                     k=row->size();
@@ -200,6 +237,17 @@ XYGrid<float>* ScanDataProcesser::makeGrid(){
         }
 
 
+    }
+
+    if(!is_foambox_){
+        QVector<float> bounds = grid->getValueRange();
+        float min = bounds.first();
+        float max = bounds.last();
+        for(int i=0; i<nx;i++){
+            for(int j=0; j<ny; j++){
+                grid->operator ()(i,j) = (min+max)-grid->at(i,j);
+            }
+        }
     }
 
     return grid;

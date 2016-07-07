@@ -52,6 +52,13 @@ Float Vector3::operator[] (int ix) const {
   }
 }
 
+bool Vector3::operator==(const Vector3 &v) const
+{
+    return x == v.x &&
+           y == v.y &&
+           z == v.z;
+}
+
 
 
 Float* Vector3::array() {

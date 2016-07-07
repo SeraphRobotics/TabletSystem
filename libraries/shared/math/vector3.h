@@ -54,6 +54,11 @@ struct Vector3 {
   Float operator [] (int ix) const;
 
   /**
+   * @brief operator == Compares two objects
+   */
+  bool operator== (const Vector3& v) const;
+
+  /**
    * Provides access to this vector as an array {x, y, z}
    */
   Float* array();

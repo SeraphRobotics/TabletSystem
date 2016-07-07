@@ -1,41 +1,61 @@
 #include "usbmanager.h"
+
 #include <QFile>
 #include <QDebug>
 #include <QDomElement>
 #include <QDomNode>
 #include <QDir>
 #include <QMapIterator>
+#include <QStorageInfo>
+#include <QTimer>
+
 #include <stdio.h>
 #include <iostream>
+
+#include "usbminder.h"
 
 USBManager::USBManager(QObject *parent) :
     QObject(parent),USBDir_(""),Rx_extension(".gcode")
 {
+    USBMinder *usbMinder = new USBMinder(this);
+    connect(usbMinder, &USBMinder::usbadded,
+            this, &USBManager::processUsbAdded);
+    connect(usbMinder, &USBMinder::usbRemoved,
+            this, &USBManager::usbRemoved);
 }
 
+void USBManager::processUsbAdded(const QString &f)
+{
+    QTimer::singleShot(2000, [this, f]
+    {
+        usbAdded(f);
+    });
+}
 
 void USBManager::usbAdded(QString f)
 {
-    if(USBDir_!=""){
+    if (USBDir_ != "") {
         qDebug()<<"looking for: "<<USBDir_;
         return;
     }
+
     USBDir_ = f;
     proccessUSBDrive();
-    emit usbConnected();
+    emit usbConnected(mountDir(f));
     emit uiUSBItemsUpdated(items_.values());
     qDebug()<<"items: "<<items_.size();
 }
 
-void USBManager::usbDisconnected(QString f)
+void USBManager::usbRemoved(QString f)
 {
-    if (f != USBDir_){
-        qDebug()<<"looking for: "<<USBDir_ <<" Got: <<"<<f;
+    if (f != USBDir_ ){
+        qDebug() << "looking for: " << USBDir_ << " Got: <<" << f;
         return;
     }
+
     USBDir_="";
     items_.clear();
-    emit usbDisconnected();
+    emit usbDisconnected(mountDir(f));
     emit uiUSBItemsUpdated(items_.values());
     qDebug()<<"items: "<<items_.size();
 }
@@ -57,9 +77,11 @@ QString USBManager::getLocation(QString id){
     }
 }
 
-
-
-
+void USBManager::addItem(const UI_USB_Item &item)
+{
+    items_.insert(item.id, item);
+    updateUSBData();
+}
 
 void USBManager::deleteItem(QString id){
     qDebug()<<"delete: "<<id;
@@ -75,12 +97,13 @@ void USBManager::deleteItem(QString id){
     /// IF IT EXISTS DELETE IT
     UI_USB_Item item = items_[id];
     bool worked=false;
+    QString path = mountDir(USBDir_);
     if (item.type==UI_USB_Item::kScan){
-        worked = removeDir(USBDir_+item.id);
+        worked = removeDir(path+item.id);
         qDebug()<<"removed dir" <<item.id;
     }else{
-        if (QFile::exists(USBDir_ + item.id + Rx_extension) ){
-            worked = QFile::remove(USBDir_ + item.id + Rx_extension);
+        if (QFile::exists(path + item.id + Rx_extension) ){
+            worked = QFile::remove(path + item.id + Rx_extension);
         }else{
             qDebug()<<"didnt exist";
         }
@@ -96,8 +119,8 @@ void USBManager::deleteItem(QString id){
 
 void USBManager::updateUSBData(){
 
-    QString filename;
-    filename = USBDir_+"USBData.xml";
+    QDir usbDir(mountDir(USBDir_));
+    QString filename = usbDir.absoluteFilePath("USBData.xml");
 
     QDomDocument d("USBDataFile");
 
@@ -123,21 +146,45 @@ void USBManager::updateUSBData(){
     file.close();
 }
 
+QString USBManager::mountDir(const QString &device) const
+{
+#ifdef Q_OS_WIN32
+    return device;
+#else
+    QList<QStorageInfo> volumes = QStorageInfo::mountedVolumes();
+
+    foreach (QStorageInfo storageInfo, volumes) {
+        if (QString(storageInfo.device()) == device) {
+            return storageInfo.rootPath() + "/";
+        }
+    }
+
+    qDebug() << "Cannot find appropriate storage for device:" << device;
+
+    return QString();
+#endif //Q_OS_WIN32
+}
+
 void USBManager::proccessUSBDrive()
 {
 
     QDomDocument d;
 
-    QString filename;
-    filename = USBDir_+"USBData.xml";
+    QDir usbDir(mountDir(USBDir_));
+    QString filename = usbDir.absoluteFilePath("USBData.xml");
     QFile usbdata(filename);
+    qDebug() << filename;
 
     if (!usbdata.open(QFile::ReadOnly)) {
-        qDebug() << "Could not open file.";
+        qDebug() << "Could not open file" << filename << ":" << usbdata.errorString();
+        usbdata.close();
+        USBDir_.clear();
+        return;
     }
 
     if (!d.setContent(&usbdata)) {
         usbdata.close();
+        USBDir_.clear();
         return;
     }
     usbdata.close();

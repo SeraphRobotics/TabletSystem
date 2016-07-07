@@ -11,17 +11,22 @@
 
 
 
-struct Manipulation {
+class Manipulation {
+    Q_GADGET
+public:
     enum ManipulationType {Ray_cut_out,
-                           met_cut_out,
+                           Met_cut_out,
                            U_Pad,Heal_pad,
                            Heal_spur_hole,
                            Met_Pad,Met_Bar_Pad,
                            Dancer_Pad,
+                           Mortons_Extension,
                            Mortons_Neroma_Pad,
                            Scaphoid_Pad,
-                           kCustom
+                           KCustom
                           };
+    Q_ENUM(ManipulationType)
+
     ManipulationType type;
     FAHLoopInXYPlane* outerloop;
     QList<FAHLoopInXYPlane*> innerloops;

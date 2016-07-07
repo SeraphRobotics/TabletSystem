@@ -21,7 +21,7 @@ Name nameFromNode(QDomNode node){
     if(!("name"==node.nodeName().toLower())){return n;}
 
     QDomNodeList nchildren = node.childNodes();
-    for(unsigned int i=0;i<nchildren.length();i++){
+    for(int i=0; i < nchildren.length(); i++){
         QDomNode nchild = nchildren.at(i);
         if(!nchild.isElement()){continue;}
 
@@ -82,7 +82,7 @@ QDate dateFromNode(QDomNode node){
     if(!("date"==node.nodeName().toLower())){return QDate();}
 
     QDomNodeList dchildren = node.childNodes();
-    for(unsigned int i=0;i<dchildren.length();i++){
+    for(int i=0;i<dchildren.length();i++){
         QDomNode dchild = dchildren.at(i);
         if(!dchild.isElement()){continue;}
 

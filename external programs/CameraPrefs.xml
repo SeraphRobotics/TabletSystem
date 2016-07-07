@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<trueColorEnabled>false</trueColorEnabled>
+
+	<cameras>
+	
+		<camera
+			name="Logitech HD Pro Webcam C920"
+			autoFocus="false"
+			autoWhiteBalance="true"
+			
+			focus="15"
+			zoom="0"
+			pan="0"
+			tilt="0"
+			
+			brightness="150"
+			whiteBalance="300"
+			contrast="150"
+			saturation="150"
+			/>
+
+	</cameras>
+</config>

@@ -26,14 +26,18 @@ struct UI_User{
 };
 Q_DECLARE_METATYPE(UI_User)
 
+enum Foot_Type{kRight,kLeft,kBoth};
+Q_DECLARE_METATYPE(Foot_Type)
 
 struct UI_USB_Item{
-    enum Type{kScan,kRx};
+    enum Type{kScan,kRx,kAssociatedScan};
     Type type;
     QDateTime datetime;
     QString id;
     QString comment;
     Name patient;//if none, then not assigned, if exists, thenstatus is "[Name]'s orthotic is ready for transfer to printer"
+    QString parentId;
+    Foot_Type foot;
 };
 
 Q_DECLARE_METATYPE(UI_USB_Item)
@@ -46,10 +50,6 @@ struct UI_Patient{
 };
 
 Q_DECLARE_METATYPE(UI_Patient)
-
-enum Foot_Type{kRight,kLeft,kBoth};
-Q_DECLARE_METATYPE(Foot_Type)
-
 
 struct Front_Edge{
     QPointF p1;

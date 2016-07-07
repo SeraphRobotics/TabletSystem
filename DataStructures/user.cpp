@@ -17,7 +17,7 @@ User userFromNode(QDomNode node){
     u.id=node.toElement().attribute("id","");
 
     QDomNodeList mchildren = node.childNodes();
-    for(unsigned int i=0;i<mchildren.length();i++){
+    for(int i=0; i < mchildren.length(); i++){
         QDomNode mchild = mchildren.at(i);
         if(!mchild.isElement()){continue;}
 

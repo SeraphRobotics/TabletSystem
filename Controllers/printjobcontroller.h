@@ -53,9 +53,6 @@ private:
     file_z_pair shell_;
     QList< file_z_pair> pad_files_;
     file_z_pair topcoat_file_;
-
-    QTimer* timer_;
-
 };
 
 #endif // PRINTJOBCONTROLLER_H

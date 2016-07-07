@@ -6,6 +6,7 @@
 #include "testscanmanger.h"
 #include "testorthoticmanager.h"
 #include "testorthoticcontroller.h"
+#include "testscannercontroller.h"
 
 
 #ifdef Q_OS_WIN
@@ -71,12 +72,16 @@ int main(int argc, char** argv) {
     //TestOrthoticManager testOrthoticManager;
     //QTest::qExec(&testOrthoticManager,  argc, argv);
 
-    TestOrthoticController testOrthoticController;
-    QTest::qExec(&testOrthoticController,  argc, argv);
+//    TestOrthoticController testOrthoticController;
+//    QTest::qExec(&testOrthoticController,  argc, argv);
 
-
-    return 0;
+    TestScannerController* testScannerController = new TestScannerController();
+    testScannerController->initTestCase();
     return app.exec();
+
+
+//    return 0;
+
 }
 
 

@@ -23,7 +23,9 @@ Scan* ScanManager::getScan(QString id){
     if(hasScan(id)){
         //TODO:: btl improve this path parsing
         QString filename = dir_.absolutePath()+"/"+id+QString(".")+extension_; // not the best form. Should be from QSettings
-        return new Scan(filename);
+        Scan *scan = new Scan(filename);
+        scan->setId(id);
+        return scan;
     }
     return new Scan();
 }
@@ -39,6 +41,7 @@ void ScanManager::addScan(Scan* s){
 }
 
 void ScanManager::updateScanList(){
+    dir_.refresh();
     QStringList files = dir_.entryList();
     idlist_.clear();
     for(int i=0;i<files.size();i++){

@@ -17,20 +17,17 @@ PrintJobController::PrintJobController(Orthotic *orth, QObject *parent) :
     orth_ = orth;
     QSettings s;
     dir_ = s.value("printing/directory",QDir::currentPath()).toString();
-    workthread = new QThread;
-    timer_ = new QTimer();
-    timer_->setInterval(10);
-    connect(timer_,SIGNAL(timeout()),workthread,SLOT(start()));
-    timer_->start();
-
-//    workthread->start();
+    workthread = new QThread(this);
+    workthread->start();
 }
 
 PrintJobController::~PrintJobController(){
-    timer_->stop();
-    delete timer_;
-    delete workthread;
-
+    workthread->quit();
+    if (!workthread->wait(5 * 1000))
+    {
+        workthread->terminate();
+        workthread->wait();
+    }
 }
 
 void PrintJobController::RunPrintJob(){
@@ -43,6 +40,7 @@ void PrintJobController::RunPrintJob(){
     numSTLsToRepair = 1+orth_->printjob.manipulationpairs.size();
 
     FAHVector3 p1, p2, d;
+    float rotation=0;
     if(orth_->getFootType()==Orthotic::kRight){
         p1 = orth_->getForePoints().first().copy();
         p2 = orth_->getHealPoints().first().copy();
@@ -51,6 +49,7 @@ void PrintJobController::RunPrintJob(){
         p1.z=0;
        //// EXTRA_SCALE  p2.x=p2.x*2;
         p2.z=0;
+        rotation = Math::kPi/2.0;
     }else{
         p1 = orth_->getForePoints().last().copy();
         p2 = orth_->getHealPoints().last().copy();
@@ -59,7 +58,7 @@ void PrintJobController::RunPrintJob(){
         p1.z=0;
         //// EXTRA_SCALE p2.x=p2.x*2;
         p2.z=0;
-
+        rotation = -Math::kPi/2.0;
     }
 
     d= p2-p1;
@@ -67,25 +66,28 @@ void PrintJobController::RunPrintJob(){
     FAHMatrix4x4 m;
     FAHMatrix4x4 n;
     n.rotationZ(Math::kPi/2.0);
-//    m.identity();
-    m.rotationPointAxisAngle(p2,d,-Math::kPi/2.0); //(Math::kPi)
+#ifdef DEBUGGING
+    m.identity();
+#else
+    m.rotationPointAxisAngle(p2,d,rotation); //(-Math::kPi)
     m = n.mul(m);
+#endif
 
 
     orth_->printjob.shellpair.mesh->transform(m);
-    RepairController* rs = new RepairController(orth_->printjob.shellpair.mesh,shellfilename);
-    connect(rs,SIGNAL(Success()),this,SLOT(repairSucessful()));
-    connect(workthread,SIGNAL(finished()),rs,SLOT(deleteLater()));
-    connect(rs,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
-    rs->moveToThread(workthread);
-    workthread->start();
-    rs->repairMesh();
     shell_.stlfile = shellfilename ;
     shell_.gcode_file = shellfilename.replace(".stl","_fixed.gcode");
     shell_.z_offset = 0;
     shell_.z_translate = 0;
     shell_.x_center = orth_->printjob.shellpair.x_center;
     shell_.y_center = orth_->printjob.shellpair.y_center;
+
+    RepairController* rs = new RepairController(orth_->printjob.shellpair.mesh,shellfilename);
+    connect(rs,SIGNAL(Success()),this,SLOT(repairSucessful()));
+    connect(workthread,SIGNAL(finished()),rs,SLOT(deleteLater()));
+    connect(rs,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
+    rs->moveToThread(workthread);
+    QMetaObject::invokeMethod(rs, "repairMesh", Qt::QueuedConnection);
 
     for(int i=0; i<orth_->printjob.manipulationpairs.size();i++){
         QString fn = dir_ + "/"+ orth_->printjob.manipulationpairs.at(i).id;
@@ -96,22 +98,23 @@ void PrintJobController::RunPrintJob(){
         connect(workthread,SIGNAL(finished()),r,SLOT(deleteLater()));
         connect(r,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
         r->moveToThread(workthread);
-        r->repairMesh();
-
+        QMetaObject::invokeMethod(r, "repairMesh", Qt::QueuedConnection);
     }
 
-
-    ///Start topcoat
-    //TopCoatController* tcc = new TopCoatController(orth_,"");
-//    TopCoatController* tcc = new TopCoatController(orth_, dir_, m);
-//    tcc->moveToThread(workthread);
-//    connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
-//    connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
-//    tcc->generateTopCoat();
-
-
-
-
+    if (orth_->getTopCoat().style == Top_Coat::kNone ||
+       orth_->getTopCoat().style == Top_Coat::kAuto) {
+       topcoatdone = true;
+       topcoat_file_.gcode_file = "";
+    }else{
+        ///Start topcoat
+        //TopCoatController* tcc = new TopCoatController(orth_,"");
+        TopCoatController* tcc = new TopCoatController(orth_, dir_, m);
+        tcc->moveToThread(workthread);
+        connect(tcc,SIGNAL(generatedCoatingFile(QString)),this,SLOT(topcoatMade(QString)));
+        connect(workthread,SIGNAL(finished()),tcc,SLOT(deleteLater()));
+        connect(tcc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
+        QMetaObject::invokeMethod(tcc, "generateTopCoat", Qt::QueuedConnection);
+    }
 }
 
 void PrintJobController::makeIniFiles(QString stlfilename, manipulationpair pair){
@@ -173,9 +176,7 @@ void PrintJobController::repairSucessful(){
         connect(sc,SIGNAL(Success()),this,SLOT(slicingSucessful()));
         connect(sc,SIGNAL(Failed(QString)),this,SLOT(slicingFailure(QString)));
         connect(workthread,SIGNAL(finished()),sc,SLOT(deleteLater()));
-        workthread->start();
-        //sc->slice();
-
+        QMetaObject::invokeMethod(sc, "slice", Qt::QueuedConnection);
 
 //        int i=0;
 //        foreach(manipulationpair mp, orth_->printjob.manipulationpairs ){
@@ -192,12 +193,13 @@ void PrintJobController::repairSucessful(){
             numSTLToSlice+=pad_files_.size();
             foreach(file_z_pair p,pad_files_){
                 SlicerController* sci = new SlicerController(p.stlfile,p.inifile,p.x_center,p.y_center,true);
+                sci->moveToThread(workthread);
                 connect(sci,SIGNAL(Success()),this,SLOT(slicingSucessful()));
+                connect(sci,SIGNAL(Failed(QString)),this,SLOT(slicingFailure(QString)));
                 connect(workthread,SIGNAL(finished()),sci,SLOT(deleteLater()));
-                sci->slice();
+                QMetaObject::invokeMethod(sci, "slice", Qt::QueuedConnection);
             }
         }
-
     }
 }
 void PrintJobController::slicingSucessful(){
@@ -230,12 +232,10 @@ void PrintJobController::startMerge(){
 
     MergeController* mc = new MergeController(shell_,pad_files_,topcoat_file_);
     connect(mc,SIGNAL(GCodeMerged(QString)),this,SLOT(mergeSucessful(QString)));
+    connect(mc,SIGNAL(Failed(QString)),this,SLOT(stepFailed(QString)));
     connect(workthread,SIGNAL(finished()),mc,SLOT(deleteLater()));
     mc->moveToThread(workthread);
-//    workthread->start();
-    mc->mergeFiles();
-
-
+    QMetaObject::invokeMethod(mc, "mergeFiles", Qt::QueuedConnection);
 }
 
 void PrintJobController::mergeSucessful(QString gcode){

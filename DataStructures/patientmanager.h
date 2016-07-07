@@ -30,6 +30,10 @@ signals:
 
 public slots:
     void updateRx(QString PatientID, Rx r);
+    void removeRx(const QString &patientId, const QString &rxId);
+    void replaceRxByScanId(const QString &patientId, const QString &scanId, Rx r);
+    void replaceRxByOrthoId(const QString &patientId, const QString &orthoId, Rx r);
+    void removeScan(const QString &patientId, const QString &scanId);
     void addPatient(Patient P);
     void removePatient(QString PatientID);
     void writeToDisk();

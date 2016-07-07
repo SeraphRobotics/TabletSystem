@@ -3,10 +3,12 @@
 #include <QTextStream>
 
 Orthotic::Orthotic(QObject *parent) :
-    QObject(parent),foot_(Orthotic::kRight),bottom_(Orthotic::kFlat)
+    QObject(parent),foot_(Orthotic::kRight),bottom_(Orthotic::kFlat),heal_(Orthotic::kShallow)
 {
     id_=QUuid::createUuid();
-    filename_ = id_.toString()+QString(".ortho");
+    QSettings settings;
+    QString dir = settings.value("ortho-directory", QDir::currentPath()).toString();
+    filename_ = dir + "/" + id_.toString()+QString(".ortho");
     scan_ = new Scan();
     scanid_ = scan_->getID();
     forfoot_ = Posting();
@@ -17,7 +19,7 @@ Orthotic::Orthotic(QObject *parent) :
 
 }
 
-Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::kFlat){
+Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::kFlat),heal_(Orthotic::kShallow){
     filename_=filename;
     id_=QUuid::createUuid();
     scan_ = new Scan();
@@ -43,7 +45,7 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
     scanid_ = ortho.attribute("scanid","");
 //    QTimer::singleShot(0,this,SLOT(requestScanData()));
     QDomNodeList mchildren = ortho.childNodes();
-    for(unsigned int i=0;i<mchildren.length();i++){
+    for(int i=0;i<mchildren.length();i++){
         QDomNode mchild = mchildren.at(i);
         if(!mchild.isElement()){continue;}
 
@@ -53,6 +55,8 @@ Orthotic::Orthotic(QString filename):foot_(Orthotic::kRight),bottom_(Orthotic::k
             foot_= static_cast<Orthotic::foot_type>(el.text().toUInt());
         }else if("bottom"==name){
             bottom_= static_cast<Orthotic::bottom_type>(el.text().toUInt());
+        }else if("heal"==name){
+            heal_= static_cast<Orthotic::heal_type>(el.text().toUInt());
         }else if("posting"==name){
             Posting p = nodeToPosting(mchild);
             if(Posting::kForFoot==p.for_rear){
@@ -108,6 +112,11 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
     bottomTypeEl.appendChild(d.createTextNode(QString::number(bottom_)));
     node.appendChild(bottomTypeEl);
 
+    //heal Type
+    QDomElement healTypeEl = d.createElement("heal");
+    healTypeEl.appendChild(d.createTextNode(QString::number(heal_)));
+    node.appendChild(healTypeEl);
+
     //posting
     QDomNode fpostEl = postingToNode(forfoot_);
     node.appendChild(fpostEl);
@@ -124,48 +133,50 @@ void Orthotic::writeToDisk(){//writes XML and makes Scan write to disk
 
 
     // Manipulations added
+    QDomElement manipulationsEl = d.createElement("manipulations");
     for(int i=0;i<manipulations_.size();i++){
-//        Manipulation m=manipulations_.at(i);
+//        Manipulation * m = manipulations_.at(i);
 //        QDomElement mnode = d.createElement("Manipulation");
 //        QDomElement typeEl = d.createElement("type");
-//        typeEl.appendChild(d.createTextNode(QString::number(m.type)));
+//        typeEl.appendChild(d.createTextNode(QString::number(m->type)));
 //        mnode.appendChild(typeEl);
 
 //        QDomElement stiffEl = d.createElement("stiffness");
-//        stiffEl.appendChild(d.createTextNode(QString::number(m.stiffness)));
+//        stiffEl.appendChild(d.createTextNode(QString::number(m->stiffness)));
 //        mnode.appendChild(stiffEl);
 
 //        QDomElement depthEl = d.createElement("depth");
-//        depthEl.appendChild(d.createTextNode(QString::number(m.depth)));
+//        depthEl.appendChild(d.createTextNode(QString::number(m->depth)));
 //        mnode.appendChild(depthEl);
 
 //        QDomElement thicknessEl = d.createElement("thickness");
-//        thicknessEl.appendChild(d.createTextNode(QString::number(m.thickness)));
+//        thicknessEl.appendChild(d.createTextNode(QString::number(m->thickness)));
 //        mnode.appendChild(thicknessEl);
 
 //        QDomElement locationEl = d.createElement("location");
 //        QDomElement xEl = d.createElement("x");
 //        QDomElement yEl = d.createElement("y");
-//        xEl.appendChild(d.createTextNode(QString::number(m.location.x)));
-//        yEl.appendChild(d.createTextNode(QString::number(m.location.y)));
+//        xEl.appendChild(d.createTextNode(QString::number(m->location.x)));
+//        yEl.appendChild(d.createTextNode(QString::number(m->location.y)));
 //        locationEl.appendChild(xEl);
 //        locationEl.appendChild(yEl);
 //        mnode.appendChild(locationEl);
 
 
-        //        QDomElement outerEl = d.createElement("outerloop");
-        //        QDomNode ol=nodeFromLoop(m.outerloop);
-        //        outerEl.appendChild(ol);
-        //        mnode.appendChild(outerEl);
+//        QDomElement outerEl = d.createElement("outerloop");
+//        QDomNode ol=nodeFromLoop(m->outerloop);
+//        outerEl.appendChild(ol);
+//        mnode.appendChild(outerEl);
 
 //        QDomElement innerEl = d.createElement("innerloops");
-//        for(int j=0; j<m.innerloops.size();j++){
-//            innerEl.appendChild(nodeFromLoop(m.innerloops.at(j)));
+//        for(int j=0; j<m->innerloops.size();j++){
+//            innerEl.appendChild(nodeFromLoop(m->innerloops.at(j)));
 //        }
 //        mnode.appendChild(innerEl);
 //        node.appendChild(mnode);
-        node.appendChild(manipulations_[i]->toNode());
+        manipulationsEl.appendChild(manipulations_[i]->toNode());
     }
+    node.appendChild(manipulationsEl);
 
     //  QVector< FAHVector3 > healPts_;
     QVector< QDomNode > heal_nodes = nodeListFromVector(healPts_);
@@ -238,8 +249,17 @@ void Orthotic::setScan(Scan* scan){///placeholder for scan class
 void Orthotic::setBottomType(bottom_type b){
     bottom_=b;
 }
+
+void Orthotic::setHealType(Orthotic::heal_type h){
+    heal_ = h;
+}
+
 Orthotic::bottom_type Orthotic::getBottomType(){
     return bottom_;
+}
+
+Orthotic::heal_type Orthotic::getHealType(){
+    return heal_;
 }
 
 

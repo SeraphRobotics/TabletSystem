@@ -14,13 +14,10 @@ public:
     Scan* getScan(QString id);
     bool hasScan(QString id);
     QStringList scanIds();
+    void updateScanList();
 
 public slots:
     void addScan(Scan* s);
-
-
-private slots:
-    void updateScanList();
 
 private:
     QDir dir_;

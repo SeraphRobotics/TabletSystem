@@ -29,7 +29,7 @@ void manipulationsTest(){
     m.depth=1;
     m.location=c;
     m.stiffness=20;
-    m.type=Met_Bar_Pad;
+    m.type=Manipulation::Met_Bar_Pad;
     m.outerloop=l;
     m.innerloops.append(il);
     QDomNode n = m.toNode();
@@ -64,7 +64,7 @@ void orthoticTest(){
     m.depth=1;
     m.location=c;
     m.stiffness=20;
-    m.type=Met_Bar_Pad;
+    m.type=Manipulation::Met_Bar_Pad;
     m.outerloop=l;
     m.innerloops.append(il);
 
@@ -82,7 +82,7 @@ void orthoticTest(){
     o.setFootType(Orthotic::kRight);
     o.setPosting(p1);
     o.setPosting(p2);
-    o.addManipulation(m);
+    o.addManipulation(&m);
     o.setBoundary(l);
     o.writeToDisk();
 
@@ -97,21 +97,21 @@ void orthoticTest2(){
 
 
 void scanTest(){
-    XYGrid<float> g(10,10);
-    g.setStepSize(1);
-    g(5,5)=10;
+//    XYGrid<float> g(10,10);
+//    g.setStepSize(1);
+//    g(5,5)=10;
 
-    Scan s;
-    s.setInitialData(&g);
-    s.writeToDisk();
+//    Scan s;
+//    s.setInitialData(&g);
+//    s.writeToDisk();
 }
 
 void scanTest2(){
-    QString filename = "{19491125-6e69-49d2-a074-fff69012bbec}.scan";
-    Scan s(filename);
-    XYGrid<float>* g =s.getXYGrid();
-    g->operator ()(5,5)=20;
-    s.writeToDisk();
+//    QString filename = "{19491125-6e69-49d2-a074-fff69012bbec}.scan";
+//    Scan s(filename);
+//    XYGrid<float>* g =s.getXYGrid();
+//    g->operator ()(5,5)=20;
+//    s.writeToDisk();
 
 }
 
@@ -139,7 +139,7 @@ void testScanAndOrthotic(){
     m.depth=1;
     m.location=c;
     m.stiffness=20;
-    m.type=Met_Bar_Pad;
+    m.type=Manipulation::Met_Bar_Pad;
     m.outerloop=l;
     m.innerloops.append(il);
 
@@ -157,7 +157,7 @@ void testScanAndOrthotic(){
     o.setFootType(Orthotic::kRight);
     o.setPosting(p1);
     o.setPosting(p2);
-    o.addManipulation(m);
+    o.addManipulation(&m);
     o.setBoundary(l);
     o.setScan(&s);
     o.writeToDisk();
@@ -363,32 +363,32 @@ void patientManagerOrthoTest(){
 }
 
 void ScanManagerReadTest(){
-    ScanManager SM;
-    Scan* S = SM.getScan("{19491125-6e69-49d2-a074-fff69012bbec}");
-    qDebug()<<S->getID();
-    qDebug()<<S->getXYGrid()->toCSV();
+//    ScanManager SM;
+//    Scan* S = SM.getScan("{19491125-6e69-49d2-a074-fff69012bbec}");
+//    qDebug()<<S->getID();
+//    qDebug()<<S->getXYGrid()->toCSV();
 }
 
 void ScanManagerWriteTest(){
-    ScanManager SM;
+//    ScanManager SM;
 
-    XYGrid<float> g(10,10);
-    g.setStepSize(1);
-    g(5,5)=10;
+//    XYGrid<float> g(10,10);
+//    g.setStepSize(1);
+//    g(5,5)=10;
 
-    Scan* s = new Scan();
-    s->setInitialData(&g);
+//    Scan* s = new Scan();
+//    s->setInitialData(&g);
 
-    SM.addScan(s);
+//    SM.addScan(s);
 }
 
 void orthoManagerReadTest(){
-    ScanManager SM;
-    OrthoticManager OM(&SM);
-    Orthotic* o = OM.getOrthotic("{9ee72db4-2260-41fb-a857-1408d667125c}");
-    Scan* s = o->getScan();
-    qDebug()<<s->getXYGrid()->toCSV();
-    qDebug()<<o->getScanID();
+//    ScanManager SM;
+//    OrthoticManager OM(&SM);
+//    Orthotic* o = OM.getOrthotic("{9ee72db4-2260-41fb-a857-1408d667125c}");
+//    Scan* s = o->getScan();
+//    qDebug()<<s->getXYGrid()->toCSV();
+//    qDebug()<<o->getScanID();
 
 }
 
@@ -418,7 +418,7 @@ void orthoManagerWriteTest(){
     m.depth=1;
     m.location=c;
     m.stiffness=20;
-    m.type=Met_Bar_Pad;
+    m.type=Manipulation::Met_Bar_Pad;
     m.outerloop=l;
     m.innerloops.append(il);
 
@@ -436,7 +436,7 @@ void orthoManagerWriteTest(){
     o->setFootType(Orthotic::kRight);
     o->setPosting(p1);
     o->setPosting(p2);
-    o->addManipulation(m);
+    o->addManipulation(&m);
     o->setBoundary(l);
     o->writeToDisk();
 }
@@ -465,7 +465,7 @@ void newScanTest(){
     Scan* s = new Scan();
 
     XYGrid<float> g(10,10);
-    g.setStepSize(1);
+//    g.setStepSize(1);
     g(5,5)=10;
 
     s->setInitialData(&g);
@@ -501,7 +501,7 @@ void newScanTest(){
     m.depth=1;
     m.location=c;
     m.stiffness=20;
-    m.type=Met_Bar_Pad;
+    m.type=Manipulation::Met_Bar_Pad;
     m.outerloop=l;
     m.innerloops.append(il);
 
@@ -519,7 +519,7 @@ void newScanTest(){
     o->setFootType(Orthotic::kLeft);
     o->setPosting(p1);
     o->setPosting(p2);
-    o->addManipulation(m);
+    o->addManipulation(&m);
     o->setBoundary(l);
     o->writeToDisk();
 
@@ -554,7 +554,7 @@ void newPatientTest(){
     Scan* s = new Scan();
 
     XYGrid<float> g(10,10);
-    g.setStepSize(1);
+//    g.setStepSize(1);
     g(5,5)=10;
 
     s->setInitialData(&g);
@@ -590,7 +590,7 @@ void newPatientTest(){
     m.depth=1;
     m.location=c;
     m.stiffness=20;
-    m.type=Met_Bar_Pad;
+    m.type=Manipulation::Met_Bar_Pad;
     m.outerloop=l;
     m.innerloops.append(il);
 
@@ -608,7 +608,7 @@ void newPatientTest(){
     o->setFootType(Orthotic::kLeft);
     o->setPosting(p1);
     o->setPosting(p2);
-    o->addManipulation(m);
+    o->addManipulation(&m);
     o->setBoundary(l);
     o->writeToDisk();
 
