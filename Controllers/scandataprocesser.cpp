@@ -78,7 +78,7 @@ void ScanDataProcesser::calibrateWithScan(QString folder){
 
     QString writelocation = default_path+"//"+"summed"+img_format_;
     cv::imwrite(writelocation.toStdString(),baseImg,params);
-    settings.setValue("scanner/noisefile",writelocation);
+    //settings.setValue("scanner/noisefile",writelocation);
 
 }
 
